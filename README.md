@@ -2,7 +2,7 @@
 
 Source-reconstruction project for the supplied `BEYP70` Rev.00 GBA ROM.
 
-This is **not** a Windows recompiler. The goal is readable source, recovered structures/data, and eventually a conventional GBA decompilation project that can serve as the technical source of truth for the Unreal remake.
+This is **not** a Windows recompiler. The goal is readable source, recovered structures/data, and eventually a conventional GBA decompilation project that can serve as the technical source of truth for an Unreal remake.
 
 ## Verified ROM
 
