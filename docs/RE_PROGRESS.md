@@ -71,3 +71,27 @@ The earlier pass described `08062370` and `08062490` too broadly as a single
 resource initializer. The new pass separates the routines by their actual
 entry points and records the observed 0x80-entry table construction and the
 0x28-byte object allocation path independently.
+
+## Pass 5 — persistent-loop/event tracing
+
+Resolved several previously opaque direct call targets from the startup loop:
+
+- `08049268` — large state-context preparation/reset routine.
+- `0804945C` — state/context dispatch routine with VBlank and event/object checks.
+- `080512D0` — indexed control/event state scan.
+- `0805A6DC` — queued 16-bit control/event stream consumer.
+- `08062B44` — one-word runtime context setter.
+- `08062BCC` — deferred-event table lookup/start routine.
+
+Also corrected `src/main.c` so the second VBlank/`08062814` phase and direct `08049268`/`0804945C` calls are represented instead of being hidden behind comments.
+
+## Pass 7
+
+Recovered the `0x0804901C–0x0804945C` state/context cluster: context history, pending-index handling, signed fixed-point scaling, main state initialization, and a five-way indirect state dispatcher. See `docs/PASS7_FINDINGS.md` and `src/game_state.c`.
+
+## Pass 8
+
+Refined the state dispatcher after checking its target addresses directly. The
+five entries at `0x08049348` are shared-tail continuations, not independent C
+handlers. Also traced `0x0804A284` and recovered the structural behavior of
+`0x08050398`, including its `0x1C`-byte record stride and heap allocation.

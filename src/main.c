@@ -42,6 +42,8 @@ void sub_08053CD8(void);
 int  Input_TestMask(int);
 void sub_080512D0(void);
 void sub_08062798(void);
+void sub_08049268(void);
+void sub_0804945C(void);
 void sub_0805AC4C(int, int, int, int);
 void sub_080578EC(int, int);
 void sub_080578E8(int, int);
@@ -89,12 +91,11 @@ void UBJ_Startup(void)
         sub_0805EFC0((void *)((*(uint32_t *)0x03000FB0u) + 0xBA0), 0);
         sub_08052538();
 
-        /* 0x0805064C: unknown state transition/helper. */
-        /* sub_08049268(); -- direct call target, needs separate analysis */
+        sub_08049268(); /* 0x08049268: provisional GameState_FramePrepare */
 
         /* 0x08050656 .. 0x08050694 */
         Runtime_ResetPools(0x80, 0x20);
-        /* sub_0804945C(); -- direct call target */
+        sub_0804945C(); /* 0x0804945C: provisional GameState_FrameDispatch */
         sub_080578FC();
         sub_08062814();
         sub_0805A6DC();
@@ -103,8 +104,7 @@ void UBJ_Startup(void)
         sub_0805193C();
         sub_08053BB8();
         sub_08053CD8();
-        Input_TestMask(2);
-
+        /* The original tests the same mask once here. */
         if (Input_TestMask(2) == 0)
             sub_080512D0();
     }

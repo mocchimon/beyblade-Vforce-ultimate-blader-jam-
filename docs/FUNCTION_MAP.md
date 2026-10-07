@@ -100,3 +100,49 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 
 The names above are provisional and intentionally describe observed behavior
 rather than asserting game-specific semantics.
+
+## Pass 5 additions
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x08049268` | `GameState_FramePrepare` | resets/prepares a large state context and clears per-frame fields |
+| `0x0804945C` | `GameState_FrameDispatch` | VBlank + state/context processing, event/object checks, repeated frame dispatch |
+| `0x080512D0` | `ControlEvent_Service` | indexed control-record scan and event-bit updates |
+| `0x0805A6DC` | `ControlQueue_Service` | consumes queued 16-bit values and updates queue state |
+| `0x08062B44` | `Runtime_SetContext` | stores one startup pointer into `0x03005E14` |
+| `0x08062BCC` | `DeferredEvent_Begin` | bounds-checks event index and loads an 8-byte table entry into globals |
+
+## Pass 6 additions
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x08062490` | `RuntimeObjectTable_Init` | exact descriptor/buffer setup and 0x80-entry table initialization |
+| `0x08062E94` | `RuntimeMemory_Init` | exact 0xC400/0x1400 allocations and descriptor writes |
+
+## Pass 7 additions
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x0804901C` | `GameState_ResetTimers` | writes paired timing fields in the `0x03000650` context |
+| `0x080490D0` | `GameState_QueueContext` | updates the two-entry context history and invokes runtime callback |
+| `0x080490FC` | `GameState_SelectContext` | rotates/stores context pointer and advances a 15-entry history |
+| `0x08049160` | `GameState_GetContext` | returns context field `+0x08` |
+| `0x0804916C` | `GameState_ClearPendingIndex` | clears context byte `+0x7C` |
+| `0x0804917C` | `GameState_AdvancePending` | consumes pending index and selects a queued context |
+| `0x080491E4` | `GameState_ScaleStep` | signed magnitude/power-of-two scaling helper |
+| `0x08049214` | `GameState_SetActiveIndex` | clamps index against active object's limit and stores `index+1` |
+| `0x08049238` | `GameState_SetContextA` | stores pointer at context `+0x0C` |
+| `0x08049244` | `GameState_GetContextA` | reads context `+0x0C` |
+| `0x08049250` | `GameState_SetContextB` | stores pointer at context `+0x10` |
+| `0x0804925C` | `GameState_GetContextB` | reads context `+0x10` |
+| `0x08049268` | `GameState_Init` | initializes main state record rooted at `0x03000FB0` |
+| `0x08049348` | `GameState_Dispatch` | five-entry indirect state-handler dispatch |
+
+## Pass 8 additions
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x08049348` | `GameState_Dispatch` (shared-tail dispatcher) | five-entry indirect dispatch with shared register state and optional override context |
+| `0x0804A284` | `RuntimeContext_Service` | compares context indices/entry state and conditionally invokes synchronization handlers |
+| `0x08050388` | `RuntimeRecord_Clear` | clears the fixed fields of a 0x1C-byte runtime record |
+| `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x1C` bytes and initializes a sequence of runtime records |

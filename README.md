@@ -21,3 +21,8 @@ original developers' symbol names.
 Pass 4 adds the first recovered resource-table/runtime-memory structures and
 keeps their semantics conservative until their callers/callees are resolved.
 No original ROM is distributed by this project.
+
+
+## Current state
+
+Pass 5 extends the call graph into the persistent frame loop and deferred-control/event subsystem. See `docs/PASS5_FINDINGS.md` and `asm/pass5/`. The project contains no original ROM.
