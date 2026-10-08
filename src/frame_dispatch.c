@@ -6,6 +6,8 @@
  * gameplay update: it first checks several global enable/state flags,
  * advances an aligned timing value, and then dispatches through a table.
  */
+void FrameEvent_UpdateTiming(void);
+
 void FrameEvent_Service(void)
 {
     uint32_t *state = *(uint32_t **)0x03005E78;
@@ -20,4 +22,3 @@ void FrameEvent_Service(void)
     (void)mode;
 }
 
-void FrameEvent_UpdateTiming(void);

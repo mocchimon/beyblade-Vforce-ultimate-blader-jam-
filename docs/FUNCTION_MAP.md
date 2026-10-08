@@ -146,3 +146,69 @@ rather than asserting game-specific semantics.
 | `0x0804A284` | `RuntimeContext_Service` | compares context indices/entry state and conditionally invokes synchronization handlers |
 | `0x08050388` | `RuntimeRecord_Clear` | clears the fixed fields of a 0x1C-byte runtime record |
 | `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x1C` bytes and initializes a sequence of runtime records |
+
+| `0x0804AF08` | `RuntimeResource_Select` | selects an indexed runtime resource and updates its handle |
+| `0x0804AF60` | `RuntimeResource_ReleaseSelected` | releases selected runtime resource and resets selector |
+| `0x08062A74` | `RuntimeEntry_Find` | searches 0x28-byte runtime entries by key |
+| `0x08062AB4` | `RuntimeEntry_Deactivate` | clears runtime entry status byte |
+| `0x08062AC8` | `RuntimeEntry_SetStatus2` | sets runtime entry status to 2 |
+| `0x08062ADC` | `RuntimeEntry_AdvanceStatus` | transitions runtime entry status 2 to 1 |
+| `0x08062AF8` | `RuntimeEntry_SetLimit` | updates runtime entry halfword at +0x10, capped at 0x100 |
+| `0x08062B18` | `RuntimeEntry_SetPointer` | updates runtime entry pointer from the 0x03000D98 table |
+
+## Consolidated runtime cluster
+| `0x08062934` | `RuntimeEntry_Init` | initializes a 0x28-byte runtime entry |
+| `0x08062974` | `RuntimeEntry_InitIndexed` | initializes an entry from a secondary indexed table |
+| `0x080629B4` | `RuntimeEntry_AllocIndexed` | allocates an inactive runtime entry and returns its serial |
+| `0x08062A14` | `RuntimeEntry_Alloc` | allocates an inactive runtime entry from source/index |
+| `0x08062C20` | `RuntimeTable_CopyIndexed` | bounds-checks an index and dispatches a table entry through a copy helper |
+| `0x08062FCC` | `RuntimeBlock_FindFree` | scans the runtime block list for a free slot |
+| `0x08063004` | `RuntimeBlock_Free` | releases a block and relinks the block list |
+| `0x08063090` | `RuntimeBlock_Insert` | inserts a block into the size-ordered runtime list |
+| `0x080631B4` | `RuntimeBlock_Get` | returns the `0xC4`-stride block for an index |
+| `0x080631D4` | `RuntimeBuffer_Create` | allocates and describes an even-width/height buffer |
+| `0x08063210` | `RuntimeBuffer_CopyRow` | copies one indexed row/plane through the GBA copy helper |
+| `0x08063244` | `RuntimeBuffer_Repack` | repacks six 5-bit channels from descriptor data |
+
+| `0x08064FC0` | `Object_Init` | initializes a larger object record and its flags/links |
+| `0x0806500C` | `Object_CreateChildren` | allocates a 0xC4-stride child block and initializes each child |
+| `0x080650AC` | `Object_InitChildren` | initializes child fields across the object child array |
+| `0x0806512C` | `Object_CountActiveChildren` | counts child records with a nonzero field at +0x70 |
+| `0x08065164` | `Object_Update` | services timing/flags and dispatches object state |
+
+## Consolidated object/runtime continuation
+
+| `0x08050388` | `RuntimeRecord_Clear` | clears the manager's six control fields |
+| `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x18` bytes and initializes 0x18-byte records |
+| `0x08050420` | `RuntimeRecord_Update` | advances the 0x18-byte records using the manager flag field |
+| `0x08064FC0` | `Object_Init` | initializes a larger object containing 0xC4-byte children |
+| `0x0806512C` | `Object_CountActiveChildren` | counts children with nonzero field at +0x70 |
+| `0x08065164` | `Object_Update` | flag-driven object update/dispatch |
+| `0x080656DC` | `Object_ClearChildActivity` | scans child modes and clears activity fields |
+| `0x08065730` | `Object_ProcessChildren` | processes all children through a common helper |
+| `0x08065784` | `Object_ProcessChildrenLimited` | bounded child-processing variant |
+| `0x080657E8` | `Object_ServiceChildren` | invokes a common service routine for each child |
+
+## Continued object/render cluster
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x08057C7C` | `ChildRecord_Init` | initializes a 0xC4-byte child, including +0x74 queue state and transform/control fields through +0xC0 |
+| `0x08058400` | `ChildResource_Apply` | reads resource metadata and applies it to child fields; exact asset semantics unresolved |
+| `0x08059334` | `ChildResource_RenderCopy` | uses child `+0x70` as a 16-bit source surface and builds clipped transfer descriptors |
+| `0x080584DC` | `ChildMotion_Update` | advances three fixed-point accumulators and an activity timer |
+| `0x080585EC` | `Child_SetModeByte` | updates child byte at +0x98 and refreshes +0x58 when it changes |
+| `0x0805861C` | `Child_SetTransform4` | stores four halfword parameters at +0xA8..+0xAE |
+| `0x08058638` | `Child_SetTransform3` | stores three halfword parameters at +0x9A..+0x9E |
+| `0x08058778` | `Child_GetMotionState` | copies child motion fields or delegates to a callback at +0xB0 |
+| `0x0805879C` | `Child_ResetModeByte` | delegates mode reset to `0x08057DAC` |
+| `0x080587B8` | `ChildQueue_Append` | allocates/uses a four-entry 0x10-byte queue at +0x74..+0x7C |
+| `0x08058900` | `ChildQueue_Clear` | clears queued entry activity words and resets queue count |
+
+### Continued render/runtime cluster
+| `0x08058948` | `RuntimeTable_NextElement` | indexed pointer helper; semantics neutral |
+| `0x08058960` | `RuntimeTable_GetIndexed` | flag-gated indexed table lookup |
+| `0x0805898C` | `ChildRuntime_InitVariantA` | initializes nested runtime state and child defaults |
+| `0x08058A4C` | `ChildRuntime_InitVariantB` | related initializer using caller-supplied dimensions/flags |
+| `0x08058ACC` | `ChildResource_Init` | resource-backed child initializer; consumes the 16-byte resource record header and establishes source/end pointers |
+| `0x08058C98` | `ChildRuntime_InitVariantC` | related runtime initializer |

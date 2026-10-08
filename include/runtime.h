@@ -22,3 +22,8 @@ void Input_SetState(uint32_t state);
 uint32_t Input_TestMask(uint32_t mask);
 
 #endif
+
+/* Child command/event queue recovered from 0x080587B8/0x08058900. */
+void ChildQueue_Append(void *child, uint32_t value0, uint32_t value2,
+                       uint32_t value3, uint32_t value1);
+void ChildQueue_Clear(void *child);

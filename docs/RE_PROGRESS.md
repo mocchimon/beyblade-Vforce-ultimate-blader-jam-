@@ -94,4 +94,62 @@ Recovered the `0x0804901C–0x0804945C` state/context cluster: context history, 
 Refined the state dispatcher after checking its target addresses directly. The
 five entries at `0x08049348` are shared-tail continuations, not independent C
 handlers. Also traced `0x0804A284` and recovered the structural behavior of
-`0x08050398`, including its `0x1C`-byte record stride and heap allocation.
+`0x08050398`, including its `0x18`-byte record stride and heap allocation.
+
+## Pass 9
+
+Recovered the resource/handle lifecycle around `0x0804AF08` and
+`0x0804AF60`, including the selector field at `0x03000FB0 + 0xC26`, handle
+field at `+0xC2C`, ROM resource table at `0x08075640`, and the 0x28-byte
+runtime-entry search/status helpers around `0x08062A74`.
+
+## Continued object/render runtime recovery
+
+Direct disassembly of the child initializer at `0x08057C7C` confirms that the
+`0xC4`-byte child record initializes a command/event queue at `+0x74`:
+
+- `+0x6C` is cleared.
+- `+0x70` receives the caller-supplied initial activity/timing value.
+- `+0x74` is initialized to `-1` (queue uninitialized).
+- `+0x78` and `+0x7C` are cleared and later hold the 0x40-byte queue pointer
+  and its allocation respectively.
+- `+0x80` is initialized to zero, `+0x84` to `-1`, and several nearby control
+  bytes/words are cleared.
+- `+0xA0`..`+0xA5` are initialized by the child setup path.
+- `+0xA8`..`+0xAE` receive four halfword transform/control values through
+  `0x0805861C`.
+- `+0xB8` is cleared, `+0xBC` is cleared as a halfword, and `+0xC0` is cleared.
+
+`0x080587B8` is now characterized as a four-slot queue append routine. It
+allocates exactly `0x40` bytes on first use, treats that allocation as four
+`0x10`-byte entries, searches for an empty entry once the queue reaches four
+entries, and wraps to slot zero if all four are occupied. The four entry words
+are populated from the routine's four value arguments; their semantic meaning
+is still intentionally unresolved.
+
+`0x08058900` clears the first word of each active queue entry and resets the
+queue count to zero. It does not free the 0x40-byte allocation.
+
+`0x08058400` reads a referenced resource/descriptor and copies its small
+metadata fields into the child record, while `0x080584DC` advances the child's
+three fixed-point position/step accumulators and handles its activity timer.
+These routines are strong evidence that the child structure is part of a
+render/animation-oriented runtime object, but no game-specific name is being
+assigned yet.
+
+## Verification cleanup
+
+The cumulative C source tree now passes an ARMv4T/Thumb freestanding syntax
+check with clang. Remaining diagnostics are qualifier/narrowing warnings in
+older provisional files, not syntax failures. `runtime_entries.c` also had an
+incorrect placeholder assignment in `RuntimeEntry_InitIndexed`; it has been
+corrected to store the source-table pointer at entry `+0x1C`, matching the ROM.
+
+## Continued render/runtime recovery
+
+The cluster `0x08058948..0x08058D68` was disassembled directly from the ROM.
+Two small table helpers at `0x08058948`/`0x08058960` were recovered, and the
+larger initializer family at `0x0805898C`, `0x08058A4C`, `0x08058ACC`, and
+`0x08058C98` was mapped. `0x08058ACC` is now represented by a conservative
+field-level source reconstruction in `src/child_resource_init.c`; unresolved
+helper semantics remain explicit rather than guessed.
