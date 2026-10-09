@@ -15,18 +15,18 @@ void System_Dma3StateInit(void)
     state[2] = 0x10;
 }
 
-/* 0x08057968: programs DMA3 for an immediate 32-bit ROM->EWRAM copy. */
-void System_CopyStartupData(void)
+/* 0x08057968: installs a 0x104-byte IWRAM block through immediate DMA3. */
+void System_InstallIwramBlock(void)
 {
     const uint32_t *src = (const uint32_t *)0x08000168u;
     uint32_t *dst = (uint32_t *)0x03000FE0u;
-    uint32_t words = (0x0800026Cu - 0x08000168u) >> 2;
+    uint32_t words = (0x0800026Cu - 0x08000168u) >> 2; /* 0x41 words */
 
     REG_DMA3SAD = (uint32_t)src;
     REG_DMA3DAD = (uint32_t)dst;
-    REG_DMA3CNT = 0x84000000u | words;
+    REG_DMA3CNT = 0x84000000u | words; /* enable + 32-bit + immediate */
 
-    /* The original routine also touches this system scratch location. */
+    /* Runtime-visible pointer associated with the installed IWRAM block. */
     *(volatile uint32_t *)0x03007FFCu = (uint32_t)dst;
 }
 

@@ -10,7 +10,7 @@
  * preserve the call graph and name only functions whose behavior is known.
  */
 
-void System_CopyStartupData(void);          /* 0x08057968 */
+void System_InstallIwramBlock(void);          /* 0x08057968 */
 void System_DisplayInit(uint16_t);          /* 0x080579CC */
 void System_SetDisplayFlags(uint16_t);      /* 0x08057A18 */
 void System_Dma3StateInit(void);             /* 0x08057940 */
@@ -53,7 +53,7 @@ void sub_080578F8(uint32_t);
 void UBJ_Startup(void)
 {
     /* 0x080505B2 .. 0x080505CE */
-    System_CopyStartupData();
+    System_InstallIwramBlock();
     System_DisplayInit(8);
     System_SetDisplayFlags(0x11);
     System_Dma3StateInit();

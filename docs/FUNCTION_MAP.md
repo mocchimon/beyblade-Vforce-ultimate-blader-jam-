@@ -17,7 +17,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 | `0x080578F8` | `System_Sqrt` | BIOS SWI `0x08` |
 | `0x080578FC` | `System_VBlankWait` | BIOS SWI `0x05` |
 | `0x08057940` | `System_Dma3StateInit` | initializes `0x03000E30` triple |
-| `0x08057968` | `System_CopyStartupData` | programs DMA3 ROM→EWRAM, 32-bit immediate |
+| `0x08057968` | `System_InstallIwramBlock` | DMA3 copies `0x104` bytes from ROM `0x08000168` to IWRAM `0x03000FE0`; records destination at `0x03007FFC` |
 | `0x080579CC` | `System_DisplayInit` | IME/IE/IF/DISPSTAT + DMA3 setup |
 | `0x08057A18` | `System_SetDisplayFlags` | OR into `DISPCNT` |
 | `0x08063A74` | `Input_ResetTable` | clears 0x15-byte table at `0x03005E80` |
@@ -30,7 +30,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 ## Important call targets from `0x080505A8`
 
 ```text
-08057968  System_CopyStartupData
+08057968  System_InstallIwramBlock
 080579CC  System_DisplayInit
 08057A18  System_SetDisplayFlags
 08057940  System_Dma3StateInit
@@ -195,7 +195,8 @@ rather than asserting game-specific semantics.
 |---|---|---|
 | `0x08057C7C` | `ChildRecord_Init` | initializes a 0xC4-byte child, including +0x74 queue state and transform/control fields through +0xC0 |
 | `0x08058400` | `ChildResource_Apply` | reads resource metadata and applies it to child fields; exact asset semantics unresolved |
-| `0x08059334` | `ChildResource_RenderCopy` | uses child `+0x70` as a 16-bit source surface and builds clipped transfer descriptors |
+| `0x08059334` | `ChildResource_RenderCopy` | clips a rectangle and dispatches the selected transfer backend through `0x08065C5C` |
+| `0x08059520` | `Render_CopyRect16_DMA3` | copies a 16-bit rectangle row-by-row by programming GBA DMA3 into VRAM |
 | `0x080584DC` | `ChildMotion_Update` | advances three fixed-point accumulators and an activity timer |
 | `0x080585EC` | `Child_SetModeByte` | updates child byte at +0x98 and refreshes +0x58 when it changes |
 | `0x0805861C` | `Child_SetTransform4` | stores four halfword parameters at +0xA8..+0xAE |
@@ -212,3 +213,14 @@ rather than asserting game-specific semantics.
 | `0x08058A4C` | `ChildRuntime_InitVariantB` | related initializer using caller-supplied dimensions/flags |
 | `0x08058ACC` | `ChildResource_Init` | resource-backed child initializer; consumes the 16-byte resource record header and establishes source/end pointers |
 | `0x08058C98` | `ChildRuntime_InitVariantC` | related runtime initializer |
+
+## Runtime configuration / render backend follow-up
+
+| Address | Name/status | Evidence |
+|---|---|---|
+| `0x0807D920` | mixed runtime configuration/data block (provisional) | Contains runtime-global addresses, Thumb pointers, scalars, and byte lookup data; not a flat callback array |
+| `0x08060170` | runtime/config consumer (entry boundary provisional) | At `0x0806027E`, loads `0x0807D920`, dereferences its first word (`0x0300717C`), then calls the `bx r0` trampoline at `0x08065C38`; see `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md` |
+| `0x0806027E` | literal load referencing configuration block | PC-relative load resolves to literal at `0x080602C0`, whose word is `0x0807D920` |
+| `0x08065C38` | `Runtime_Dispatch_R0` (mechanical name) | Single-instruction indirect branch `bx r0`; not a normal C function body |
+| `0x0300646C` | alternate render backend pointer slot | Read by render-transfer code; initialization/store and exact target remain unproven |
+| `0x08059428` | `sub_08059428` (neutral) | Row-oriented DMA3 transfer routine; relation to IWRAM targets `0x0300646C` / `0x0300682C` not proven |

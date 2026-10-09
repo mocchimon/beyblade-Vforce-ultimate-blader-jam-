@@ -1,0 +1,134 @@
+
+full.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08000000 <rom>:
+ 8059520: b5f0         	push	{r4, r5, r6, r7, lr}
+ 8059522: 4657         	mov	r7, r10
+ 8059524: 464e         	mov	r6, r9
+ 8059526: 4645         	mov	r5, r8
+ 8059528: b4e0         	push	{r5, r6, r7}
+ 805952a: b085         	sub	sp, #0x14
+ 805952c: 4684         	mov	r12, r0
+ 805952e: 1c0f         	adds	r7, r1, #0x0
+ 8059530: 4691         	mov	r9, r2
+ 8059532: 1c1d         	adds	r5, r3, #0x0
+ 8059534: 9e0e         	ldr	r6, [sp, #0x38]
+ 8059536: 6f04         	ldr	r4, [r0, #0x70]
+ 8059538: 305c         	adds	r0, #0x5c
+ 805953a: 7800         	ldrb	r0, [r0]
+ 805953c: 02c1         	lsls	r1, r0, #0xb
+ 805953e: 20c0         	movs	r0, #0xc0
+ 8059540: 04c0         	lsls	r0, r0, #0x13
+ 8059542: 1809         	adds	r1, r1, r0
+ 8059544: 9100         	str	r1, [sp]
+ 8059546: 2302         	movs	r3, #0x2
+ 8059548: 425b         	rsbs	r3, r3, #0
+ 805954a: 4660         	mov	r0, r12
+ 805954c: 6800         	ldr	r0, [r0]
+ 805954e: 9001         	str	r0, [sp, #0x4]
+ 8059550: 4662         	mov	r2, r12
+ 8059552: 325f         	adds	r2, #0x5f
+ 8059554: 2001         	movs	r0, #0x1
+ 8059556: 1c01         	adds	r1, r0, #0x0
+ 8059558: 7812         	ldrb	r2, [r2]
+ 805955a: 4091         	lsls	r1, r2
+ 805955c: 1e4a         	subs	r2, r1, #0x1
+ 805955e: 4690         	mov	r8, r2
+ 8059560: 4662         	mov	r2, r12
+ 8059562: 3260         	adds	r2, #0x60
+ 8059564: 7812         	ldrb	r2, [r2]
+ 8059566: 4090         	lsls	r0, r2
+ 8059568: 3801         	subs	r0, #0x1
+ 805956a: 9002         	str	r0, [sp, #0x8]
+ 805956c: 9103         	str	r1, [sp, #0xc]
+ 805956e: 401e         	ands	r6, r3
+ 8059570: 401d         	ands	r5, r3
+ 8059572: 401f         	ands	r7, r3
+ 8059574: 2e00         	cmp	r6, #0x0
+ 8059576: d100         	bne	0x805957a <rom+0x5957a> @ imm = #0x0
+ 8059578: 2602         	movs	r6, #0x2
+ 805957a: 9901         	ldr	r1, [sp, #0x4]
+ 805957c: 4648         	mov	r0, r9
+ 805957e: 4348         	muls	r0, r1, r0
+ 8059580: 19c0         	adds	r0, r0, r7
+ 8059582: 1824         	adds	r4, r4, r0
+ 8059584: 4642         	mov	r2, r8
+ 8059586: 4015         	ands	r5, r2
+ 8059588: 9b0d         	ldr	r3, [sp, #0x34]
+ 805958a: 9f0f         	ldr	r7, [sp, #0x3c]
+ 805958c: 19d8         	adds	r0, r3, r7
+ 805958e: 4283         	cmp	r3, r0
+ 8059590: d23e         	bhs	0x8059610 <rom+0x59610> @ imm = #0x7c
+ 8059592: 4a16         	ldr	r2, [pc, #0x58]         @ 0x80595ec <rom+0x595ec>
+ 8059594: 9803         	ldr	r0, [sp, #0xc]
+ 8059596: 1b40         	subs	r0, r0, r5
+ 8059598: 4682         	mov	r10, r0
+ 805959a: 0840         	lsrs	r0, r0, #0x1
+ 805959c: 2180         	movs	r1, #0x80
+ 805959e: 0609         	lsls	r1, r1, #0x18
+ 80595a0: 4308         	orrs	r0, r1
+ 80595a2: 4681         	mov	r9, r0
+ 80595a4: 4657         	mov	r7, r10
+ 80595a6: 1bf0         	subs	r0, r6, r7
+ 80595a8: 0840         	lsrs	r0, r0, #0x1
+ 80595aa: 4680         	mov	r8, r0
+ 80595ac: 4308         	orrs	r0, r1
+ 80595ae: 4680         	mov	r8, r0
+ 80595b0: 0ff0         	lsrs	r0, r6, #0x1f
+ 80595b2: 1830         	adds	r0, r6, r0
+ 80595b4: 1040         	asrs	r0, r0, #0x1
+ 80595b6: 4308         	orrs	r0, r1
+ 80595b8: 9004         	str	r0, [sp, #0x10]
+ 80595ba: 1c19         	adds	r1, r3, #0x0
+ 80595bc: 9f02         	ldr	r7, [sp, #0x8]
+ 80595be: 4039         	ands	r1, r7
+ 80595c0: 4660         	mov	r0, r12
+ 80595c2: 305f         	adds	r0, #0x5f
+ 80595c4: 7800         	ldrb	r0, [r0]
+ 80595c6: 4081         	lsls	r1, r0
+ 80595c8: 19a8         	adds	r0, r5, r6
+ 80595ca: 9f03         	ldr	r7, [sp, #0xc]
+ 80595cc: 42b8         	cmp	r0, r7
+ 80595ce: d90f         	bls	0x80595f0 <rom+0x595f0> @ imm = #0x1e
+ 80595d0: 6014         	str	r4, [r2]
+ 80595d2: 9800         	ldr	r0, [sp]
+ 80595d4: 1841         	adds	r1, r0, r1
+ 80595d6: 1948         	adds	r0, r1, r5
+ 80595d8: 6050         	str	r0, [r2, #0x4]
+ 80595da: 464f         	mov	r7, r9
+ 80595dc: 6097         	str	r7, [r2, #0x8]
+ 80595de: 6890         	ldr	r0, [r2, #0x8]
+ 80595e0: 4657         	mov	r7, r10
+ 80595e2: 19e0         	adds	r0, r4, r7
+ 80595e4: 6010         	str	r0, [r2]
+ 80595e6: 6051         	str	r1, [r2, #0x4]
+ 80595e8: 4640         	mov	r0, r8
+ 80595ea: e007         	b	0x80595fc <rom+0x595fc> @ imm = #0xe
+ 80595ec: 00d4         	lsls	r4, r2, #0x3
+ 80595ee: 0400         	lsls	r0, r0, #0x10
+ 80595f0: 6014         	str	r4, [r2]
+ 80595f2: 9f00         	ldr	r7, [sp]
+ 80595f4: 1878         	adds	r0, r7, r1
+ 80595f6: 1940         	adds	r0, r0, r5
+ 80595f8: 6050         	str	r0, [r2, #0x4]
+ 80595fa: 9804         	ldr	r0, [sp, #0x10]
+ 80595fc: 6090         	str	r0, [r2, #0x8]
+ 80595fe: 6890         	ldr	r0, [r2, #0x8]
+ 8059600: 9901         	ldr	r1, [sp, #0x4]
+ 8059602: 1864         	adds	r4, r4, r1
+ 8059604: 3301         	adds	r3, #0x1
+ 8059606: 9f0d         	ldr	r7, [sp, #0x34]
+ 8059608: 990f         	ldr	r1, [sp, #0x3c]
+ 805960a: 1878         	adds	r0, r7, r1
+ 805960c: 4283         	cmp	r3, r0
+ 805960e: d3d4         	blo	0x80595ba <rom+0x595ba> @ imm = #-0x58
+ 8059610: b005         	add	sp, #0x14
+ 8059612: bc38         	pop	{r3, r4, r5}
+ 8059614: 4698         	mov	r8, r3
+ 8059616: 46a1         	mov	r9, r4
+ 8059618: 46aa         	mov	r10, r5
+ 805961a: bcf0         	pop	{r4, r5, r6, r7}
+ 805961c: bc01         	pop	{r0}
+ 805961e: 4700         	bx	r0

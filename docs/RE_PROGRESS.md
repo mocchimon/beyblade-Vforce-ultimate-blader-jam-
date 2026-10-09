@@ -153,3 +153,46 @@ larger initializer family at `0x0805898C`, `0x08058A4C`, `0x08058ACC`, and
 `0x08058C98` was mapped. `0x08058ACC` is now represented by a conservative
 field-level source reconstruction in `src/child_resource_init.c`; unresolved
 helper semantics remain explicit rather than guessed.
+
+## Runtime pointer/configuration table pass
+
+Started the next pass by following the literal-pool reference to `0x0807D920`.
+The region is structured mixed data: runtime-global addresses, Thumb code
+pointers, scalar configuration values, and compact lookup-table bytes coexist
+near one another. A PC-relative load in the `0x080602xx` region references the
+block; the literal is at `0x080602C0`, with a load site at `0x0806027E`.
+
+The `0x0300646C` word appears at `0x0807D968`, while code reads that global at
+`0x08059254` and `0x080593FC`. This supports the function-pointer-slot
+interpretation but does not yet prove the store/initializer or final target.
+Details and explicit confidence boundaries are in
+`docs/RUNTIME_POINTER_TABLE_FINDINGS.md`.
+
+
+## Runtime configuration consumer follow-up
+
+Disassembly around `0x0806027E` now establishes a concrete use of the mixed
+block: the routine loads `0x0807D920`, dereferences its first word (`0x0300717C`),
+and branches indirectly through the `0x08065C38` trampoline (`bx r0`). This
+means at least some entries may point into IWRAM runtime code; they should not
+all be described as ordinary global-variable addresses. The block's exact
+record layout and the write to `0x0300646C` remain unresolved. Evidence is
+recorded in `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md` and
+`asm/runtime/runtime_config_consumer_60170.s`.
+
+### 2026-10-09 — renderer-slot literal scan
+
+- Reconstructed the consumer sequence at `0x0805921C`: it loads the address of `0x0300646C`, dereferences the mutable slot, and invokes the resulting target via `0x08065C48` (`bx r4`).
+- Scanned the complete ROM for the aligned word `0x0300646C`: its sole occurrence is the mixed-data word at `0x0807D968`; no direct Thumb literal-load reference to that word was found. This suggests indirect/base-relative or data-driven initialization, but does not prove the writer is absent.
+- Added a table of known words from `0x0807D920` to the runtime config findings document, preserving uncertainty around record boundaries and semantics.
+- Next: reconstruct the setup/copy routine(s) for the `0x03006xxx` runtime region and search for stores through base/index addressing; keep `0x08059428` as a candidate backend until the slot value is proven.
+
+
+## Render dispatch re-check
+
+Re-read the raw Thumb instructions around `0x08059334–0x08059428` and corrected an earlier overconfident backend association. `0x08059520` is directly selected when child `+0x64` bit 0 is set. Other branches use IWRAM targets `0x0300646C` and `0x0300682C`; their installation/source has not yet been found. `0x08059428` is now neutrally named `sub_08059428` until a byte-copy or assignment relationship is demonstrated.
+
+
+## Startup IWRAM install correction
+
+Re-disassembly of `0x08057968` corrected a misleading legacy name/comment: the function programs DMA3 to copy `0x104` bytes from ROM `0x08000168` into IWRAM `0x03000FE0`, then records the destination at `0x03007FFC`. The destination range ends at `0x030010E4`, so it does not explain the unresolved renderer targets at `0x0300646C` and `0x0300682C`. Source and function-map labels were updated to `System_InstallIwramBlock`; details are in `docs/IWRAM_INSTALL_FINDINGS.md`.

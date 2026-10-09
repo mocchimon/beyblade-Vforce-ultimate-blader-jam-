@@ -26,3 +26,31 @@ The C sources are checked for ARMv4T/Thumb freestanding syntax with clang. A
 fully matching ROM build is not yet claimed; the next stage is continued call-
 graph/data recovery followed by progressively replacing provisional helpers
 with verified implementations.
+
+## Latest render recovery
+
+The current snapshot includes the recovered `0x08059520` DMA3-backed 16-bit
+VRAM transfer backend and its raw disassembly artifact. See
+`docs/RENDER_DMA_FINDINGS.md` and `asm/runtime/render_dma3_59520.dis.txt`.
+
+### Latest reverse-engineering update
+
+The runtime pointer/configuration region around ROM address `0x0807D920` is now
+being traced from its code references. It contains mixed runtime addresses,
+Thumb pointers, constants, and lookup bytes rather than a single homogeneous
+callback table. See `docs/RUNTIME_POINTER_TABLE_FINDINGS.md` for the confirmed
+cross-reference and the unresolved initialization questions.
+
+
+Latest runtime-table follow-up: `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md`
+documents the first concrete consumer of `0x0807D920` and the indirect branch
+through `0x08065C38`. The alternate renderer pointer's initialization remains
+unproven; `0x08059428` is still provisional.
+
+Latest reverse-engineering note: the alternate renderer slot at `0x0300646C` is read through a mutable runtime global and dispatched via `bx r4`. A full aligned-word scan finds its address literal only in the mixed configuration block at `0x0807D968`, so the writer is likely reached through indirect/base-relative initialization rather than a direct literal load. See `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md`.
+
+
+Latest correction: render-dispatch evidence was rechecked against the ROM's actual Thumb instructions. `0x08059428` is no longer asserted to be the alternate backend; the unresolved targets are runtime addresses `0x0300646C` and `0x0300682C`. See `docs/RENDER_ALT_BACKEND_FINDINGS.md`.
+
+
+Latest startup analysis: `0x08057968` installs a 0x104-byte block from ROM `0x08000168` to IWRAM `0x03000FE0` via immediate DMA3. This is confirmed but separate from the unresolved render callback slots at `0x0300646C` and `0x0300682C`; see `docs/IWRAM_INSTALL_FINDINGS.md`.
