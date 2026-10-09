@@ -196,3 +196,37 @@ Re-read the raw Thumb instructions around `0x08059334–0x08059428` and correcte
 ## Startup IWRAM install correction
 
 Re-disassembly of `0x08057968` corrected a misleading legacy name/comment: the function programs DMA3 to copy `0x104` bytes from ROM `0x08000168` into IWRAM `0x03000FE0`, then records the destination at `0x03007FFC`. The destination range ends at `0x030010E4`, so it does not explain the unresolved renderer targets at `0x0300646C` and `0x0300682C`. Source and function-map labels were updated to `System_InstallIwramBlock`; details are in `docs/IWRAM_INSTALL_FINDINGS.md`.
+
+
+## IWRAM target interpretation correction
+
+Instruction-level review corrected a prior misconception: `0x0300646C` and `0x0300682C` are direct IWRAM branch targets supplied by ROM words at `0x0807D968` and `0x0807D96C`, not RAM variables containing function pointers. `0x0805921C` loads `0x0807D968`, reads `0x0300646C` from the ROM table, then dispatches through `bx r4`; the clipping path similarly routes through `bx r9`. The code-install source for these IWRAM addresses remains unresolved. See `docs/IWRAM_TARGET_INSTALL_FINDINGS.md`.
+
+## Copy-site audit follow-up
+
+Audited the full ROM's Thumb disassembly for direct calls to the known LZ77 wrapper `0x080578F4`: only `0x08055CA8` and `0x080572F8` call it directly, and both callers pass allocator-returned destinations for resource data. The only direct call to `System_CpuSet` at `0x080578E4` is `0x0805070A`, with zero source/destination and control `0x40000000`, consistent with a clear/fill operation rather than ROM-to-IWRAM code installation. This does not find the writer for `0x0300646C` / `0x0300682C`; custom copy loops and descriptor-driven DMA remain open. See `docs/IWRAM_COPY_SITE_AUDIT.md`.
+
+## 2026-10-09 — Follow-up DMA destination audit
+
+Expanded the DMA3-site audit beyond literal-address scans. The setup sequence at `0x0805EFF8` uses a runtime descriptor for destination and length while sourcing from a ROM address loaded into `r6`, making it a stronger candidate for a data-driven copy than routines whose destinations are clearly VRAM or hardware state. This candidate remains unproven: the descriptor producer and destination range have not yet been traced. The sequence at `0x08062ED0` uses a stack source and control value `0x05000000`, so it is currently classified as a fill/state-transfer path, not code installation. Added these distinctions to `docs/IWRAM_COPY_SITE_AUDIT.md` and kept both IWRAM render targets unresolved.
+
+## 2026-10-09 — DMA candidate caller trace
+
+Traced the DMA setup site at `0x0805EFF8` back to its containing routine (`0x0805EFC0`) and startup caller (`0x08050644`). The caller passes `*(0x03000FB0) + 0xBA0` and zero, before the frame loop. The routine allocates a `0xD24`-byte context-associated block, configures DMA3 from runtime fields, and builds pointer-like fields by adding offsets from a ROM table. This supports classifying it as startup context/table setup, but does not prove it installs executable code into the unresolved IWRAM targets. The target-source question remains open.
+
+
+## 2026-10-09 — ARM-mode runtime image identified
+
+Re-disassembly of `0x0805EFC0` and inspection of the source region established an ARM-state image at `0x080641B8` with length `0xD24`, ending exactly at `0x08064EDC`. The bytes at `0x08064EDC` form an offset/relocation table; the loader copies the image using the allocated block descriptor's address and size, then rebases selected internal offsets into runtime context fields. This is strong evidence for a relocatable ARM-mode runtime module.
+
+A potentially important address correspondence emerged: if the image were based at `0x030061B8`, the renderer's IWRAM targets `0x0300646C` and `0x0300682C` would map to ROM offsets `0x0806446C` and `0x0806482C` (offsets `0x2B4` and `0x674`). Both are inside the ARM-mode image and decode as ARM instructions. However, the currently traced loader uses a heap block descriptor and its actual destination has not been proven to equal `0x030061B8`. The correspondence is therefore recorded as a high-value hypothesis, not a confirmed alias. See `docs/ARM_RUNTIME_IMAGE_FINDINGS.md` and `asm/runtime/arm_runtime_image_641b8.s`.
+
+## 2026-10-09 — checked the ARM-image/IWRAM offset hypothesis
+
+Re-disassembled heap initialization at `0x0805A374`. It initializes the primary heap arena from `0x02000000` (EWRAM), with adjacent boundaries around `0x02000200` and `0x02000400`. The loader at `0x0805EFC0` allocates `0xD24` bytes through that allocator and copies the ARM-state image at `0x080641B8` into the allocated block. This means the tempting correspondence between image offsets `0x2B4` / `0x674` and IWRAM targets `0x0300646C` / `0x0300682C` is not established by this loader and is now explicitly downgraded as a likely false lead. See `docs/IWRAM_IMAGE_HYPOTHESIS_CHECK.md`.
+
+Next: find a separate writer/copy loop for the upper IWRAM region and continue the renderer target trace.
+
+## Completion estimate
+
+**Overall traditional decompilation: approximately 15% (rough engineering estimate, not a line-count metric).** Boot path and several runtime subsystems are mapped, but gameplay states, audio, much of the asset/data semantics, many function bodies, and build/matching-ROM work remain. A reproducible build that matches the original ROM is **0% complete**: the current project is a research/source-reconstruction scaffold, not yet a full buildable matching decompilation. Keep this estimate conservative and revise it when whole subsystems or a verified build milestone are completed.

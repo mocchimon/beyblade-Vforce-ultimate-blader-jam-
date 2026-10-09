@@ -31,7 +31,7 @@ A whole-ROM aligned-word scan confirms that the literal value `0x0300646C` occur
 
 This narrows the initialization hypothesis: the slot is likely reached through a base pointer, indexed structure, copied/configuration data, or address arithmetic rather than a straightforward `ldr rN, =0x0300646C` literal reference. This is a negative search result, not proof that no code writes the slot.
 
-The consumer at `0x0805921C` loads the address `0x0300646C` from its own literal pool at `0x08059254`, dereferences the slot, then passes the resulting target through the shared `bx r4` stub at `0x08065C48`. The alternate target therefore comes from mutable runtime state; its concrete value must be recovered from the initialization path or a dynamic runtime snapshot.
+Correction from instruction-level re-disassembly: `0x0805921C` loads the ROM address `0x0807D968` from its literal pool at `0x08059254`. At `0x0805923A`, it dereferences that ROM address to obtain `0x0300646C`, then dispatches through `0x08065C48` (`bx r4`). Therefore `0x0300646C` is the IWRAM branch target itself, not a mutable RAM slot containing another pointer.
 
 ## Confirmed address words in the mixed block
 
@@ -47,6 +47,6 @@ The consumer at `0x0805921C` loads the address `0x0300646C` from its own literal
 | `0x0807D95C` | `0x0806082D` | Thumb ROM pointer |
 | `0x0807D960` | `0x0300616C` | runtime address; role unresolved |
 | `0x0807D964` | `0x08057C5D` | Thumb ROM pointer |
-| `0x0807D968` | `0x0300646C` | alternate render function-pointer slot address |
+| `0x0807D968` | `0x0300646C` | IWRAM executable branch target used by render-transfer path |
 
 These values are documented as words, not assumed to form one homogeneous array. The surrounding block includes scalar/byte lookup data and needs further structure recovery.

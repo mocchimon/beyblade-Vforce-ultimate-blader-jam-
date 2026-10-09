@@ -47,10 +47,21 @@ documents the first concrete consumer of `0x0807D920` and the indirect branch
 through `0x08065C38`. The alternate renderer pointer's initialization remains
 unproven; `0x08059428` is still provisional.
 
-Latest reverse-engineering note: the alternate renderer slot at `0x0300646C` is read through a mutable runtime global and dispatched via `bx r4`. A full aligned-word scan finds its address literal only in the mixed configuration block at `0x0807D968`, so the writer is likely reached through indirect/base-relative initialization rather than a direct literal load. See `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md`.
+Latest reverse-engineering correction: `0x0300646C` and `0x0300682C` are used as direct IWRAM code targets, not RAM variables containing function pointers. ROM words at `0x0807D968` and `0x0807D96C` supply those executable addresses. The code-install/copy path that populates those IWRAM regions is still unresolved. See `docs/IWRAM_TARGET_INSTALL_FINDINGS.md`.
 
 
 Latest correction: render-dispatch evidence was rechecked against the ROM's actual Thumb instructions. `0x08059428` is no longer asserted to be the alternate backend; the unresolved targets are runtime addresses `0x0300646C` and `0x0300682C`. See `docs/RENDER_ALT_BACKEND_FINDINGS.md`.
 
 
 Latest startup analysis: `0x08057968` installs a 0x104-byte block from ROM `0x08000168` to IWRAM `0x03000FE0` via immediate DMA3. This is confirmed but separate from the unresolved render callback slots at `0x0300646C` and `0x0300682C`; see `docs/IWRAM_INSTALL_FINDINGS.md`.
+
+Latest instruction-level correction: `0x0300646C` and `0x0300682C` are direct IWRAM executable targets obtained by dereferencing ROM table words at `0x0807D968` and `0x0807D96C`. They are not RAM pointer slots. See `docs/IWRAM_TARGET_INSTALL_FINDINGS.md` and `asm/runtime/iwram_target_trace.s` for the trace. Their installed code/source remains unresolved.
+
+Latest tracing note: the DMA3 setup at `0x0805EFF8` is inside startup routine `0x0805EFC0`, called from `0x08050644` with the main runtime context plus `0xBA0`. It is currently classified as context/table initialization; no copy into the unresolved IWRAM renderer targets has been proven. See `docs/IWRAM_COPY_SITE_AUDIT.md`.
+
+
+Latest runtime-image finding: ROM `0x080641B8–0x08064EDC` is a `0xD24`-byte ARM-state code image followed by an offset/relocation table. A possible offset match links renderer IWRAM targets `0x0300646C` and `0x0300682C` to ROM addresses `0x0806446C` and `0x0806482C` if the runtime base is `0x030061B8`; the destination is not yet proven, so this remains a hypothesis. See `docs/ARM_RUNTIME_IMAGE_FINDINGS.md`.
+
+### Latest reverse-engineering correction (2026-10-09)
+
+The ARM-state image at `0x080641B8` is copied through the normal heap allocation path. The heap initializer points its primary arena into EWRAM (`0x02000000`), so the apparent offset match with IWRAM renderer targets is not proof of a shared image. The project records this as a rejected/unproven hypothesis in `docs/IWRAM_IMAGE_HYPOTHESIS_CHECK.md`; the actual IWRAM installer remains an open target.

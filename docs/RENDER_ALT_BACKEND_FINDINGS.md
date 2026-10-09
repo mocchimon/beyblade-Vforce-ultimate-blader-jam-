@@ -26,20 +26,20 @@ The renderer tests bit 0 of the halfword at child offset `+0x64`:
 
 Correction: the two-way control flow is the inverse of the earlier prose description. When bit 0 is **set**, `r9` receives Thumb address `0x08059521`. When bit 0 is **clear**, the code reads the word at ROM `0x0807D968` (`0x0300646C`) and puts that value into `r9`. The exact branch target is subsequently reached through the `bx r9` tail dispatcher at `0x08065C5C`.
 
-The code at `0x08059374` does not dereference `0x0300646C` in this excerpt: it loads the ROM word `0x0300646C` into `r9`. This distinction matters. The runtime slot itself is accessed by a different nearby path (consumer at `0x0805921C`), while this clipping path's register setup must be interpreted in its full calling context. Do not infer a final backend from the word value alone.
+The code at `0x08059374` loads the ROM table entry at `0x0807D968`, whose value is the executable IWRAM address `0x0300646C`, into `r9`. It does not load a RAM variable at that address. The nearby path at `0x0805921C` also loads the table word and branches to the resulting IWRAM address through `bx r4`. The code installed at that IWRAM address remains unidentified.
 
 ## Separate indirect path around `0x08059400`
 
 When child byte `+0x7C` has bit 3 set, code at `0x080593D4–0x080593F4` routes through `0x08065C5C` using `r9`. When bit 3 is clear, code at `0x08059400` loads the ROM word at `0x0807D96C`, which is `0x0300682C`, into `r4` and calls the `bx r4` dispatcher at `0x08065C48`.
 
-That establishes an indirect target of `0x0300682C` for this path, but not the origin of the executable bytes at that IWRAM address. One plausible explanation is that an IWRAM code fragment is installed there from ROM, but that requires proving the copy/setup path. The nearby routine beginning at `0x08059428` contains row-oriented DMA3 transfer code; it is **not yet proven** to be the value installed in either runtime slot.
+That establishes an indirect branch target of `0x0300682C`, which is an IWRAM code address rather than a pointer slot. The origin of the executable bytes at that address remains unknown. The nearby routine beginning at `0x08059428` contains row-oriented DMA3 transfer code; it is **not yet proven** to be copied to either IWRAM target.
 
 ## Current conclusions
 
 - `0x08059520` is the confirmed DMA3 rectangle backend selected by child `+0x64` bit 0 set.
-- `0x0807D968` contains the IWRAM address `0x0300646C`; that is a ROM table word, not the slot contents.
-- `0x0807D96C` contains `0x0300682C`, used as an indirect target in a separate branch.
-- The contents/installation of runtime code at `0x0300646C` and `0x0300682C` remain unresolved.
+- `0x0807D968` contains the IWRAM executable address `0x0300646C`; it is a ROM table word, not the contents of a RAM pointer slot.
+- `0x0807D96C` contains the IWRAM executable address `0x0300682C`, used as an indirect branch target in a separate path.
+- The installation/source of runtime code at `0x0300646C` and `0x0300682C` remains unresolved.
 - `0x08059428` is retained as a neutral `sub_08059428` until its relationship to the IWRAM targets is demonstrated.
 
 ## Next proof target

@@ -15,7 +15,7 @@ The surrounding region also contains compact byte lookup tables, so the whole ar
 
 A raw aligned-word scan finds the address `0x0807D920` at ROM address `0x080602C0`. The code immediately preceding that literal pool contains a PC-relative load at `0x0806027E` that resolves to `0x080602C0`; thus code in the `0x080602xx` region obtains a pointer to this block. This is a concrete code-to-data reference, but the routine's full entry boundary and the table's per-field semantics still require control-flow reconstruction.
 
-The word `0x0300646C` occurs in this block at `0x0807D968`. The same EWRAM address is loaded by render-transfer code at `0x08059254` and `0x080593FC`, supporting its interpretation as a runtime global rather than a literal source-data pointer. The render path reads the word stored at that EWRAM address as an indirect backend target.
+The word `0x0300646C` occurs in this block at `0x0807D968`. Render-transfer code loads the ROM table address `0x0807D968` from literals at `0x08059254` and `0x080593FC`, then reads the table word to obtain the IWRAM branch target. The value `0x0300646C` is not itself dereferenced as a pointer slot in this path.
 
 ## What is and is not established
 
@@ -23,7 +23,7 @@ Established:
 
 1. The block contains a mixture of runtime addresses, Thumb pointers, and scalar/lookup data.
 2. Code in the `0x080602xx` region references the block through a PC-relative literal.
-3. `0x0300646C` is a runtime function-pointer slot consumed by render-transfer code.
+3. `0x0300646C` is an IWRAM code address used as a direct indirect-branch target by render-transfer code.
 4. `0x08059428` is structurally a sibling 16-bit DMA3 rectangle-transfer routine.
 
 Not yet established:
@@ -38,7 +38,7 @@ Not yet established:
 - Reconstruct the complete function containing the `0x0806027E` literal load and identify the offsets it reads from the block.
 - Trace startup copy/initialization tables that populate EWRAM globals in the `0x03006xxx` range.
 - Inspect all code references to the other literal-pool words that point into `0x0807D920` and distinguish true code from data references.
-- Keep the alternate backend name provisional until the actual store to `0x0300646C` is located.
+- Keep the alternate backend identity provisional until the code installed at IWRAM address `0x0300646C` is traced to its source or reconstructed from runtime state.
 
 
 ## Render-table dispatch correction (2026-10-08)

@@ -222,5 +222,5 @@ rather than asserting game-specific semantics.
 | `0x08060170` | runtime/config consumer (entry boundary provisional) | At `0x0806027E`, loads `0x0807D920`, dereferences its first word (`0x0300717C`), then calls the `bx r0` trampoline at `0x08065C38`; see `docs/RUNTIME_CONFIG_CONSUMER_FINDINGS.md` |
 | `0x0806027E` | literal load referencing configuration block | PC-relative load resolves to literal at `0x080602C0`, whose word is `0x0807D920` |
 | `0x08065C38` | `Runtime_Dispatch_R0` (mechanical name) | Single-instruction indirect branch `bx r0`; not a normal C function body |
-| `0x0300646C` | alternate render backend pointer slot | Read by render-transfer code; initialization/store and exact target remain unproven |
+| `0x0300646C` | IWRAM render branch target | Reached through an indirect branch; installed code/source remains unresolved |
 | `0x08059428` | `sub_08059428` (neutral) | Row-oriented DMA3 transfer routine; relation to IWRAM targets `0x0300646C` / `0x0300682C` not proven |
