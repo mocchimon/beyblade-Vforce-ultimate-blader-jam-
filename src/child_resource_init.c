@@ -13,7 +13,6 @@ extern uint32_t ChildResource_SelectLayout(void *child, uint32_t arg1, uint32_t 
 extern uint16_t ChildResource_LayoutValueA(uint32_t index);
 extern uint16_t ChildResource_LayoutValueB(uint32_t index);
 extern uint16_t ChildResource_LayoutValueC(uint32_t value);
-static void sub_08059334(void *child, uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e);
 
 /* 0x08058ACC */
 void ChildResource_Init(void *child, uint32_t index, const ChildResourceHeader *src,

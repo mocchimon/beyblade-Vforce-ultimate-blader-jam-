@@ -18,7 +18,6 @@ uint32_t ResourceTable_Combine(uint32_t value, void *context);
 void ResourceTable_Init(void *context)
 {
     uint32_t *dst = *(uint32_t **)0x03000D98;
-    uint32_t *table = (uint32_t *)0x03005E1C;
     uint32_t i;
 
     for (i = 0; i < 0x80; ++i) {

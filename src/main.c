@@ -30,7 +30,7 @@ void sub_080532DC(void);
 void sub_08051090(void);
 void sub_08055CDC(void);
 void sub_08058940(void);
-void sub_0805EFC0(void *, int);
+void *ArmRaster_LoadModule(void *, void *);
 void sub_08052538(void);
 void sub_080578FC(void);
 void sub_08062814(void);
@@ -88,7 +88,7 @@ void UBJ_Startup(void)
      * semantically identified.
      */
     for (;;) {
-        sub_0805EFC0((void *)((*(uint32_t *)0x03000FB0u) + 0xBA0), 0);
+        ArmRaster_LoadModule((void *)((*(uint32_t *)0x03000FB0u) + 0xBA0), 0);
         sub_08052538();
 
         sub_08049268(); /* 0x08049268: provisional GameState_FramePrepare */

@@ -51,7 +51,10 @@ void RuntimeRecord_Init(RuntimeRecordManager *m,
     if (bytes == 0) {
         records = 0;
     } else {
-        records = (RuntimeSubRecord *)Heap_AllocAlt(bytes);
+        void *allocation = Heap_AllocAlt(bytes);
+        records = allocation != 0
+            ? (RuntimeSubRecord *)(uintptr_t)*(uint32_t *)allocation
+            : 0;
     }
 
     m->records = records;

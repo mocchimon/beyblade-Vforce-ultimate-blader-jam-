@@ -28,9 +28,9 @@ void GameState_SetActiveIndex(uint32_t index)
 }
 
 void GameState_SetContextA(void *ptr) { *(volatile uint32_t *)(GAME_STATE + 0x0C) = (uint32_t)ptr; }
-void *GameState_GetContextA(void) { return *(volatile void **)(GAME_STATE + 0x0C); }
+void *GameState_GetContextA(void) { return (void *)(uintptr_t)*(volatile uint32_t *)(GAME_STATE + 0x0C); }
 void GameState_SetContextB(void *ptr) { *(volatile uint32_t *)(GAME_STATE + 0x10) = (uint32_t)ptr; }
-void *GameState_GetContextB(void) { return *(volatile void **)(GAME_STATE + 0x10); }
+void *GameState_GetContextB(void) { return (void *)(uintptr_t)*(volatile uint32_t *)(GAME_STATE + 0x10); }
 
 /* Exact field-level reconstruction where the current disassembly is unambiguous. */
 void GameState_Init(void)

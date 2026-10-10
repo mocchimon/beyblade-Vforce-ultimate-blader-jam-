@@ -9,7 +9,9 @@ void *Heap_Alloc(uint32_t size);
 void *Heap_AllocAlt(uint32_t size);
 void Heap_Free(void *block);
 void *Heap_FindFreeBlock(void *head, uint32_t size);
-void *Heap_InsertBlock(void *node, uint32_t size);
+void *Heap_InsertBlock(uint32_t size, uint32_t arena_base,
+                       uint32_t arena_size, void *current_head,
+                       void *descriptor, void *head_pointer);
 void *Heap_FindAvailable(void *head, uint32_t count);
 
 /* Startup/frame memory-pool initialization. */

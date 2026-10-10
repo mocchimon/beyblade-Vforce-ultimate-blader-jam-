@@ -29,10 +29,6 @@ typedef struct ResourceBlobHeader {
     uint8_t data[];
 } ResourceBlobHeader;
 
-static inline uint32_t ResourceBlob_StorageSize(const ResourceBlobHeader *r)
-{
-    return (0x10u + r->data_size + 3u) & ~3u;
-}
 
 #define RESOURCE_BLOB_HEADER_SIZE 0x10u
 #define RESOURCE_BLOB_MODE_OFFSET 0x18u

@@ -45,7 +45,7 @@ static void RuntimeEntry_Init(RuntimeEntry *e, uint32_t source, uint32_t index)
 static void RuntimeEntry_InitIndexed(RuntimeEntry *e, uint32_t source_table,
                                       uint32_t secondary_table)
 {
-    uint32_t index = *(const uint16_t *)secondary_table;
+    int32_t index = *(const int16_t *)secondary_table;
     uint32_t value = ((uint32_t *)source_table)[index];
     e->status = 1;
     e->source = value;
@@ -53,10 +53,9 @@ static void RuntimeEntry_InitIndexed(RuntimeEntry *e, uint32_t source_table,
     e->field17 = 0;
     e->limit = 0x100;
     e->source_plus10 = value + 0x10;
-    /* The original clamps the secondary-table pointer itself to 0x7F before
-       indexing TABLE_0D98, so a normal ROM pointer ends up selecting entry 0x7F. */
-    uint32_t table_index = secondary_table > 0x7F ? 0x7F : secondary_table;
-    e->table_value = TABLE_0D98[table_index];
+    /* The alternate initializer reads the first word of TABLE_0D98 directly;
+       it does not index that table with the secondary-table pointer. */
+    e->table_value = TABLE_0D98[0];
     e->field0C = 0;
     e->field1C = source_table;
     e->field20 = secondary_table;

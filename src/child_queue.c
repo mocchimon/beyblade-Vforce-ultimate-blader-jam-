@@ -35,7 +35,8 @@ void ChildQueue_Append(void *child, uint32_t value0, uint32_t value2,
         q->allocation = Heap_AllocAlt(0x40);
         if (q->allocation == 0)
             return; /* original calls the runtime fatal handler */
-        q->entries = (ChildQueueEntry *)q->allocation;
+        q->entries = (ChildQueueEntry *)(uintptr_t)
+            *(uint32_t *)q->allocation;
     }
 
     uint32_t slot = 0;
