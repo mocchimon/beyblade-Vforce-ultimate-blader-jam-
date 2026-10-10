@@ -65,3 +65,49 @@ Latest runtime-image finding: ROM `0x080641B8–0x08064EDC` is a `0xD24`-byte AR
 ### Latest reverse-engineering correction (2026-10-09)
 
 The ARM-state image at `0x080641B8` is copied through the normal heap allocation path. The heap initializer points its primary arena into EWRAM (`0x02000000`), so the apparent offset match with IWRAM renderer targets is not proof of a shared image. The project records this as a rejected/unproven hypothesis in `docs/IWRAM_IMAGE_HYPOTHESIS_CHECK.md`; the actual IWRAM installer remains an open target.
+
+### ARM rasterizer recovery
+
+The ARM-state runtime image at `0x080641B8` is now mapped as a software rasterization/primitive-processing subsystem: fixed-point sample generation, packed byte output, three-record edge processing, span clamping, 64-byte row stepping, and vertex/attribute updates. See `docs/ARM_RASTERIZER_FINDINGS.md`; raw ARM disassembly is preserved in `asm/runtime/arm_rasterizer_641b8_64edc.dis.txt`. This is separate from the unresolved IWRAM render dispatch targets.
+
+Current rough overall traditional-decompilation estimate: **17%**. A reproducible build matching the original ROM is not yet achieved.
+
+### Latest recovery: ARM rasterizer copy helper
+
+The ARM image's helper at `0x08064E54` has now been reconstructed in C as
+`ArmRaster_CopyEightRowSlices` (`src/arm_rasterizer.c`). It gathers eight
+8-byte slices from source rows using a caller-supplied stride and emits each
+64-byte block contiguously. Its precise graphics format remains under
+investigation. See `docs/ARM_RASTERIZER_COPY_HELPER.md`.
+
+Current rough engineering estimate: **18% overall decompilation**; matching-ROM
+build remains **0% complete**.
+
+### Compile recovered sources
+
+Run `make check` with Clang installed to compile each current C translation
+unit to ARM7TDMI object files. The rasterizer source is compiled in ARM state;
+other units are compiled in Thumb state. This is deliberately a compile-only
+target: unresolved original functions and the original linker/memory layout
+mean it does **not** create a runnable or matching ROM. Rasterizer bucket-list
+and edge-dispatch reconstructions are documented in
+`docs/ARM_RASTERIZER_LISTS.md`.
+
+Current rough overall traditional-decompilation estimate: **24%**. Matching-ROM
+build remains **0% complete**.
+
+The ARM image loader and relocation map are documented in `docs/ARM_RASTERIZER_LOADER.md`.
+
+### Latest recovery: dual-heap allocator
+
+The allocator cluster is now represented in C with both the IWRAM small-object heap and EWRAM large-buffer heap, including descriptor-pool search, address-sorted gap insertion, unlink/free, and allocation counters. Callers were audited and corrected to distinguish allocation descriptors from payload addresses. See [`docs/HEAP_FINDINGS.md`](docs/HEAP_FINDINGS.md). `make clean && make -j2` compiles all 25 C units for ARM7TDMI without warnings; it is not yet a linked or byte-matching ROM build.
+
+Latest reverse-engineering correction: `docs/PASS10_OBJECT_TABLE_FIX.md`
+records the instruction-checked object-table cleanup and allocation-size fix
+for `0x08062370` / `0x08062490`.
+
+### Latest recovery pass (2026-10-10)
+
+`src/runtime_record.c` reconstructs the record allocation helper at
+`0x0805AC4C` and the pointer setter at `0x0805AC80`. See
+`docs/RUNTIME_RECORD_FINDINGS.md` and `asm/runtime/runtime_record_5ab68_5acac.dis.txt`.
