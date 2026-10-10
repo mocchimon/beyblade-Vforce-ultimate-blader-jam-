@@ -230,3 +230,121 @@ Next: find a separate writer/copy loop for the upper IWRAM region and continue t
 ## Completion estimate
 
 **Overall traditional decompilation: approximately 15% (rough engineering estimate, not a line-count metric).** Boot path and several runtime subsystems are mapped, but gameplay states, audio, much of the asset/data semantics, many function bodies, and build/matching-ROM work remain. A reproducible build that matches the original ROM is **0% complete**: the current project is a research/source-reconstruction scaffold, not yet a full buildable matching decompilation. Keep this estimate conservative and revise it when whole subsystems or a verified build milestone are completed.
+
+## 2026-10-09 — ARM rasterizer image semantic recovery
+
+Re-disassembled the complete ARM-state image `0x080641B8–0x08064EDB` using ARM decoding (rather than Thumb). Recovered a conservative routine map for sample generation at `+0x000`, packed byte-sample generation at `+0x060`, a three-record primitive/edge processor at `+0x1AC`, an alternate edge path at `+0x434`, span clamping at `+0x56C`, row stepping at `+0x698`, and compact vertex/attribute processing at `+0x85C`. The row routine advances output by `0x40` bytes per row; the sample routine packs four byte samples per word; the edge processor consumes records at `0x10`-byte stride and uses fixed-point slope/table operations. These findings establish that this is a software rasterization/primitive-processing subsystem. They do not establish that it supplies the separate IWRAM targets `0x0300646C` / `0x0300682C`.
+
+Added `docs/ARM_RASTERIZER_FINDINGS.md` and `asm/runtime/arm_rasterizer_641b8_64edc.dis.txt`. Next: isolate the remaining entry points from the relocation table and trace descriptor producers/callers.
+
+## Completion estimate update
+
+Overall traditional decompilation estimate remains conservative at **17%**. The ARM rendering module is now semantically mapped beyond a generic relocatable image, but gameplay state logic, audio, broad data classification, a complete build system, and matching-ROM verification remain substantial unfinished work. Matching-ROM build milestone remains **0%**.
+
+## 2026-10-09 — ARM rasterizer copy helper reconstructed in C
+
+Isolated the function entry at `0x08064E54` (the preceding `0x08064E50` word is zero/padding) and translated its gather-copy behavior into `src/arm_rasterizer.c`. Each output block contains eight 8-byte slices gathered from source rows separated by `r1` stride; the routine advances through 8-column groups and applies a `stride * 8 - 64` correction after each eight chunks. This is consistent with tile/swizzle preparation, but the caller's data format is not yet established. Added `docs/ARM_RASTERIZER_COPY_HELPER.md`, corrected the function map, and updated the rasterizer notes.
+
+## Completion estimate update
+
+Overall traditional decompilation estimate: **18%**. This pass converted a previously documented ARM helper into a C source reconstruction and clarified its exact entry boundary. The build/matching-ROM milestone remains **0%**; the project is still not a complete matching decompilation.
+
+## 2026-10-10 — ARM rasterizer list processing recovered
+
+Translated three ARM entries into source: `0x08064C38` as
+`ArmRaster_InsertBucketItem`, `0x08064C8C` as `ArmRaster_BuildEdgeBuckets`,
+and `0x08064DE0` as `ArmRaster_ProcessEdgeBuckets`. The insertion routine
+creates/appends four-byte linked-list nodes with a signed-halfword sentinel;
+the builder handles selected/default primitive ranges, applies a signed
+orientation test, derives a 32-level bucket from fixed-point attributes, and
+inserts accepted record indices; the dispatcher follows bucket chains,
+resolves primitive records, invokes primitive-edge processing, and conditionally
+dispatches row drawing. Added `docs/ARM_RASTERIZER_LISTS.md` and updated the function map.
+
+Added a compile-only Makefile that builds all C translation units for ARM7TDMI,
+using ARM state for the rasterizer image source and Thumb state for the other
+units. This is a reproducible source-compilation milestone, not a ROM link or
+matching build. Remaining work includes validating the rasterizer builder against a reference
+emulator or disassembly-level test, recovering the rasterizer's caller and
+descriptors, and replacing many unresolved runtime/gameplay functions.
+
+## Completion estimate update — 2026-10-10
+
+Overall traditional decompilation: **22%** (rough engineering estimate).
+This pass adds source reconstructions for a linked-list primitive, its
+primitive-bucket builder, and its bucket-chain dispatcher, plus a repeatable
+ARM7TDMI compile-only target. The
+matching-ROM build remains **0%**; compile-only object output must not be
+mistaken for a linkable game or a byte-matching ROM.
+
+
+## 2026-10-10 — relocatable ARM image loader recovered
+
+Translated `0x0805EFC0` into `src/arm_rasterizer_loader.c`. The function either
+allocates a `0xD24` heap descriptor and programs DMA3 to copy the ARM image, or
+reuses an existing descriptor passed indirectly. It then rebases the specific
+pointer fields selected by the table at `0x08064EDC`, leaving context offsets
+`+0x40`, `+0x50`, and `+0x54` untouched. The loader's field-by-field map is
+recorded in `docs/ARM_RASTERIZER_LOADER.md`, and startup now calls the recovered
+working name rather than `sub_0805EFC0`.
+
+The source compile target now covers 25 C translation units without compiler
+warnings. This remains object compilation only; the heap allocator is still
+incomplete, the project is not linkable as a game, and matching-ROM progress
+remains 0%.
+
+## Completion estimate update — 2026-10-10
+
+Overall traditional decompilation: **24%** (rough engineering estimate). The
+loader and three of its rasterizer support routines now have source-level
+reconstructions, and all 25 current C units compile for ARM7TDMI. The matching-
+ROM build remains **0%**.
+
+## 2026-10-10 — dual-heap allocator reconstruction
+
+Recovered both descriptor-backed allocator configurations from the `0x0805A3CC–0x0805A608` cluster. The main heap uses 32 descriptors from `0x02000000` and an IWRAM arena at `0x03001160` of size `0x4B20`; the alternate heap uses 32 descriptors from `0x02000200` and an EWRAM arena beginning at `0x02000400` with size `0x3FC00`. Reconstructed first-fit-by-address-gap insertion, descriptor-slot search, list unlink, and allocation counters.
+
+A caller audit found an important representation error: both allocator front-ends return descriptor pointers, not payload pointers. Corrected `src/object_record.c` and `src/child_queue.c` to use descriptor `+0x00` for the payload while retaining the descriptor where the original structure expects it. See `docs/HEAP_FINDINGS.md` for addresses, layouts, and confidence boundaries.
+
+Validation: clean ARM7TDMI object compilation of all 25 C source files, with no compiler warnings. This remains compile-only validation, not a matching-ROM build.
+
+### Runtime-entry indexed initializer correction
+
+Re-read `0x08062974` instruction-by-instruction. Its index is a signed halfword at `secondary_table + 0`, used to select a 32-bit value from `source_table`; the entry's `+0x08` field is loaded from the first word of the table rooted at `0x03000D98`. Corrected `RuntimeEntry_InitIndexed` accordingly. The previous C draft incorrectly treated the secondary-table pointer itself as an index into `0x03000D98`, which could select the wrong resource value.
+
+## Pass 10 — object-table allocation correction (2026-10-10)
+
+Rechecked `0x08062370` and `0x08062490` directly against Thumb instructions.
+The helper at `0x080661E4` is an unsigned division routine, not an allocator.
+The object-table initializer now computes the aligned quotient
+`round_up(base / 0x28, 0x10)`, stores its positive and negative halfword forms,
+and allocates `3*n + 40*count` bytes through `Heap_Alloc`. The auxiliary
+`0x440`-byte block is allocated through `Heap_AllocAlt`. Both returned values
+are heap descriptors; payload addresses are read from descriptor offset zero.
+
+Also implemented the observed cleanup path at `0x08062370`: it stops the
+associated hardware registers, frees the stored descriptors (not payload
+pointers), and clears the corresponding runtime pointer globals. Full evidence
+and remaining semantic uncertainty are in `docs/PASS10_OBJECT_TABLE_FIX.md`.
+
+## Pass 11 — runtime record allocation recovered (2026-10-10)
+
+Translated `0x0805AC4C` into `src/runtime_record.c`. The routine allocates a
+0x10-byte alternate-heap record, dereferences the heap descriptor to get its
+payload, then writes the four incoming values into fields at `+0x00`, `+0x04`,
+`+0x08` (halfword), and `+0x0C`. Startup calls it with four zero arguments.
+Also recovered the direct global setter at `0x0805AC80`, which stores a pointer
+at `0x03005DC0`. Names remain neutral because the higher-level record purpose
+is not yet proven. Evidence is in `docs/RUNTIME_RECORD_FINDINGS.md` and the
+matching disassembly artifact.
+
+Validation: source-level structure size is enforced with `_Static_assert`; a
+clean ARM7TDMI object compilation is required before archiving. This pass adds
+one compact but concrete runtime helper cluster. Matching-ROM build remains
+0%.
+
+## Completion estimate update
+
+Overall traditional decompilation estimate: **31%**. This reflects one more
+recovered runtime record allocator/setter and its exact field layout, not a
+claim that 31% of ROM bytes are translated. Matching-ROM build remains **0%**.

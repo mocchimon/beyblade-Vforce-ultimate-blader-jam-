@@ -55,3 +55,19 @@ The heap initializer at `0x0805A374` was re-disassembled. Its literal stores ini
 Consequently, the allocation made by `0x0805EFC0` for the `0xD24`-byte image is an EWRAM allocation under the normal initialized heap path. The image's bytes at ROM `0x0806446C` and `0x0806482C` therefore **must not be identified as the code installed at IWRAM `0x0300646C` / `0x0300682C` based only on the matching offsets**. That base-address hypothesis is currently disfavored, not confirmed. The module is still useful to reverse engineer on its own; its relocation behavior indicates a position-adjusted ARM-state runtime module, but its exact role remains to be named conservatively.
 
 The unresolved IWRAM branch targets likely have a separate installation path or are established by a different runtime mechanism. Continue auditing writers/copy loops that can target the `0x03006xxx` and `0x03007xxx` range. Do not infer that the D24 image supplies those entries unless a separate copy or matching runtime bytes prove it.
+
+
+## 2026-10-10 — loader translated to C
+
+The complete entry at `0x0805EFC0` is now reconstructed in
+`src/arm_rasterizer_loader.c` as `ArmRaster_LoadModule`. It either allocates a
+`0xD24` heap block descriptor and DMA-copies the ARM image into the descriptor's
+address, or reuses a descriptor pointer supplied indirectly by its second
+argument. It then adds the loaded image base to selected entries from the
+`0x08064EDC` offset table and stores the results into context offsets
+`+0x04` through `+0x80`, preserving the three skipped relocation/context slots.
+See `docs/ARM_RASTERIZER_LOADER.md` for the exact field map.
+
+This translation improves the loader's source-level recovery but does not
+resolve the separate IWRAM render targets, and it does not make the loader
+runnable yet because the underlying heap allocator remains a partial stub.

@@ -49,7 +49,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 08051090  unknown
 08055CDC  unknown
 08058940  unknown
-0805EFC0  unknown
+0805EFC0  ArmRaster_LoadModule (DMA image copy + selected pointer rebasing)
 08052538  unknown
 080578FC  System_VBlankWait
 08062814  unknown/update-related
@@ -224,3 +224,38 @@ rather than asserting game-specific semantics.
 | `0x08065C38` | `Runtime_Dispatch_R0` (mechanical name) | Single-instruction indirect branch `bx r0`; not a normal C function body |
 | `0x0300646C` | IWRAM render branch target | Reached through an indirect branch; installed code/source remains unresolved |
 | `0x08059428` | `sub_08059428` (neutral) | Row-oriented DMA3 transfer routine; relation to IWRAM targets `0x0300646C` / `0x0300682C` not proven |
+
+## ARM-state rasterizer image (`0x080641B8–0x08064EDB`)
+
+| Address | Working name | Status |
+|---|---|---|
+| `0x080641B8` | `ArmRaster_EmitSamples` | Fixed-point sample generation; high confidence in behavior class |
+| `0x08064218` | `ArmRaster_EmitPackedSamples` | Packs four byte samples per word; high confidence |
+| `0x08064364` | `ArmRaster_ProcessPrimitiveEdges` | Processes three 0x10-stride records and computes edge slopes; behavior class high confidence |
+| `0x080645EC` | `ArmRaster_ProcessAlternateEdgeCase` | Alternate edge path; exact contract unresolved |
+| `0x08064724` | `ArmRaster_ClampSpan` | Endpoint ordering and span clamping; medium/high confidence |
+| `0x08064850` | `ArmRaster_DrawRows` | Row-stepping and sample generation with 0x40-byte stride; high confidence |
+| `0x08064A14` | `ArmRaster_ApplyVertexParameters` | Updates compact per-row coordinate/attribute records; medium confidence |
+| `0x08064C38` | `ArmRaster_InsertBucketItem` | Appends a signed-halfword item to a bucket-linked node table; high confidence |
+| `0x08064C8C` | `ArmRaster_BuildEdgeBuckets` | Applies the primitive orientation test, maps a fixed-point attribute into a 32-bucket domain, and inserts record indices; reconstructed in C with raw descriptor offsets |
+| `0x08064DE0` | `ArmRaster_ProcessEdgeBuckets` | Traverses bucket-linked vertex records, invokes primitive-edge processing, and conditionally draws rows; high confidence in control flow |
+| `0x08064E50` | `ArmRaster_Helper_C98` | Relocation-table entry; unresolved |
+
+See `docs/ARM_RASTERIZER_FINDINGS.md` for evidence and caveats. This module has not been proven to supply IWRAM branch targets `0x0300646C` / `0x0300682C`.
+
+| `0x08064E54` | `ArmRaster_CopyEightRowSlices` | ARM-state helper that gathers eight 8-byte source slices at a supplied stride into each 64-byte output block; exact graphics layout remains unresolved. |
+
+### Pass 10 corrections
+
+| Address | Working name | Updated interpretation |
+|---|---|---|
+| `0x08062370` | `RuntimeObject_Prepare` | Stops associated registers, frees stored heap descriptors, clears runtime payload pointers and the primary descriptor slot. |
+| `0x08062490` | `RuntimeObjectTable_Init` | Computes an aligned count-derived size and allocates `3*n + 40*count` through `Heap_Alloc`; allocates the auxiliary `0x440` block through `Heap_AllocAlt`. |
+| `0x080661E4` | `System_Udiv` (working label) | Unsigned division helper; not an allocator. |
+
+## Pass 11 — runtime record helpers
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x0805AC4C` | `RuntimeRecord_Create` | allocates a 0x10-byte alternate-heap payload and writes fields at +0x00/+0x04/+0x08/+0x0C |
+| `0x0805AC80` | `RuntimeRecord_SetCurrent` | stores its argument at `0x03005DC0` |

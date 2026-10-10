@@ -74,3 +74,12 @@ path adjusts the global cursor using the same delta and invokes `0x08065C44`.
 
 This is strong evidence for scheduled/timed record processing, but not enough
 to assign a gameplay-specific meaning to those records.
+
+## Pass 10 correction — allocator target and size expression
+
+The original notes above are superseded where they imply an unknown allocator
+at `0x080661E4`. Re-disassembly shows that address is an unsigned division
+helper. The first allocation is `Heap_Alloc` (`0x0805A3CC`) and its size is
+`3*n + 40*count`, where `n = ((base / 0x28) + 0x0F) & ~0x0F`. The second is
+`Heap_AllocAlt(0x440)`. See `docs/PASS10_OBJECT_TABLE_FIX.md` and the raw
+instruction capture `asm/runtime/object_table_cluster_62370_62490.thumb.s`.
