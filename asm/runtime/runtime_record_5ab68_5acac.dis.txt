@@ -1,0 +1,163 @@
+
+/tmp/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08000000 <rom_start>:
+ 805ab68: 4802         	ldr	r0, [pc, #0x8]          @ 0x805ab74 <rom_start+0x5ab74>
+ 805ab6a: 4903         	ldr	r1, [pc, #0xc]          @ 0x805ab78 <rom_start+0x5ab78>
+ 805ab6c: 6800         	ldr	r0, [r0]
+ 805ab6e: 6809         	ldr	r1, [r1]
+ 805ab70: 1a40         	subs	r0, r0, r1
+ 805ab72: 4770         	bx	lr
+ 805ab74: 0e30         	lsrs	r0, r6, #0x18
+ 805ab76: 0300         	lsls	r0, r0, #0xc
+ 805ab78: 5da8         	ldrb	r0, [r5, r6]
+ 805ab7a: 0300         	lsls	r0, r0, #0xc
+ 805ab7c: 2100         	movs	r1, #0x0
+ 805ab7e: 4803         	ldr	r0, [pc, #0xc]          @ 0x805ab8c <rom_start+0x5ab8c>
+ 805ab80: 8800         	ldrh	r0, [r0]
+ 805ab82: 2802         	cmp	r0, #0x2
+ 805ab84: d100         	bne	0x805ab88 <rom_start+0x5ab88> @ imm = #0x0
+ 805ab86: 2101         	movs	r1, #0x1
+ 805ab88: 1c08         	adds	r0, r1, #0x0
+ 805ab8a: 4770         	bx	lr
+ 805ab8c: 5ca4         	ldrb	r4, [r4, r2]
+ 805ab8e: 0300         	lsls	r0, r0, #0xc
+ 805ab90: b570         	push	{r4, r5, r6, lr}
+ 805ab92: 4803         	ldr	r0, [pc, #0xc]          @ 0x805aba0 <rom_start+0x5aba0>
+ 805ab94: 8804         	ldrh	r4, [r0]
+ 805ab96: 2600         	movs	r6, #0x0
+ 805ab98: 4802         	ldr	r0, [pc, #0x8]          @ 0x805aba4 <rom_start+0x5aba4>
+ 805ab9a: 6800         	ldr	r0, [r0]
+ 805ab9c: 6805         	ldr	r5, [r0]
+ 805ab9e: e00f         	b	0x805abc0 <rom_start+0x5abc0> @ imm = #0x1e
+ 805aba0: 5db8         	ldrb	r0, [r7, r6]
+ 805aba2: 0300         	lsls	r0, r0, #0xc
+ 805aba4: 5dbc         	ldrb	r4, [r7, r6]
+ 805aba6: 0300         	lsls	r0, r0, #0xc
+ 805aba8: 8829         	ldrh	r1, [r5]
+ 805abaa: 4809         	ldr	r0, [pc, #0x24]         @ 0x805abd0 <rom_start+0x5abd0>
+ 805abac: f7fd f856    	bl	0x8057c5c <rom_start+0x57c5c> @ imm = #-0x2f54
+ 805abb0: 3601         	adds	r6, #0x1
+ 805abb2: 2e1e         	cmp	r6, #0x1e
+ 805abb4: d103         	bne	0x805abbe <rom_start+0x5abbe> @ imm = #0x6
+ 805abb6: 2600         	movs	r6, #0x0
+ 805abb8: 4806         	ldr	r0, [pc, #0x18]         @ 0x805abd4 <rom_start+0x5abd4>
+ 805abba: f7fd f84f    	bl	0x8057c5c <rom_start+0x57c5c> @ imm = #-0x2f62
+ 805abbe: 3502         	adds	r5, #0x2
+ 805abc0: 1c20         	adds	r0, r4, #0x0
+ 805abc2: 3c01         	subs	r4, #0x1
+ 805abc4: 2800         	cmp	r0, #0x0
+ 805abc6: d1ef         	bne	0x805aba8 <rom_start+0x5aba8> @ imm = #-0x22
+ 805abc8: bc70         	pop	{r4, r5, r6}
+ 805abca: bc01         	pop	{r0}
+ 805abcc: 4700         	bx	r0
+ 805abce: 0000         	movs	r0, r0
+ 805abd0: 5360         	strh	r0, [r4, r5]
+ 805abd2: 0875         	lsrs	r5, r6, #0x1
+ 805abd4: 5368         	strh	r0, [r5, r5]
+ 805abd6: 0875         	lsrs	r5, r6, #0x1
+ 805abd8: 4801         	ldr	r0, [pc, #0x4]          @ 0x805abe0 <rom_start+0x5abe0>
+ 805abda: 8800         	ldrh	r0, [r0]
+ 805abdc: 4770         	bx	lr
+ 805abde: 0000         	movs	r0, r0
+ 805abe0: 5db8         	ldrb	r0, [r7, r6]
+ 805abe2: 0300         	lsls	r0, r0, #0xc
+ 805abe4: b510         	push	{r4, lr}
+ 805abe6: 1c02         	adds	r2, r0, #0x0
+ 805abe8: 4c14         	ldr	r4, [pc, #0x50]         @ 0x805ac3c <rom_start+0x5ac3c>
+ 805abea: 8820         	ldrh	r0, [r4]
+ 805abec: 8911         	ldrh	r1, [r2, #0x8]
+ 805abee: 4008         	ands	r0, r1
+ 805abf0: 2800         	cmp	r0, #0x0
+ 805abf2: d027         	beq	0x805ac44 <rom_start+0x5ac44> @ imm = #0x4e
+ 805abf4: 8950         	ldrh	r0, [r2, #0xa]
+ 805abf6: 4b12         	ldr	r3, [pc, #0x48]         @ 0x805ac40 <rom_start+0x5ac40>
+ 805abf8: 2800         	cmp	r0, #0x0
+ 805abfa: d101         	bne	0x805ac00 <rom_start+0x5ac00> @ imm = #0x2
+ 805abfc: 6818         	ldr	r0, [r3]
+ 805abfe: 6010         	str	r0, [r2]
+ 805ac00: 6819         	ldr	r1, [r3]
+ 805ac02: 6810         	ldr	r0, [r2]
+ 805ac04: 1a08         	subs	r0, r1, r0
+ 805ac06: 2864         	cmp	r0, #0x64
+ 805ac08: d902         	bls	0x805ac10 <rom_start+0x5ac10> @ imm = #0x4
+ 805ac0a: 6011         	str	r1, [r2]
+ 805ac0c: 2000         	movs	r0, #0x0
+ 805ac0e: 8150         	strh	r0, [r2, #0xa]
+ 805ac10: 8910         	ldrh	r0, [r2, #0x8]
+ 805ac12: 8821         	ldrh	r1, [r4]
+ 805ac14: 4001         	ands	r1, r0
+ 805ac16: 8954         	ldrh	r4, [r2, #0xa]
+ 805ac18: 4321         	orrs	r1, r4
+ 805ac1a: 8151         	strh	r1, [r2, #0xa]
+ 805ac1c: 4001         	ands	r1, r0
+ 805ac1e: 0400         	lsls	r0, r0, #0x10
+ 805ac20: 0c00         	lsrs	r0, r0, #0x10
+ 805ac22: 4281         	cmp	r1, r0
+ 805ac24: d10e         	bne	0x805ac44 <rom_start+0x5ac44> @ imm = #0x1c
+ 805ac26: 6819         	ldr	r1, [r3]
+ 805ac28: 6810         	ldr	r0, [r2]
+ 805ac2a: 1a08         	subs	r0, r1, r0
+ 805ac2c: 2841         	cmp	r0, #0x41
+ 805ac2e: d809         	bhi	0x805ac44 <rom_start+0x5ac44> @ imm = #0x12
+ 805ac30: 6051         	str	r1, [r2, #0x4]
+ 805ac32: 2000         	movs	r0, #0x0
+ 805ac34: 8150         	strh	r0, [r2, #0xa]
+ 805ac36: 2001         	movs	r0, #0x1
+ 805ac38: e005         	b	0x805ac46 <rom_start+0x5ac46> @ imm = #0xa
+ 805ac3a: 0000         	movs	r0, r0
+ 805ac3c: 5da0         	ldrb	r0, [r4, r6]
+ 805ac3e: 0300         	lsls	r0, r0, #0xc
+ 805ac40: 0e30         	lsrs	r0, r6, #0x18
+ 805ac42: 0300         	lsls	r0, r0, #0xc
+ 805ac44: 2000         	movs	r0, #0x0
+ 805ac46: bc10         	pop	{r4}
+ 805ac48: bc02         	pop	{r1}
+ 805ac4a: 4708         	bx	r1
+ 805ac4c: b5f0         	push	{r4, r5, r6, r7, lr}
+ 805ac4e: 1c07         	adds	r7, r0, #0x0
+ 805ac50: 1c0d         	adds	r5, r1, #0x0
+ 805ac52: 1c16         	adds	r6, r2, #0x0
+ 805ac54: 041b         	lsls	r3, r3, #0x10
+ 805ac56: 0c1c         	lsrs	r4, r3, #0x10
+ 805ac58: 2010         	movs	r0, #0x10
+ 805ac5a: f7ff fbf3    	bl	0x805a444 <rom_start+0x5a444> @ imm = #-0x81a
+ 805ac5e: 6800         	ldr	r0, [r0]
+ 805ac60: 2800         	cmp	r0, #0x0
+ 805ac62: d004         	beq	0x805ac6e <rom_start+0x5ac6e> @ imm = #0x8
+ 805ac64: 60c5         	str	r5, [r0, #0xc]
+ 805ac66: 6007         	str	r7, [r0]
+ 805ac68: 6046         	str	r6, [r0, #0x4]
+ 805ac6a: 8104         	strh	r4, [r0, #0x8]
+ 805ac6c: e003         	b	0x805ac76 <rom_start+0x5ac76> @ imm = #0x6
+ 805ac6e: 4803         	ldr	r0, [pc, #0xc]          @ 0x805ac7c <rom_start+0x5ac7c>
+ 805ac70: f7fc ff76    	bl	0x8057b60 <rom_start+0x57b60> @ imm = #-0x3114
+ 805ac74: 2000         	movs	r0, #0x0
+ 805ac76: bcf0         	pop	{r4, r5, r6, r7}
+ 805ac78: bc02         	pop	{r1}
+ 805ac7a: 4708         	bx	r1
+ 805ac7c: 536c         	strh	r4, [r5, r5]
+ 805ac7e: 0875         	lsrs	r5, r6, #0x1
+ 805ac80: 4901         	ldr	r1, [pc, #0x4]          @ 0x805ac88 <rom_start+0x5ac88>
+ 805ac82: 6008         	str	r0, [r1]
+ 805ac84: 4770         	bx	lr
+ 805ac86: 0000         	movs	r0, r0
+ 805ac88: 5dc0         	ldrb	r0, [r0, r7]
+ 805ac8a: 0300         	lsls	r0, r0, #0xc
+ 805ac8c: b500         	push	{lr}
+ 805ac8e: 4804         	ldr	r0, [pc, #0x10]         @ 0x805aca0 <rom_start+0x5aca0>
+ 805ac90: 6800         	ldr	r0, [r0]
+ 805ac92: 2800         	cmp	r0, #0x0
+ 805ac94: d002         	beq	0x805ac9c <rom_start+0x5ac9c> @ imm = #0x4
+ 805ac96: 6801         	ldr	r1, [r0]
+ 805ac98: f00a ffd0    	bl	0x8065c3c <rom_start+0x65c3c> @ imm = #0xafa0
+ 805ac9c: bc01         	pop	{r0}
+ 805ac9e: 4700         	bx	r0
+ 805aca0: 5dc0         	ldrb	r0, [r0, r7]
+ 805aca2: 0300         	lsls	r0, r0, #0xc
+ 805aca4: b5f0         	push	{r4, r5, r6, r7, lr}
+ 805aca6: 4684         	mov	r12, r0
+ 805aca8: 1c0c         	adds	r4, r1, #0x0
+ 805acaa: 302f         	adds	r0, #0x2f

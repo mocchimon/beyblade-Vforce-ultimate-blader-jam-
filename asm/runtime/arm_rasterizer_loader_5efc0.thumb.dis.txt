@@ -1,0 +1,144 @@
+
+/tmp/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08000000 <rom_start>:
+ 805efc0: b570         	push	{r4, r5, r6, lr}
+ 805efc2: 1c04         	adds	r4, r0, #0x0
+ 805efc4: 4d08         	ldr	r5, [pc, #0x20]         @ 0x805efe8 <rom_start+0x5efe8>
+ 805efc6: 2900         	cmp	r1, #0x0
+ 805efc8: d124         	bne	0x805f014 <rom_start+0x5f014> @ imm = #0x48
+ 805efca: 4808         	ldr	r0, [pc, #0x20]         @ 0x805efec <rom_start+0x5efec>
+ 805efcc: 4e08         	ldr	r6, [pc, #0x20]         @ 0x805eff0 <rom_start+0x5eff0>
+ 805efce: 1b80         	subs	r0, r0, r6
+ 805efd0: f7fb f9fc    	bl	0x805a3cc <rom_start+0x5a3cc> @ imm = #-0x4c08
+ 805efd4: 1c01         	adds	r1, r0, #0x0
+ 805efd6: 6021         	str	r1, [r4]
+ 805efd8: 2900         	cmp	r1, #0x0
+ 805efda: d10d         	bne	0x805eff8 <rom_start+0x5eff8> @ imm = #0x1a
+ 805efdc: 4805         	ldr	r0, [pc, #0x14]         @ 0x805eff4 <rom_start+0x5eff4>
+ 805efde: f7f8 fdbf    	bl	0x8057b60 <rom_start+0x57b60> @ imm = #-0x7482
+ 805efe2: 2000         	movs	r0, #0x0
+ 805efe4: e074         	b	0x805f0d0 <rom_start+0x5f0d0> @ imm = #0xe8
+ 805efe6: 0000         	movs	r0, r0
+ 805efe8: 4edc         	ldr	r6, [pc, #0x370]        @ 0x805f35c <rom_start+0x5f35c>
+ 805efea: 0806         	lsrs	r6, r0, #0x20
+ 805efec: 4edc         	ldr	r6, [pc, #0x370]        @ 0x805f360 <rom_start+0x5f360>
+ 805efee: 0806         	lsrs	r6, r0, #0x20
+ 805eff0: 41b8         	sbcs	r0, r7
+ 805eff2: 0806         	lsrs	r6, r0, #0x20
+ 805eff4: 5668         	ldrsb	r0, [r5, r1]
+ 805eff6: 0875         	lsrs	r5, r6, #0x1
+ 805eff8: 4a05         	ldr	r2, [pc, #0x14]         @ 0x805f010 <rom_start+0x5f010>
+ 805effa: 6016         	str	r6, [r2]
+ 805effc: 6808         	ldr	r0, [r1]
+ 805effe: 6050         	str	r0, [r2, #0x4]
+ 805f000: 6848         	ldr	r0, [r1, #0x4]
+ 805f002: 0880         	lsrs	r0, r0, #0x2
+ 805f004: 2184         	movs	r1, #0x84
+ 805f006: 0609         	lsls	r1, r1, #0x18
+ 805f008: 4308         	orrs	r0, r1
+ 805f00a: 6090         	str	r0, [r2, #0x8]
+ 805f00c: 6890         	ldr	r0, [r2, #0x8]
+ 805f00e: e003         	b	0x805f018 <rom_start+0x5f018> @ imm = #0x6
+ 805f010: 00d4         	lsls	r4, r2, #0x3
+ 805f012: 0400         	lsls	r0, r0, #0x10
+ 805f014: 6808         	ldr	r0, [r1]
+ 805f016: 6020         	str	r0, [r4]
+ 805f018: 6820         	ldr	r0, [r4]
+ 805f01a: 6801         	ldr	r1, [r0]
+ 805f01c: 6828         	ldr	r0, [r5]
+ 805f01e: 1808         	adds	r0, r1, r0
+ 805f020: 6060         	str	r0, [r4, #0x4]
+ 805f022: 6868         	ldr	r0, [r5, #0x4]
+ 805f024: 1808         	adds	r0, r1, r0
+ 805f026: 60a0         	str	r0, [r4, #0x8]
+ 805f028: 68a8         	ldr	r0, [r5, #0x8]
+ 805f02a: 1808         	adds	r0, r1, r0
+ 805f02c: 60e0         	str	r0, [r4, #0xc]
+ 805f02e: 68e8         	ldr	r0, [r5, #0xc]
+ 805f030: 1808         	adds	r0, r1, r0
+ 805f032: 6120         	str	r0, [r4, #0x10]
+ 805f034: 6928         	ldr	r0, [r5, #0x10]
+ 805f036: 1808         	adds	r0, r1, r0
+ 805f038: 6160         	str	r0, [r4, #0x14]
+ 805f03a: 6968         	ldr	r0, [r5, #0x14]
+ 805f03c: 1808         	adds	r0, r1, r0
+ 805f03e: 61a0         	str	r0, [r4, #0x18]
+ 805f040: 69a8         	ldr	r0, [r5, #0x18]
+ 805f042: 1808         	adds	r0, r1, r0
+ 805f044: 61e0         	str	r0, [r4, #0x1c]
+ 805f046: 69e8         	ldr	r0, [r5, #0x1c]
+ 805f048: 1808         	adds	r0, r1, r0
+ 805f04a: 6220         	str	r0, [r4, #0x20]
+ 805f04c: 6a28         	ldr	r0, [r5, #0x20]
+ 805f04e: 1808         	adds	r0, r1, r0
+ 805f050: 6260         	str	r0, [r4, #0x24]
+ 805f052: 6a68         	ldr	r0, [r5, #0x24]
+ 805f054: 1808         	adds	r0, r1, r0
+ 805f056: 62a0         	str	r0, [r4, #0x28]
+ 805f058: 6aa8         	ldr	r0, [r5, #0x28]
+ 805f05a: 1808         	adds	r0, r1, r0
+ 805f05c: 62e0         	str	r0, [r4, #0x2c]
+ 805f05e: 6ae8         	ldr	r0, [r5, #0x2c]
+ 805f060: 1808         	adds	r0, r1, r0
+ 805f062: 6320         	str	r0, [r4, #0x30]
+ 805f064: 6b28         	ldr	r0, [r5, #0x30]
+ 805f066: 1808         	adds	r0, r1, r0
+ 805f068: 6360         	str	r0, [r4, #0x34]
+ 805f06a: 6b68         	ldr	r0, [r5, #0x34]
+ 805f06c: 1808         	adds	r0, r1, r0
+ 805f06e: 63a0         	str	r0, [r4, #0x38]
+ 805f070: 6ba8         	ldr	r0, [r5, #0x38]
+ 805f072: 1808         	adds	r0, r1, r0
+ 805f074: 63e0         	str	r0, [r4, #0x3c]
+ 805f076: 6c28         	ldr	r0, [r5, #0x40]
+ 805f078: 1808         	adds	r0, r1, r0
+ 805f07a: 6460         	str	r0, [r4, #0x44]
+ 805f07c: 6c68         	ldr	r0, [r5, #0x44]
+ 805f07e: 1808         	adds	r0, r1, r0
+ 805f080: 64a0         	str	r0, [r4, #0x48]
+ 805f082: 6ca8         	ldr	r0, [r5, #0x48]
+ 805f084: 1808         	adds	r0, r1, r0
+ 805f086: 64e0         	str	r0, [r4, #0x4c]
+ 805f088: 6d68         	ldr	r0, [r5, #0x54]
+ 805f08a: 1808         	adds	r0, r1, r0
+ 805f08c: 65a0         	str	r0, [r4, #0x58]
+ 805f08e: 6da8         	ldr	r0, [r5, #0x58]
+ 805f090: 1808         	adds	r0, r1, r0
+ 805f092: 65e0         	str	r0, [r4, #0x5c]
+ 805f094: 6de8         	ldr	r0, [r5, #0x5c]
+ 805f096: 1808         	adds	r0, r1, r0
+ 805f098: 6620         	str	r0, [r4, #0x60]
+ 805f09a: 6e28         	ldr	r0, [r5, #0x60]
+ 805f09c: 1808         	adds	r0, r1, r0
+ 805f09e: 6660         	str	r0, [r4, #0x64]
+ 805f0a0: 6e68         	ldr	r0, [r5, #0x64]
+ 805f0a2: 1808         	adds	r0, r1, r0
+ 805f0a4: 66a0         	str	r0, [r4, #0x68]
+ 805f0a6: 6ea8         	ldr	r0, [r5, #0x68]
+ 805f0a8: 1808         	adds	r0, r1, r0
+ 805f0aa: 66e0         	str	r0, [r4, #0x6c]
+ 805f0ac: 6ee8         	ldr	r0, [r5, #0x6c]
+ 805f0ae: 1808         	adds	r0, r1, r0
+ 805f0b0: 6720         	str	r0, [r4, #0x70]
+ 805f0b2: 6f28         	ldr	r0, [r5, #0x70]
+ 805f0b4: 1808         	adds	r0, r1, r0
+ 805f0b6: 6760         	str	r0, [r4, #0x74]
+ 805f0b8: 6f68         	ldr	r0, [r5, #0x74]
+ 805f0ba: 1808         	adds	r0, r1, r0
+ 805f0bc: 67a0         	str	r0, [r4, #0x78]
+ 805f0be: 6fa8         	ldr	r0, [r5, #0x78]
+ 805f0c0: 1808         	adds	r0, r1, r0
+ 805f0c2: 67e0         	str	r0, [r4, #0x7c]
+ 805f0c4: 1c22         	adds	r2, r4, #0x0
+ 805f0c6: 3280         	adds	r2, #0x80
+ 805f0c8: 6fe8         	ldr	r0, [r5, #0x7c]
+ 805f0ca: 1809         	adds	r1, r1, r0
+ 805f0cc: 6011         	str	r1, [r2]
+ 805f0ce: 1c20         	adds	r0, r4, #0x0
+ 805f0d0: bc70         	pop	{r4, r5, r6}
+ 805f0d2: bc02         	pop	{r1}
+ 805f0d4: 4708         	bx	r1
+ 805f0d6: 0000         	movs	r0, r0
