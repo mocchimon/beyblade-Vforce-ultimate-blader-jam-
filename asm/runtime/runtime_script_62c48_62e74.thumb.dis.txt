@@ -1,0 +1,280 @@
+
+/tmp/rebuild_rom.elf:	file format elf32-littlearm
+
+Disassembly of section .rom:
+
+08000000 <rom_start>:
+ 8062c48: b5f0         	push	{r4, r5, r6, r7, lr}
+ 8062c4a: 4811         	ldr	r0, [pc, #0x44]         @ 0x8062c90 <rom_start+0x62c90>
+ 8062c4c: 6800         	ldr	r0, [r0]
+ 8062c4e: 2801         	cmp	r0, #0x1
+ 8062c50: d000         	beq	0x8062c54 <rom_start+0x62c54> @ imm = #0x0
+ 8062c52: e10c         	b	0x8062e6e <rom_start+0x62e6e> @ imm = #0x218
+ 8062c54: 4a0f         	ldr	r2, [pc, #0x3c]         @ 0x8062c94 <rom_start+0x62c94>
+ 8062c56: 4910         	ldr	r1, [pc, #0x40]         @ 0x8062c98 <rom_start+0x62c98>
+ 8062c58: 6810         	ldr	r0, [r2]
+ 8062c5a: 6809         	ldr	r1, [r1]
+ 8062c5c: 1a40         	subs	r0, r0, r1
+ 8062c5e: 6010         	str	r0, [r2]
+ 8062c60: 2800         	cmp	r0, #0x0
+ 8062c62: dd00         	ble	0x8062c66 <rom_start+0x62c66> @ imm = #0x0
+ 8062c64: e103         	b	0x8062e6e <rom_start+0x62e6e> @ imm = #0x206
+ 8062c66: 4b0d         	ldr	r3, [pc, #0x34]         @ 0x8062c9c <rom_start+0x62c9c>
+ 8062c68: 681a         	ldr	r2, [r3]
+ 8062c6a: 7815         	ldrb	r5, [r2]
+ 8062c6c: 3201         	adds	r2, #0x1
+ 8062c6e: 601a         	str	r2, [r3]
+ 8062c70: 2080         	movs	r0, #0x80
+ 8062c72: 4028         	ands	r0, r5
+ 8062c74: 1c1c         	adds	r4, r3, #0x0
+ 8062c76: 2800         	cmp	r0, #0x0
+ 8062c78: d100         	bne	0x8062c7c <rom_start+0x62c7c> @ imm = #0x0
+ 8062c7a: e0e9         	b	0x8062e50 <rom_start+0x62e50> @ imm = #0x1d2
+ 8062c7c: 0928         	lsrs	r0, r5, #0x4
+ 8062c7e: 3808         	subs	r0, #0x8
+ 8062c80: 2805         	cmp	r0, #0x5
+ 8062c82: d900         	bls	0x8062c86 <rom_start+0x62c86> @ imm = #0x0
+ 8062c84: e0ee         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x1dc
+ 8062c86: 0080         	lsls	r0, r0, #0x2
+ 8062c88: 4905         	ldr	r1, [pc, #0x14]         @ 0x8062ca0 <rom_start+0x62ca0>
+ 8062c8a: 1840         	adds	r0, r0, r1
+ 8062c8c: 6800         	ldr	r0, [r0]
+ 8062c8e: 4687         	mov	pc, r0
+ 8062c90: 5e0c         	ldrsh	r4, [r1, r0]
+ 8062c92: 0300         	lsls	r0, r0, #0xc
+ 8062c94: 5e08         	ldrsh	r0, [r1, r0]
+ 8062c96: 0300         	lsls	r0, r0, #0xc
+ 8062c98: 5e10         	ldrsh	r0, [r2, r0]
+ 8062c9a: 0300         	lsls	r0, r0, #0xc
+ 8062c9c: 5e00         	ldrsh	r0, [r0, r0]
+ 8062c9e: 0300         	lsls	r0, r0, #0xc
+ 8062ca0: 2ca4         	cmp	r4, #0xa4
+ 8062ca2: 0806         	lsrs	r6, r0, #0x20
+ 8062ca4: 2cbc         	cmp	r4, #0xbc
+ 8062ca6: 0806         	lsrs	r6, r0, #0x20
+ 8062ca8: 2d04         	cmp	r5, #0x4
+ 8062caa: 0806         	lsrs	r6, r0, #0x20
+ 8062cac: 2e64         	cmp	r6, #0x64
+ 8062cae: 0806         	lsrs	r6, r0, #0x20
+ 8062cb0: 2daa         	cmp	r5, #0xaa
+ 8062cb2: 0806         	lsrs	r6, r0, #0x20
+ 8062cb4: 2e18         	cmp	r6, #0x18
+ 8062cb6: 0806         	lsrs	r6, r0, #0x20
+ 8062cb8: 2e48         	cmp	r6, #0x48
+ 8062cba: 0806         	lsrs	r6, r0, #0x20
+ 8062cbc: 6820         	ldr	r0, [r4]
+ 8062cbe: 7803         	ldrb	r3, [r0]
+ 8062cc0: 3002         	adds	r0, #0x2
+ 8062cc2: 6020         	str	r0, [r4]
+ 8062cc4: 4a05         	ldr	r2, [pc, #0x14]         @ 0x8062cdc <rom_start+0x62cdc>
+ 8062cc6: 200f         	movs	r0, #0xf
+ 8062cc8: 4028         	ands	r0, r5
+ 8062cca: 00c1         	lsls	r1, r0, #0x3
+ 8062ccc: 1809         	adds	r1, r1, r0
+ 8062cce: 0089         	lsls	r1, r1, #0x2
+ 8062cd0: 6810         	ldr	r0, [r2]
+ 8062cd2: 1840         	adds	r0, r0, r1
+ 8062cd4: 1d04         	adds	r4, r0, #0x4
+ 8062cd6: 2104         	movs	r1, #0x4
+ 8062cd8: e003         	b	0x8062ce2 <rom_start+0x62ce2> @ imm = #0x6
+ 8062cda: 0000         	movs	r0, r0
+ 8062cdc: 5e28         	ldrsh	r0, [r5, r0]
+ 8062cde: 0300         	lsls	r0, r0, #0xc
+ 8062ce0: 3408         	adds	r4, #0x8
+ 8062ce2: 1c08         	adds	r0, r1, #0x0
+ 8062ce4: 3901         	subs	r1, #0x1
+ 8062ce6: 2800         	cmp	r0, #0x0
+ 8062ce8: d100         	bne	0x8062cec <rom_start+0x62cec> @ imm = #0x0
+ 8062cea: e0bb         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x176
+ 8062cec: 7820         	ldrb	r0, [r4]
+ 8062cee: 2800         	cmp	r0, #0x0
+ 8062cf0: d0f6         	beq	0x8062ce0 <rom_start+0x62ce0> @ imm = #-0x14
+ 8062cf2: 7860         	ldrb	r0, [r4, #0x1]
+ 8062cf4: 4298         	cmp	r0, r3
+ 8062cf6: d1f3         	bne	0x8062ce0 <rom_start+0x62ce0> @ imm = #-0x1a
+ 8062cf8: 6860         	ldr	r0, [r4, #0x4]
+ 8062cfa: f7ff fedb    	bl	0x8062ab4 <rom_start+0x62ab4> @ imm = #-0x24a
+ 8062cfe: 2000         	movs	r0, #0x0
+ 8062d00: 7020         	strb	r0, [r4]
+ 8062d02: e0af         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x15e
+ 8062d04: 6820         	ldr	r0, [r4]
+ 8062d06: 7806         	ldrb	r6, [r0]
+ 8062d08: 3001         	adds	r0, #0x1
+ 8062d0a: 6020         	str	r0, [r4]
+ 8062d0c: 7807         	ldrb	r7, [r0]
+ 8062d0e: 3001         	adds	r0, #0x1
+ 8062d10: 6020         	str	r0, [r4]
+ 8062d12: 210f         	movs	r1, #0xf
+ 8062d14: 4029         	ands	r1, r5
+ 8062d16: 4b20         	ldr	r3, [pc, #0x80]         @ 0x8062d98 <rom_start+0x62d98>
+ 8062d18: 681a         	ldr	r2, [r3]
+ 8062d1a: 00c8         	lsls	r0, r1, #0x3
+ 8062d1c: 1840         	adds	r0, r0, r1
+ 8062d1e: 0080         	lsls	r0, r0, #0x2
+ 8062d20: 1880         	adds	r0, r0, r2
+ 8062d22: 6802         	ldr	r2, [r0]
+ 8062d24: 469c         	mov	r12, r3
+ 8062d26: 2a00         	cmp	r2, #0x0
+ 8062d28: d100         	bne	0x8062d2c <rom_start+0x62d2c> @ imm = #0x0
+ 8062d2a: e09b         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x136
+ 8062d2c: 1d04         	adds	r4, r0, #0x4
+ 8062d2e: 2300         	movs	r3, #0x0
+ 8062d30: 2103         	movs	r1, #0x3
+ 8062d32: 7900         	ldrb	r0, [r0, #0x4]
+ 8062d34: 2800         	cmp	r0, #0x0
+ 8062d36: d003         	beq	0x8062d40 <rom_start+0x62d40> @ imm = #0x6
+ 8062d38: 7860         	ldrb	r0, [r4, #0x1]
+ 8062d3a: 42b0         	cmp	r0, r6
+ 8062d3c: d100         	bne	0x8062d40 <rom_start+0x62d40> @ imm = #0x0
+ 8062d3e: e091         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x122
+ 8062d40: 3408         	adds	r4, #0x8
+ 8062d42: 3901         	subs	r1, #0x1
+ 8062d44: 2001         	movs	r0, #0x1
+ 8062d46: 4240         	rsbs	r0, r0, #0
+ 8062d48: 4281         	cmp	r1, r0
+ 8062d4a: d006         	beq	0x8062d5a <rom_start+0x62d5a> @ imm = #0xc
+ 8062d4c: 7820         	ldrb	r0, [r4]
+ 8062d4e: 2800         	cmp	r0, #0x0
+ 8062d50: d0f6         	beq	0x8062d40 <rom_start+0x62d40> @ imm = #-0x14
+ 8062d52: 7860         	ldrb	r0, [r4, #0x1]
+ 8062d54: 42b0         	cmp	r0, r6
+ 8062d56: d1f3         	bne	0x8062d40 <rom_start+0x62d40> @ imm = #-0x1a
+ 8062d58: 2301         	movs	r3, #0x1
+ 8062d5a: 2b00         	cmp	r3, #0x0
+ 8062d5c: d000         	beq	0x8062d60 <rom_start+0x62d60> @ imm = #0x0
+ 8062d5e: e081         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x102
+ 8062d60: 200f         	movs	r0, #0xf
+ 8062d62: 4028         	ands	r0, r5
+ 8062d64: 00c1         	lsls	r1, r0, #0x3
+ 8062d66: 1809         	adds	r1, r1, r0
+ 8062d68: 0089         	lsls	r1, r1, #0x2
+ 8062d6a: 4663         	mov	r3, r12
+ 8062d6c: 6818         	ldr	r0, [r3]
+ 8062d6e: 1840         	adds	r0, r0, r1
+ 8062d70: 1d04         	adds	r4, r0, #0x4
+ 8062d72: 2103         	movs	r1, #0x3
+ 8062d74: 7820         	ldrb	r0, [r4]
+ 8062d76: 2800         	cmp	r0, #0x0
+ 8062d78: d110         	bne	0x8062d9c <rom_start+0x62d9c> @ imm = #0x20
+ 8062d7a: 2a00         	cmp	r2, #0x0
+ 8062d7c: d072         	beq	0x8062e64 <rom_start+0x62e64> @ imm = #0xe4
+ 8062d7e: 1c10         	adds	r0, r2, #0x0
+ 8062d80: 1c31         	adds	r1, r6, #0x0
+ 8062d82: f7ff fe47    	bl	0x8062a14 <rom_start+0x62a14> @ imm = #-0x372
+ 8062d86: 6060         	str	r0, [r4, #0x4]
+ 8062d88: 1c39         	adds	r1, r7, #0x0
+ 8062d8a: f7ff feb5    	bl	0x8062af8 <rom_start+0x62af8> @ imm = #-0x296
+ 8062d8e: 2001         	movs	r0, #0x1
+ 8062d90: 7020         	strb	r0, [r4]
+ 8062d92: 7066         	strb	r6, [r4, #0x1]
+ 8062d94: e066         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0xcc
+ 8062d96: 0000         	movs	r0, r0
+ 8062d98: 5e28         	ldrsh	r0, [r5, r0]
+ 8062d9a: 0300         	lsls	r0, r0, #0xc
+ 8062d9c: 3408         	adds	r4, #0x8
+ 8062d9e: 3901         	subs	r1, #0x1
+ 8062da0: 2001         	movs	r0, #0x1
+ 8062da2: 4240         	rsbs	r0, r0, #0
+ 8062da4: 4281         	cmp	r1, r0
+ 8062da6: d1e5         	bne	0x8062d74 <rom_start+0x62d74> @ imm = #-0x36
+ 8062da8: e05c         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0xb8
+ 8062daa: 200f         	movs	r0, #0xf
+ 8062dac: 4028         	ands	r0, r5
+ 8062dae: 2801         	cmp	r0, #0x1
+ 8062db0: d04a         	beq	0x8062e48 <rom_start+0x62e48> @ imm = #0x94
+ 8062db2: 2801         	cmp	r0, #0x1
+ 8062db4: dc02         	bgt	0x8062dbc <rom_start+0x62dbc> @ imm = #0x4
+ 8062db6: 2800         	cmp	r0, #0x0
+ 8062db8: d005         	beq	0x8062dc6 <rom_start+0x62dc6> @ imm = #0xa
+ 8062dba: e053         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0xa6
+ 8062dbc: 2802         	cmp	r0, #0x2
+ 8062dbe: d009         	beq	0x8062dd4 <rom_start+0x62dd4> @ imm = #0x12
+ 8062dc0: 2803         	cmp	r0, #0x3
+ 8062dc2: d023         	beq	0x8062e0c <rom_start+0x62e0c> @ imm = #0x46
+ 8062dc4: e04e         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x9c
+ 8062dc6: 4802         	ldr	r0, [pc, #0x8]          @ 0x8062dd0 <rom_start+0x62dd0>
+ 8062dc8: 6800         	ldr	r0, [r0]
+ 8062dca: 6020         	str	r0, [r4]
+ 8062dcc: e04a         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x94
+ 8062dce: 0000         	movs	r0, r0
+ 8062dd0: 5e20         	ldrsh	r0, [r4, r0]
+ 8062dd2: 0300         	lsls	r0, r0, #0xc
+ 8062dd4: 4b0c         	ldr	r3, [pc, #0x30]         @ 0x8062e08 <rom_start+0x62e08>
+ 8062dd6: 6820         	ldr	r0, [r4]
+ 8062dd8: 7805         	ldrb	r5, [r0]
+ 8062dda: 062a         	lsls	r2, r5, #0x18
+ 8062ddc: 601a         	str	r2, [r3]
+ 8062dde: 3001         	adds	r0, #0x1
+ 8062de0: 6020         	str	r0, [r4]
+ 8062de2: 7805         	ldrb	r5, [r0]
+ 8062de4: 0429         	lsls	r1, r5, #0x10
+ 8062de6: 4311         	orrs	r1, r2
+ 8062de8: 6019         	str	r1, [r3]
+ 8062dea: 1c42         	adds	r2, r0, #0x1
+ 8062dec: 6022         	str	r2, [r4]
+ 8062dee: 7840         	ldrb	r0, [r0, #0x1]
+ 8062df0: 0200         	lsls	r0, r0, #0x8
+ 8062df2: 4308         	orrs	r0, r1
+ 8062df4: 6018         	str	r0, [r3]
+ 8062df6: 1c51         	adds	r1, r2, #0x1
+ 8062df8: 6021         	str	r1, [r4]
+ 8062dfa: 7852         	ldrb	r2, [r2, #0x1]
+ 8062dfc: 4310         	orrs	r0, r2
+ 8062dfe: 6018         	str	r0, [r3]
+ 8062e00: 3101         	adds	r1, #0x1
+ 8062e02: 6021         	str	r1, [r4]
+ 8062e04: e02e         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x5c
+ 8062e06: 0000         	movs	r0, r0
+ 8062e08: 5e10         	ldrsh	r0, [r2, r0]
+ 8062e0a: 0300         	lsls	r0, r0, #0xc
+ 8062e0c: 4801         	ldr	r0, [pc, #0x4]          @ 0x8062e14 <rom_start+0x62e14>
+ 8062e0e: f7f4 ff25    	bl	0x8057c5c <rom_start+0x57c5c> @ imm = #-0xb1b6
+ 8062e12: e027         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x4e
+ 8062e14: 5e38         	ldrsh	r0, [r7, r0]
+ 8062e16: 0875         	lsrs	r5, r6, #0x1
+ 8062e18: 6820         	ldr	r0, [r4]
+ 8062e1a: 7803         	ldrb	r3, [r0]
+ 8062e1c: 3001         	adds	r0, #0x1
+ 8062e1e: 6020         	str	r0, [r4]
+ 8062e20: 220f         	movs	r2, #0xf
+ 8062e22: 402a         	ands	r2, r5
+ 8062e24: 4806         	ldr	r0, [pc, #0x18]         @ 0x8062e40 <rom_start+0x62e40>
+ 8062e26: 6800         	ldr	r0, [r0]
+ 8062e28: 00d1         	lsls	r1, r2, #0x3
+ 8062e2a: 1889         	adds	r1, r1, r2
+ 8062e2c: 0089         	lsls	r1, r1, #0x2
+ 8062e2e: 1809         	adds	r1, r1, r0
+ 8062e30: 4804         	ldr	r0, [pc, #0x10]         @ 0x8062e44 <rom_start+0x62e44>
+ 8062e32: 6800         	ldr	r0, [r0]
+ 8062e34: 68c0         	ldr	r0, [r0, #0xc]
+ 8062e36: 009b         	lsls	r3, r3, #0x2
+ 8062e38: 181b         	adds	r3, r3, r0
+ 8062e3a: 6818         	ldr	r0, [r3]
+ 8062e3c: 6008         	str	r0, [r1]
+ 8062e3e: e011         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x22
+ 8062e40: 5e28         	ldrsh	r0, [r5, r0]
+ 8062e42: 0300         	lsls	r0, r0, #0xc
+ 8062e44: 5e14         	ldrsh	r4, [r2, r0]
+ 8062e46: 0300         	lsls	r0, r0, #0xc
+ 8062e48: 6820         	ldr	r0, [r4]
+ 8062e4a: 3001         	adds	r0, #0x1
+ 8062e4c: 6020         	str	r0, [r4]
+ 8062e4e: e009         	b	0x8062e64 <rom_start+0x62e64> @ imm = #0x12
+ 8062e50: 0229         	lsls	r1, r5, #0x8
+ 8062e52: 7810         	ldrb	r0, [r2]
+ 8062e54: 4301         	orrs	r1, r0
+ 8062e56: 1c50         	adds	r0, r2, #0x1
+ 8062e58: 6018         	str	r0, [r3]
+ 8062e5a: 4a06         	ldr	r2, [pc, #0x18]         @ 0x8062e74 <rom_start+0x62e74>
+ 8062e5c: 0409         	lsls	r1, r1, #0x10
+ 8062e5e: 6810         	ldr	r0, [r2]
+ 8062e60: 1840         	adds	r0, r0, r1
+ 8062e62: 6010         	str	r0, [r2]
+ 8062e64: 4803         	ldr	r0, [pc, #0xc]          @ 0x8062e74 <rom_start+0x62e74>
+ 8062e66: 6800         	ldr	r0, [r0]
+ 8062e68: 2800         	cmp	r0, #0x0
+ 8062e6a: dc00         	bgt	0x8062e6e <rom_start+0x62e6e> @ imm = #0x0
+ 8062e6c: e6fb         	b	0x8062c66 <rom_start+0x62c66> @ imm = #-0x20a
+ 8062e6e: bcf0         	pop	{r4, r5, r6, r7}
+ 8062e70: bc01         	pop	{r0}
+ 8062e72: 4700         	bx	r0

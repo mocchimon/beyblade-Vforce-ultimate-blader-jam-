@@ -1,0 +1,60 @@
+
+/tmp/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .rom:
+
+08000000 <rom_start>:
+ 80631d4: b5f0         	push	{r4, r5, r6, r7, lr}
+ 80631d6: 4647         	mov	r7, r8
+ 80631d8: b480         	push	{r7}
+ 80631da: 1c05         	adds	r5, r0, #0x0
+ 80631dc: 4688         	mov	r8, r1
+ 80631de: 1c16         	adds	r6, r2, #0x0
+ 80631e0: 1c1c         	adds	r4, r3, #0x0
+ 80631e2: 9f06         	ldr	r7, [sp, #0x18]
+ 80631e4: 2002         	movs	r0, #0x2
+ 80631e6: 4240         	rsbs	r0, r0, #0
+ 80631e8: 4006         	ands	r6, r0
+ 80631ea: 4004         	ands	r4, r0
+ 80631ec: 0060         	lsls	r0, r4, #0x1
+ 80631ee: 4378         	muls	r0, r7, r0
+ 80631f0: f7f7 f928    	bl	0x805a444 <rom_start+0x5a444> @ imm = #-0x8db0
+ 80631f4: 6128         	str	r0, [r5, #0x10]
+ 80631f6: 80ae         	strh	r6, [r5, #0x4]
+ 80631f8: 80ec         	strh	r4, [r5, #0x6]
+ 80631fa: 812f         	strh	r7, [r5, #0x8]
+ 80631fc: 4641         	mov	r1, r8
+ 80631fe: 6029         	str	r1, [r5]
+ 8063200: 6800         	ldr	r0, [r0]
+ 8063202: 60e8         	str	r0, [r5, #0xc]
+ 8063204: bc08         	pop	{r3}
+ 8063206: 4698         	mov	r8, r3
+ 8063208: bcf0         	pop	{r4, r5, r6, r7}
+ 806320a: bc01         	pop	{r0}
+ 806320c: 4700         	bx	r0
+ 806320e: 0000         	movs	r0, r0
+ 8063210: b530         	push	{r4, r5, lr}
+ 8063212: 1c04         	adds	r4, r0, #0x0
+ 8063214: 1c0d         	adds	r5, r1, #0x0
+ 8063216: 1c11         	adds	r1, r2, #0x0
+ 8063218: 2208         	movs	r2, #0x8
+ 806321a: 5ea0         	ldrsh	r0, [r4, r2]
+ 806321c: 4281         	cmp	r1, r0
+ 806321e: da0c         	bge	0x806323a <rom_start+0x6323a> @ imm = #0x18
+ 8063220: 4b07         	ldr	r3, [pc, #0x1c]         @ 0x8063240 <rom_start+0x63240>
+ 8063222: 88e2         	ldrh	r2, [r4, #0x6]
+ 8063224: 4351         	muls	r1, r2, r1
+ 8063226: 0049         	lsls	r1, r1, #0x1
+ 8063228: 68e0         	ldr	r0, [r4, #0xc]
+ 806322a: 1840         	adds	r0, r0, r1
+ 806322c: 88a4         	ldrh	r4, [r4, #0x4]
+ 806322e: 0061         	lsls	r1, r4, #0x1
+ 8063230: 1869         	adds	r1, r5, r1
+ 8063232: 0052         	lsls	r2, r2, #0x1
+ 8063234: 681b         	ldr	r3, [r3]
+ 8063236: f002 fd05    	bl	0x8065c44 <rom_start+0x65c44> @ imm = #0x2a0a
+ 806323a: bc30         	pop	{r4, r5}
+ 806323c: bc01         	pop	{r0}
+ 806323e: 4700         	bx	r0
+ 8063240: d998         	bls	0x8063174 <rom_start+0x63174> @ imm = #-0xd0
+ 8063242: 0807         	lsrs	r7, r0, #0x20

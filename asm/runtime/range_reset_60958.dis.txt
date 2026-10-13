@@ -1,0 +1,77 @@
+
+/tmp/ubj_next/region.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08060500 <region_start>:
+ 8060958: b570         	push	{r4, r5, r6, lr}
+ 806095a: 0400         	lsls	r0, r0, #0x10
+ 806095c: 0c06         	lsrs	r6, r0, #0x10
+ 806095e: 481d         	ldr	r0, [pc, #0x74]         @ 0x80609d4 <region_start+0x4d4>
+ 8060960: 6804         	ldr	r4, [r0]
+ 8060962: 2c00         	cmp	r4, #0x0
+ 8060964: d015         	beq	0x8060992 <region_start+0x492> @ imm = #0x2a
+ 8060966: 2501         	movs	r5, #0x1
+ 8060968: 1c28         	adds	r0, r5, #0x0
+ 806096a: 8c21         	ldrh	r1, [r4, #0x20]
+ 806096c: 4008         	ands	r0, r1
+ 806096e: 2800         	cmp	r0, #0x0
+ 8060970: d10c         	bne	0x806098c <region_start+0x48c> @ imm = #0x18
+ 8060972: 6a62         	ldr	r2, [r4, #0x24]
+ 8060974: 2a00         	cmp	r2, #0x0
+ 8060976: db06         	blt	0x8060986 <region_start+0x486> @ imm = #0xc
+ 8060978: 8ae0         	ldrh	r0, [r4, #0x16]
+ 806097a: 3805         	subs	r0, #0x5
+ 806097c: 1c29         	adds	r1, r5, #0x0
+ 806097e: 4081         	lsls	r1, r0
+ 8060980: 1c10         	adds	r0, r2, #0x0
+ 8060982: f7ff ff53    	bl	0x806082c <region_start+0x32c> @ imm = #-0x15a
+ 8060986: 2001         	movs	r0, #0x1
+ 8060988: 4240         	rsbs	r0, r0, #0
+ 806098a: 6260         	str	r0, [r4, #0x24]
+ 806098c: 6864         	ldr	r4, [r4, #0x4]
+ 806098e: 2c00         	cmp	r4, #0x0
+ 8060990: d1ea         	bne	0x8060968 <region_start+0x468> @ imm = #-0x2c
+ 8060992: 4811         	ldr	r0, [pc, #0x44]         @ 0x80609d8 <region_start+0x4d8>
+ 8060994: 6006         	str	r6, [r0]
+ 8060996: 4811         	ldr	r0, [pc, #0x44]         @ 0x80609dc <region_start+0x4dc>
+ 8060998: 6803         	ldr	r3, [r0]
+ 806099a: 2b00         	cmp	r3, #0x0
+ 806099c: d017         	beq	0x80609ce <region_start+0x4ce> @ imm = #0x2e
+ 806099e: 4810         	ldr	r0, [pc, #0x40]         @ 0x80609e0 <region_start+0x4e0>
+ 80609a0: 6003         	str	r3, [r0]
+ 80609a2: 4810         	ldr	r0, [pc, #0x40]         @ 0x80609e4 <region_start+0x4e4>
+ 80609a4: 1c1a         	adds	r2, r3, #0x0
+ 80609a6: 3208         	adds	r2, #0x8
+ 80609a8: 6002         	str	r2, [r0]
+ 80609aa: 2100         	movs	r1, #0x0
+ 80609ac: 801e         	strh	r6, [r3]
+ 80609ae: 2480         	movs	r4, #0x80
+ 80609b0: 00e4         	lsls	r4, r4, #0x3
+ 80609b2: 1c20         	adds	r0, r4, #0x0
+ 80609b4: 1b80         	subs	r0, r0, r6
+ 80609b6: 8058         	strh	r0, [r3, #0x2]
+ 80609b8: 6059         	str	r1, [r3, #0x4]
+ 80609ba: 231d         	movs	r3, #0x1d
+ 80609bc: 1c11         	adds	r1, r2, #0x0
+ 80609be: 3108         	adds	r1, #0x8
+ 80609c0: 6051         	str	r1, [r2, #0x4]
+ 80609c2: 1c0a         	adds	r2, r1, #0x0
+ 80609c4: 1c18         	adds	r0, r3, #0x0
+ 80609c6: 3b01         	subs	r3, #0x1
+ 80609c8: 2800         	cmp	r0, #0x0
+ 80609ca: d1f7         	bne	0x80609bc <region_start+0x4bc> @ imm = #-0x12
+ 80609cc: 6048         	str	r0, [r1, #0x4]
+ 80609ce: bc70         	pop	{r4, r5, r6}
+ 80609d0: bc01         	pop	{r0}
+ 80609d2: 4700         	bx	r0
+ 80609d4: 5de4         	ldrb	r4, [r4, r7]
+ 80609d6: 0300         	lsls	r0, r0, #0xc
+ 80609d8: 5e6c         	ldrsh	r4, [r5, r1]
+ 80609da: 0300         	lsls	r0, r0, #0xc
+ 80609dc: 5dcc         	ldrb	r4, [r1, r7]
+ 80609de: 0300         	lsls	r0, r0, #0xc
+ 80609e0: 5dc8         	ldrb	r0, [r1, r7]
+ 80609e2: 0300         	lsls	r0, r0, #0xc
+ 80609e4: 5dd8         	ldrb	r0, [r3, r7]
+ 80609e6: 0300         	lsls	r0, r0, #0xc

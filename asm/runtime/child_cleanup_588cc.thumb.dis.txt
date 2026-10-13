@@ -1,0 +1,30 @@
+
+/tmp/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .rom:
+
+08000000 <rom_start>:
+ 80588cc: b530         	push	{r4, r5, lr}
+ 80588ce: 1c04         	adds	r4, r0, #0x0
+ 80588d0: 1c25         	adds	r5, r4, #0x0
+ 80588d2: 35b8         	adds	r5, #0xb8
+ 80588d4: 6828         	ldr	r0, [r5]
+ 80588d6: 2800         	cmp	r0, #0x0
+ 80588d8: d003         	beq	0x80588e2 <rom_start+0x588e2> @ imm = #0x6
+ 80588da: f008 f8ed    	bl	0x8060ab8 <rom_start+0x60ab8> @ imm = #0x81da
+ 80588de: 2000         	movs	r0, #0x0
+ 80588e0: 6028         	str	r0, [r5]
+ 80588e2: 6fe0         	ldr	r0, [r4, #0x7c]
+ 80588e4: 2800         	cmp	r0, #0x0
+ 80588e6: d001         	beq	0x80588ec <rom_start+0x588ec> @ imm = #0x2
+ 80588e8: f001 fde8    	bl	0x805a4bc <rom_start+0x5a4bc> @ imm = #0x1bd0
+ 80588ec: 2001         	movs	r0, #0x1
+ 80588ee: 4240         	rsbs	r0, r0, #0
+ 80588f0: 6760         	str	r0, [r4, #0x74]
+ 80588f2: 2000         	movs	r0, #0x0
+ 80588f4: 67a0         	str	r0, [r4, #0x78]
+ 80588f6: 67e0         	str	r0, [r4, #0x7c]
+ 80588f8: bc30         	pop	{r4, r5}
+ 80588fa: bc01         	pop	{r0}
+ 80588fc: 4700         	bx	r0
+ 80588fe: 0000         	movs	r0, r0

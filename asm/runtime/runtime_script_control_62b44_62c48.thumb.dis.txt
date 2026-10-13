@@ -1,0 +1,133 @@
+
+/tmp/rebuild_rom.elf:	file format elf32-littlearm
+
+Disassembly of section .rom:
+
+08000000 <rom_start>:
+ 8062b44: 4901         	ldr	r1, [pc, #0x4]          @ 0x8062b4c <rom_start+0x62b4c>
+ 8062b46: 6008         	str	r0, [r1]
+ 8062b48: 4770         	bx	lr
+ 8062b4a: 0000         	movs	r0, r0
+ 8062b4c: 5e14         	ldrsh	r4, [r2, r0]
+ 8062b4e: 0300         	lsls	r0, r0, #0xc
+ 8062b50: b5f0         	push	{r4, r5, r6, r7, lr}
+ 8062b52: b081         	sub	sp, #0x4
+ 8062b54: 4815         	ldr	r0, [pc, #0x54]         @ 0x8062bac <rom_start+0x62bac>
+ 8062b56: 6800         	ldr	r0, [r0]
+ 8062b58: 2801         	cmp	r0, #0x1
+ 8062b5a: d123         	bne	0x8062ba4 <rom_start+0x62ba4> @ imm = #0x46
+ 8062b5c: 2100         	movs	r1, #0x0
+ 8062b5e: 4a14         	ldr	r2, [pc, #0x50]         @ 0x8062bb0 <rom_start+0x62bb0>
+ 8062b60: 2600         	movs	r6, #0x0
+ 8062b62: 00c8         	lsls	r0, r1, #0x3
+ 8062b64: 1c4f         	adds	r7, r1, #0x1
+ 8062b66: 1840         	adds	r0, r0, r1
+ 8062b68: 0085         	lsls	r5, r0, #0x2
+ 8062b6a: 6810         	ldr	r0, [r2]
+ 8062b6c: 1829         	adds	r1, r5, r0
+ 8062b6e: 00f4         	lsls	r4, r6, #0x3
+ 8062b70: 1908         	adds	r0, r1, r4
+ 8062b72: 7900         	ldrb	r0, [r0, #0x4]
+ 8062b74: 2800         	cmp	r0, #0x0
+ 8062b76: d00c         	beq	0x8062b92 <rom_start+0x62b92> @ imm = #0x18
+ 8062b78: 1c08         	adds	r0, r1, #0x0
+ 8062b7a: 3008         	adds	r0, #0x8
+ 8062b7c: 1900         	adds	r0, r0, r4
+ 8062b7e: 6800         	ldr	r0, [r0]
+ 8062b80: 9200         	str	r2, [sp]
+ 8062b82: f7ff ff97    	bl	0x8062ab4 <rom_start+0x62ab4> @ imm = #-0xd2
+ 8062b86: 9a00         	ldr	r2, [sp]
+ 8062b88: 6810         	ldr	r0, [r2]
+ 8062b8a: 1828         	adds	r0, r5, r0
+ 8062b8c: 1900         	adds	r0, r0, r4
+ 8062b8e: 2100         	movs	r1, #0x0
+ 8062b90: 7101         	strb	r1, [r0, #0x4]
+ 8062b92: 3601         	adds	r6, #0x1
+ 8062b94: 2e03         	cmp	r6, #0x3
+ 8062b96: d9e8         	bls	0x8062b6a <rom_start+0x62b6a> @ imm = #-0x30
+ 8062b98: 1c39         	adds	r1, r7, #0x0
+ 8062b9a: 290f         	cmp	r1, #0xf
+ 8062b9c: d9e0         	bls	0x8062b60 <rom_start+0x62b60> @ imm = #-0x40
+ 8062b9e: 4903         	ldr	r1, [pc, #0xc]          @ 0x8062bac <rom_start+0x62bac>
+ 8062ba0: 2000         	movs	r0, #0x0
+ 8062ba2: 6008         	str	r0, [r1]
+ 8062ba4: b001         	add	sp, #0x4
+ 8062ba6: bcf0         	pop	{r4, r5, r6, r7}
+ 8062ba8: bc01         	pop	{r0}
+ 8062baa: 4700         	bx	r0
+ 8062bac: 5e0c         	ldrsh	r4, [r1, r0]
+ 8062bae: 0300         	lsls	r0, r0, #0xc
+ 8062bb0: 5e28         	ldrsh	r0, [r5, r0]
+ 8062bb2: 0300         	lsls	r0, r0, #0xc
+ 8062bb4: 4803         	ldr	r0, [pc, #0xc]          @ 0x8062bc4 <rom_start+0x62bc4>
+ 8062bb6: 6800         	ldr	r0, [r0]
+ 8062bb8: 2800         	cmp	r0, #0x0
+ 8062bba: d002         	beq	0x8062bc2 <rom_start+0x62bc2> @ imm = #0x4
+ 8062bbc: 4902         	ldr	r1, [pc, #0x8]          @ 0x8062bc8 <rom_start+0x62bc8>
+ 8062bbe: 2001         	movs	r0, #0x1
+ 8062bc0: 6008         	str	r0, [r1]
+ 8062bc2: 4770         	bx	lr
+ 8062bc4: 5e00         	ldrsh	r0, [r0, r0]
+ 8062bc6: 0300         	lsls	r0, r0, #0xc
+ 8062bc8: 5e0c         	ldrsh	r4, [r1, r0]
+ 8062bca: 0300         	lsls	r0, r0, #0xc
+ 8062bcc: b530         	push	{r4, r5, lr}
+ 8062bce: 1c04         	adds	r4, r0, #0x0
+ 8062bd0: 4d0d         	ldr	r5, [pc, #0x34]         @ 0x8062c08 <rom_start+0x62c08>
+ 8062bd2: 6828         	ldr	r0, [r5]
+ 8062bd4: 6800         	ldr	r0, [r0]
+ 8062bd6: 4284         	cmp	r4, r0
+ 8062bd8: d213         	bhs	0x8062c02 <rom_start+0x62c02> @ imm = #0x26
+ 8062bda: f7ff ffb9    	bl	0x8062b50 <rom_start+0x62b50> @ imm = #-0x8e
+ 8062bde: 4a0b         	ldr	r2, [pc, #0x2c]         @ 0x8062c0c <rom_start+0x62c0c>
+ 8062be0: 6828         	ldr	r0, [r5]
+ 8062be2: 6881         	ldr	r1, [r0, #0x8]
+ 8062be4: 00e0         	lsls	r0, r4, #0x3
+ 8062be6: 1840         	adds	r0, r0, r1
+ 8062be8: 6801         	ldr	r1, [r0]
+ 8062bea: 6011         	str	r1, [r2]
+ 8062bec: 4908         	ldr	r1, [pc, #0x20]         @ 0x8062c10 <rom_start+0x62c10>
+ 8062bee: 6840         	ldr	r0, [r0, #0x4]
+ 8062bf0: 6008         	str	r0, [r1]
+ 8062bf2: 4808         	ldr	r0, [pc, #0x20]         @ 0x8062c14 <rom_start+0x62c14>
+ 8062bf4: 2100         	movs	r1, #0x0
+ 8062bf6: 6001         	str	r1, [r0]
+ 8062bf8: 4807         	ldr	r0, [pc, #0x1c]         @ 0x8062c18 <rom_start+0x62c18>
+ 8062bfa: 6001         	str	r1, [r0]
+ 8062bfc: 4907         	ldr	r1, [pc, #0x1c]         @ 0x8062c1c <rom_start+0x62c1c>
+ 8062bfe: 2001         	movs	r0, #0x1
+ 8062c00: 6008         	str	r0, [r1]
+ 8062c02: bc30         	pop	{r4, r5}
+ 8062c04: bc01         	pop	{r0}
+ 8062c06: 4700         	bx	r0
+ 8062c08: 5e14         	ldrsh	r4, [r2, r0]
+ 8062c0a: 0300         	lsls	r0, r0, #0xc
+ 8062c0c: 5e00         	ldrsh	r0, [r0, r0]
+ 8062c0e: 0300         	lsls	r0, r0, #0xc
+ 8062c10: 5e20         	ldrsh	r0, [r4, r0]
+ 8062c12: 0300         	lsls	r0, r0, #0xc
+ 8062c14: 5e08         	ldrsh	r0, [r1, r0]
+ 8062c16: 0300         	lsls	r0, r0, #0xc
+ 8062c18: 5e10         	ldrsh	r0, [r2, r0]
+ 8062c1a: 0300         	lsls	r0, r0, #0xc
+ 8062c1c: 5e0c         	ldrsh	r4, [r1, r0]
+ 8062c1e: 0300         	lsls	r0, r0, #0xc
+ 8062c20: b500         	push	{lr}
+ 8062c22: 1c02         	adds	r2, r0, #0x0
+ 8062c24: 1c0b         	adds	r3, r1, #0x0
+ 8062c26: 4807         	ldr	r0, [pc, #0x1c]         @ 0x8062c44 <rom_start+0x62c44>
+ 8062c28: 6801         	ldr	r1, [r0]
+ 8062c2a: 6848         	ldr	r0, [r1, #0x4]
+ 8062c2c: 4282         	cmp	r2, r0
+ 8062c2e: d206         	bhs	0x8062c3e <rom_start+0x62c3e> @ imm = #0xc
+ 8062c30: 68c9         	ldr	r1, [r1, #0xc]
+ 8062c32: 0090         	lsls	r0, r2, #0x2
+ 8062c34: 1840         	adds	r0, r0, r1
+ 8062c36: 6800         	ldr	r0, [r0]
+ 8062c38: 1c19         	adds	r1, r3, #0x0
+ 8062c3a: f7ff feeb    	bl	0x8062a14 <rom_start+0x62a14> @ imm = #-0x22a
+ 8062c3e: bc02         	pop	{r1}
+ 8062c40: 4708         	bx	r1
+ 8062c42: 0000         	movs	r0, r0
+ 8062c44: 5e14         	ldrsh	r4, [r2, r0]
+ 8062c46: 0300         	lsls	r0, r0, #0xc

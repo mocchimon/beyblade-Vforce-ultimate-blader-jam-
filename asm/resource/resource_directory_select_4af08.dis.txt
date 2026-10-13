@@ -1,0 +1,47 @@
+
+/tmp/ubj_new/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08000000 <rom_start>:
+ 804af08: b530         	push	{r4, r5, lr}
+ 804af0a: 1c04         	adds	r4, r0, #0x0
+ 804af0c: f000 f828    	bl	0x804af60 <rom_start+0x4af60> @ imm = #0x50
+ 804af10: 4d0d         	ldr	r5, [pc, #0x34]         @ 0x804af48 <rom_start+0x4af48>
+ 804af12: 6828         	ldr	r0, [r5]
+ 804af14: 490d         	ldr	r1, [pc, #0x34]         @ 0x804af4c <rom_start+0x4af4c>
+ 804af16: 1840         	adds	r0, r0, r1
+ 804af18: 8004         	strh	r4, [r0]
+ 804af1a: 490d         	ldr	r1, [pc, #0x34]         @ 0x804af50 <rom_start+0x4af50>
+ 804af1c: 00e4         	lsls	r4, r4, #0x3
+ 804af1e: 1860         	adds	r0, r4, r1
+ 804af20: 6800         	ldr	r0, [r0]
+ 804af22: 3104         	adds	r1, #0x4
+ 804af24: 1864         	adds	r4, r4, r1
+ 804af26: 6821         	ldr	r1, [r4]
+ 804af28: f017 fd44    	bl	0x80629b4 <rom_start+0x629b4> @ imm = #0x17a88
+ 804af2c: 6829         	ldr	r1, [r5]
+ 804af2e: 4a09         	ldr	r2, [pc, #0x24]         @ 0x804af54 <rom_start+0x4af54>
+ 804af30: 1889         	adds	r1, r1, r2
+ 804af32: 6008         	str	r0, [r1]
+ 804af34: 4908         	ldr	r1, [pc, #0x20]         @ 0x804af58 <rom_start+0x4af58>
+ 804af36: 6809         	ldr	r1, [r1]
+ 804af38: 4a08         	ldr	r2, [pc, #0x20]         @ 0x804af5c <rom_start+0x4af5c>
+ 804af3a: 1889         	adds	r1, r1, r2
+ 804af3c: 8809         	ldrh	r1, [r1]
+ 804af3e: f017 fddb    	bl	0x8062af8 <rom_start+0x62af8> @ imm = #0x17bb6
+ 804af42: bc30         	pop	{r4, r5}
+ 804af44: bc01         	pop	{r0}
+ 804af46: 4700         	bx	r0
+ 804af48: 0fb0         	lsrs	r0, r6, #0x1e
+ 804af4a: 0300         	lsls	r0, r0, #0xc
+ 804af4c: 0c26         	lsrs	r6, r4, #0x10
+ 804af4e: 0000         	movs	r0, r0
+ 804af50: 5640         	ldrsb	r0, [r0, r1]
+ 804af52: 0807         	lsrs	r7, r0, #0x20
+ 804af54: 0c2c         	lsrs	r4, r5, #0x10
+ 804af56: 0000         	movs	r0, r0
+ 804af58: 0f48         	lsrs	r0, r1, #0x1d
+ 804af5a: 0300         	lsls	r0, r0, #0xc
+ 804af5c: 06e6         	lsls	r6, r4, #0x1b
+ 804af5e: 0000         	movs	r0, r0

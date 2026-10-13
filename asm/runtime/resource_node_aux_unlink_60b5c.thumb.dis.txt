@@ -1,0 +1,30 @@
+
+/tmp/rom.elf:	file format elf32-littlearm
+
+Disassembly of section .text:
+
+08000000 <rom_start>:
+ 8060b5c: 1c03         	adds	r3, r0, #0x0
+ 8060b5e: 7e58         	ldrb	r0, [r3, #0x19]
+ 8060b60: 2800         	cmp	r0, #0x0
+ 8060b62: d10e         	bne	0x8060b82 <rom_start+0x60b82> @ imm = #0x1c
+ 8060b64: 681a         	ldr	r2, [r3]
+ 8060b66: 6859         	ldr	r1, [r3, #0x4]
+ 8060b68: 2a00         	cmp	r2, #0x0
+ 8060b6a: d001         	beq	0x8060b70 <rom_start+0x60b70> @ imm = #0x2
+ 8060b6c: 6051         	str	r1, [r2, #0x4]
+ 8060b6e: e001         	b	0x8060b74 <rom_start+0x60b74> @ imm = #0x2
+ 8060b70: 4804         	ldr	r0, [pc, #0x10]         @ 0x8060b84 <rom_start+0x60b84>
+ 8060b72: 6001         	str	r1, [r0]
+ 8060b74: 2900         	cmp	r1, #0x0
+ 8060b76: d000         	beq	0x8060b7a <rom_start+0x60b7a> @ imm = #0x0
+ 8060b78: 600a         	str	r2, [r1]
+ 8060b7a: 4903         	ldr	r1, [pc, #0xc]          @ 0x8060b88 <rom_start+0x60b88>
+ 8060b7c: 6808         	ldr	r0, [r1]
+ 8060b7e: 6058         	str	r0, [r3, #0x4]
+ 8060b80: 600b         	str	r3, [r1]
+ 8060b82: 4770         	bx	lr
+ 8060b84: 5df8         	ldrb	r0, [r7, r7]
+ 8060b86: 0300         	lsls	r0, r0, #0xc
+ 8060b88: 5de8         	ldrb	r0, [r5, r7]
+ 8060b8a: 0300         	lsls	r0, r0, #0xc
