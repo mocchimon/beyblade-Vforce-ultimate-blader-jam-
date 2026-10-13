@@ -15,11 +15,11 @@ indices:
 | 3 | `0x08074FD4..0x08075008` | 13 |
 | 4 | `0x08075044..0x080750C4` | 32 |
 | 5 | `0x08075178..0x08075198` | 8 |
-| 6 | `0x080751FC..0x08075204` | 2 (last word is the final end sentinel) |
+| 6 | `0x080751FC..0x08075204` | 2 (both pointers reference resource records) |
 
-This yields **108 primary resource records**. The final pointer in bank 6
-is `0x0821AAF4`, exactly the end of the preceding blob, so it is a sentinel
-rather than a second blob.
+This yields **109 primary resource records**. Bank 6 pointer 1 at
+`0x0821AAF4` is the start of a separate resource with data length `0x57`,
+not an end sentinel. Its header and aligned `0x68`-byte span have been verified.
 
 Entries 7–31 of the directory repeatedly reference two 4-byte singleton
 ranges at `0x08074DCC..0x08074DD0` and `0x08074DD4..0x08074DD8`. Those ranges
@@ -79,7 +79,7 @@ assuming that the blobs are directly decompressed at acquisition time.
 
 ## Data manifest
 
-`data/resource_blob_manifest.inc` records the 108 primary record addresses,
+`data/resource_blob_manifest.inc` records the 109 primary record addresses,
 bank/index, inline-data sizes, and aligned physical storage spans. It contains
 **addresses and metadata only**; no copyrighted ROM bytes are copied into the project.
 Two additional records are reachable through the repeated singleton aliases:

@@ -348,3 +348,310 @@ one compact but concrete runtime helper cluster. Matching-ROM build remains
 Overall traditional decompilation estimate: **31%**. This reflects one more
 recovered runtime record allocator/setter and its exact field layout, not a
 claim that 31% of ROM bytes are translated. Matching-ROM build remains **0%**.
+
+
+## Pass 12 — surface/context constructor recovered (2026-10-10)
+
+Replaced the `0x0805FEF4` interface stub with a field-by-field C reconstruction.
+The routine allocates `0x44 + 2*width*height + 2*height` bytes from the alternate
+heap, installs the payload at `0x03005DC4`, stores the descriptor pointer at
+payload `+0x0C`, initializes observed fields and region pointers through `+0x40`,
+computes the `+0x10` interval value using the internal division helper, and
+reproduces the halfword writes at `0x04000134` and `0x04000128`. Exact graphics
+semantics and peripheral register roles remain open. Evidence: `docs/SURFACE_CONTEXT_FINDINGS.md`.
+
+## Pass 12 validation and completion estimate — 2026-10-10
+
+The surface/context constructor is now source-level rather than a declaration-only
+stub. Its function-specific disassembly is retained separately, the C structure
+has compile-time offset/size assertions, and the entire 26-unit source set passes
+ARM7TDMI compile-only validation with `-Wall -Wextra` and no warnings.
+
+Overall traditional decompilation estimate: **32%**. This pass recovers one
+medium-sized constructor and its memory/register contract; it does not yet
+provide a linkable game or matching ROM. Matching-ROM build remains **0%**.
+
+## 2026-10-10 — runtime-entry service pass
+
+Recovered the per-entry service path at `0x080627CC` into `src/runtime_entry_service.c`: status gating, resource-record boundary calculations, terminal-status clearing, and the cursor-delta helper call are represented explicitly. Also corrected `FrameEvent_Service` to use the actual gate globals at `0x03005E1C` and `0x03005E44`, iterate the 0x28-byte runtime-entry table rooted at `0x03005E24`, and preserve the still-unresolved timing/transfer tail behind a clearly named helper. Added the matching disassembly and `docs/RUNTIME_ENTRY_SERVICE_FINDINGS.md`.
+
+The helper at `0x0806625C` and the final timing/transfer tail remain unresolved. This pass increases the source-recovered surface but does not yet establish a matching-ROM build.
+
+Current rough engineering estimate after this pass: **33% traditional decompilation**. This is a judgment-based estimate of recovered source/behavior, not a byte-count. Matching-ROM build remains **0% complete**.
+
+### Runtime modulo helper resolved
+
+Followed the call from `0x080627CC` into `0x0806625C`. Its behavior is unsigned remainder, including a zero-divisor path that returns zero. Added `src/math_runtime.c` with an equivalent shift/subtract implementation and replaced the provisional cursor-delta helper with `Math_ModuloUnsigned`. The relevant instructions are preserved in `asm/runtime/math_modulo_6625c.dis.txt`.
+
+Current rough engineering estimate after the modulo-helper recovery: **34% traditional decompilation**. Matching-ROM build remains **0% complete**.
+
+## Pass 13 — timer-window service and indirect callback ABI (2026-10-10)
+
+Reconstructed the previously isolated tail of `0x08062814`. The routine samples
+Timer0 at `0x04000100`, rounds its value to an even count, handles the wrap
+sentinel, computes one or two elapsed segments, services the `0x28`-byte entry
+pool, and dispatches segment callbacks through the pointer at `0x03000D8C`.
+The second segment begins at `cursor - interval`; the final cursor is normalized
+when it equals `context + interval`. The callback is kept neutral because its
+higher-level role is not established.
+
+A caller/callee ABI audit also corrected `RuntimeEntry_ServiceOne` at
+`0x080627CC`: its caller passes `(entry, elapsed_window, threshold)` in `r0-r2`,
+and the routine branches through the function pointer stored at ROM address
+`0x0807D988` (currently `0x03006C60`). The previous source incorrectly treated
+the ROM slot address as a context argument and used a four-argument helper.
+The callback's IWRAM installation/source remains unresolved.
+
+Added `docs/RUNTIME_ENTRY_TIMING_FINDINGS.md` and
+`asm/runtime/runtime_entry_timing_627cc_62934.thumb.dis.txt`. Added host-side
+exhaustive small-range and edge tests for `Math_ModuloUnsigned`; they pass.
+The full 28-unit ARM7TDMI compile check also passes with no warnings.
+
+Current rough engineering estimate: **35% traditional decompilation**. This is
+an estimate of recovered source and behavior, not ROM-byte coverage. A linked
+or matching-ROM build remains **0% complete**.
+
+## Pass 14 — runtime script interpreter recovered (2026-10-10)
+
+Translated the command loop at `0x08062C48` into `RuntimeScript_Service` in `src/runtime_script.c`.
+Recovered its countdown pacing, 16-bit fixed-point delay commands, the `0x8`
+entry-removal family, the `0x9` entry-creation family, `0xB0` saved-cursor jump,
+`0xB1` skip, `0xB2` big-endian step update, `0xB3` error path, `0xC` source-record
+selection, and `0xD` skip family. The script's 16 records are 0x24 bytes each;
+each contains four 8-byte runtime-entry slots. The code uses existing entry
+allocation/status/limit helpers rather than duplicating them.
+
+Added `docs/RUNTIME_SCRIPT_FINDINGS.md` and the complete original instruction
+region in `asm/runtime/runtime_script_62c48_62e74.thumb.dis.txt`. The C code
+compiles cleanly, but the bytecode interpreter has not yet been exercised in a
+GBA emulator, so runtime equivalence remains unverified.
+
+Current rough engineering estimate: **38% traditional decompilation**. This is
+an engineering estimate of recovered source and connected behavior, not a ROM
+byte percentage. Matching-ROM build remains **0% complete**.
+
+### Runtime script lifecycle controls
+
+Continued through the adjacent routines at `0x08062B44`, `0x08062B50`, and
+`0x08062BCC`. Added descriptor installation, stop/cleanup, and indexed start to
+`src/runtime_script.c`. Start validates the index against descriptor offset
+`+0`, loads two cursor words from its `+8` table, clears countdown/step state,
+and enables the interpreter. Stop deactivates occupied script-owned entries
+across the 16-record table before clearing the interpreter state. Original
+instructions are retained in `asm/runtime/runtime_script_control_62b44_62c48.thumb.dis.txt`.
+
+Updated estimate: **40% traditional decompilation**. The runtime script cluster
+is now represented from descriptor setup and lifecycle through command
+execution and per-frame timing integration. Emulator execution and matching-ROM
+verification remain outstanding.
+
+## Pass 15 — runtime buffer descriptor and row-copy path (2026-10-10)
+
+Recovered `0x080631D4` and `0x08063210` into the new `src/runtime_buffer_descriptor.c`.
+The constructor aligns its two dimension arguments down to even values, allocates
+`2 * aligned_stride * row_count` bytes through the game's descriptor-returning
+heap API, and stores both the heap descriptor and its payload address. The row
+routine bounds-checks a signed row index, computes the source row using a
+halfword stride, offsets the destination in halfword units, and dispatches the
+copy through the callback slot at `0x0807D998` via the shared `bx r3` trampoline
+at `0x08065C44`.
+
+Added `docs/RUNTIME_BUFFER_DESCRIPTOR_FINDINGS.md` and preserved the exact
+Thumb instructions in `asm/runtime/runtime_buffer_descriptor_631d4_63244.thumb.dis.txt`.
+The concrete callback backend and broader semantic role of the descriptor are
+still unknown; the source does not assign either one a guessed identity.
+
+Validation: all 30 C translation units compile for ARM7TDMI without warnings;
+`make test-all` passes the existing modulo and runtime-script host tests. These
+checks do not establish emulator equivalence or a matching-ROM build.
+
+Updated rough engineering estimate: **41% traditional decompilation**. The
+matching-ROM build remains **0% complete**.
+
+## Pass 16 — runtime block lookup helpers (2026-10-10)
+
+Recovered three more routines from the 0xC4-stride runtime block manager into
+`src/runtime_block_helpers.c`: the 256-slot free-descriptor scan at `0x08062FCC`,
+the next-link tail walk at `0x0806307C`, and the bounds-checked payload-record
+resolver at `0x080631B4`. Added field-layout assertions, an instruction dump, and
+`docs/RUNTIME_BLOCK_HELPERS_FINDINGS.md`. The more complex insertion/release
+routines remain evidence-backed disassembly rather than guessed C.
+
+Validation: 31 C translation units compile for ARM7TDMI; existing host-side
+modulo and script tests pass. The estimate is now **42% traditional
+decompilation**; matching-ROM build remains **0% complete**.
+
+## Pass 17 — runtime block allocator (`0x08062F20`)
+
+Recovered the block-allocation front end into `src/runtime_block_allocate.c`.
+It reserves an unused descriptor, appends allocations when the 0x100-slot
+high-water limit permits, and delegates overflow/gap placement to the observed
+`RuntimeBlock_Insert` routine. It records the payload address as the 0xC4-stride
+pool base plus the selected slot offset and returns the descriptor, consistent
+with the game's descriptor-based heap APIs. Added an instruction-level note in
+`docs/RUNTIME_BLOCK_ALLOCATE_FINDINGS.md`.
+
+Validation: all 32 C translation units compile for ARM7TDMI without warnings;
+`make test-all` continues to pass. The gap insertion routine is still an
+assembly-backed dependency, so full allocator runtime behavior is not yet
+claimed as tested. Updated estimate: **43% traditional decompilation**; matching-
+ROM build remains **0% complete**.
+
+
+## Pass 18 — runtime block gap insertion (`0x08063090`)
+
+Translated the linked-list insertion routine into `src/runtime_block_insert.c`.
+It searches between adjacent occupied 0xC4-slot ranges, inserts a descriptor
+when an interior gap is large enough, repairs both neighbor links, and returns
+the first slot of the gap. It intentionally does not allocate at the head or tail;
+those cases are handled (or rejected) by the original allocator's surrounding
+logic. Added host tests for interior-gap placement, list-link updates, too-small
+gaps, and the no-tail-gap behavior.
+
+Validation: 33 C translation units compile for ARM7TDMI; `make test-all` passes
+modulo, script-interpreter, and block-list tests. The release/destructor path is
+still unresolved, and no ROM link/match has been achieved. Updated estimate: **45%
+traditional decompilation**; matching-ROM build remains **0% complete**.
+
+## Pass 19 — runtime block release (`0x08063004`)
+
+Translated the release path into `src/runtime_block_free.c`. It calls the
+existing child cleanup routine for each 0xC4-byte child, unlinks the block
+record, preserves the observed high-water decrement and reset calls, and clears
+only the payload field used by the free-descriptor scan. Added a findings note
+that explicitly records the unusual global-update paths rather than silently
+correcting them to a conventional linked-list allocator.
+
+Validation: all 34 C translation units compile for ARM7TDMI without warnings;
+`make test-all` passes. The block free path has compile validation only, not
+emulator execution. Updated estimate: **46% traditional decompilation**; matching-
+ROM build remains **0% complete**.
+
+## Pass 20 — indexed table allocator and entry-status query (2026-10-10)
+
+Recovered `0x08062C20` into `src/runtime_table_copy.c`: it checks the indexed
+entry against the descriptor count, resolves the source pointer through the
+`+0x0C` pointer table, and invokes the existing runtime-entry allocator. Also
+added `RuntimeEntry_IsActive` for `0x08062E74`, preserving the behavior that any
+nonzero status counts as active. Added separate findings notes and corrected the
+function map to describe allocation rather than a generic copy operation.
+
+Validation: all 35 C translation units compile for ARM7TDMI without warnings;
+`make test-all` passes all current host tests. Updated estimate: **48% traditional
+decompilation**; matching-ROM build remains **0% complete**.
+
+## Pass 21 — child record cleanup (`0x080588CC`)
+
+Recovered `ObjectChild_Cleanup` in `src/child_queue.c`, connecting the runtime
+block release path to its actual per-child cleanup. It releases the resource
+handle at `+0xB8` through the existing `0x08060AB8` boundary, frees the queue's
+heap descriptor, and resets the queue state at `+0x74/+0x78/+0x7C`. Added
+`docs/CHILD_CLEANUP_FINDINGS.md`; the resource-node unlink implementation itself
+remains unresolved and is not guessed.
+
+Validation: all 35 C translation units compile for ARM7TDMI without warnings;
+all host tests pass. Updated estimate: **49% traditional decompilation**;
+matching-ROM build remains **0% complete**.
+
+## Pass 22 — resource-node unlink/recycle (`0x08060AB8`)
+
+Recovered the previously external `ResourceNode_Unlink` boundary in
+`src/resource_node.c`. The implementation now reproduces active-list unlinking,
+free-list insertion, range-token release gating, auxiliary-node cleanup, the
+recycle counter increment, and the post-operation active-list validation call.
+Added field-offset assertions, `docs/RESOURCE_NODE_FINDINGS.md`, and an exact
+Thumb disassembly artifact. Range-release and auxiliary-unlink helpers remain
+explicit unresolved boundaries rather than guessed implementations.
+
+Validation: all 36 C translation units compile for ARM7TDMI without warnings;
+all existing host tests pass. The unlink routine is compile-validated but not
+emulator-executed. Updated estimate: **50% traditional decompilation**;
+matching-ROM build remains **0% complete**.
+
+## Pass 23 — auxiliary resource-node unlink (`0x08060B5C`)
+
+Recovered the auxiliary-node unlink/recycle helper as
+`ResourceNode_UnlinkAuxiliary` in `src/resource_node.c`. It honors the state
+byte at `+0x19`, repairs the active doubly linked list headed at `0x03005DF8`,
+and pushes eligible nodes onto the free chain at `0x03005DE8`. This closes the
+second list-management call made by `ResourceNode_Unlink`; auxiliary node
+semantics remain intentionally neutral. Added a dedicated disassembly artifact
+and findings note.
+
+Validation: all 36 C translation units compile for ARM7TDMI; all current host
+tests pass. Updated estimate: **51% traditional decompilation**; matching-ROM
+build remains **0% complete**.
+
+## Pass 24 — resource-node lifecycle execution tests (2026-10-11)
+
+Added Linux simulated-IWRAM tests exercising the recovered primary and
+auxiliary node unlink routines with original global RAM addresses. Four
+scenarios pass: middle-node unlink with range release and auxiliary recycling,
+head unlink with gated release, auxiliary tail unlink, and primary tail unlink.
+The host harness stubs the two unresolved external dependencies. All 36 C
+translation units still compile for ARM7TDMI and `make test-all` passes.
+Completion estimate remains **51%** because this is validation, not additional
+source coverage. Matching-ROM build remains **0%**.
+
+## Range manager recovery — 2026-10-11
+
+Reconstructed `0x0806082C` as `RuntimeRange_Release` in `src/runtime_range.c`. Confirmed IWRAM list roots at `0x03005DC8` and `0x03005DD8`, 8-byte nodes with two halfwords and next pointer, adjacent-range extension, sorted spare-node insertion, and second-pass coalescing/recycling. Preserved raw Thumb disassembly and documented remaining diagnostic-path caveat in `docs/RANGE_RELEASE_FINDINGS.md`. All 37 source files compile and existing host tests pass. Matching-ROM build still absent.
+
+### 2026-10-11: Range-release behavioral tests
+- Added `tests/test_runtime_range.c` (seven scenarios on mapped GBA IWRAM).
+- Integrated `test-range` into `make test-all`.
+- All five host-side test suites passed; 37 ARM7TDMI translation units compile.
+- Estimate remains 52%; no matching-ROM build yet.
+
+## 2026-10-11: range arena reset
+Recovered ROM `0x08060958` into `src/runtime_range_init.c`, including object-token release, reserved range initialization, and 31-node spare chain. Added focused Thumb disassembly, findings, and a host test. 38 C translation units now compile and six host test suites pass. No matching ROM build yet.
+
+## Range allocation recovery (2026-10-11)
+
+Recovered ROM `0x080607B4` as `RuntimeRange_Alloc`, completing the currently identified range manager trio (reset, allocate, release) at source level. Added seven host-side scenarios and preserved Thumb disassembly. All 39 C translation units compile for ARM7TDMI and all seven host test suites pass. Matching-ROM build still unavailable. Overall recovery percentage remains a subjective estimate.
+
+## 2026-10-11: resource-manifest original-ROM validation
+
+Added `tools/verify_resource_manifest.py`, `tests/test_resource_manifest.py`, and `docs/RESOURCE_MANIFEST_VERIFICATION.md`. The tool checked 110 manifest records (108 primary + 2 alias-reachable) in the locally supplied original ROM, including table pointers, header sizes, aligned spans, and adjacent record boundaries. In-memory corruption tests for a size and pointer were detected. All 39 C units compiled and all existing host test suites passed. Completion estimate remains 54%: this is a verification improvement, not a newly recovered gameplay subsystem.
+
+## 2026-10-11: full resource directory audit
+
+- Verified all 32 directory slots, including repeated pointer-table aliases in slots 7–31.
+- Confirmed all 110 manifested record headers use `{0, data_size, 0, 0}`.
+- Identified unmanifested second pointer in slot 6 (`0x0821AAF4`), retained as an open question.
+- Added `tools/audit_resource_directory.py` and corruption tests in `tests/test_resource_directory_audit.py`.
+- This is a metadata/verification milestone, not new recovered gameplay C. Estimate remains 54%.
+
+## 2026-10-11: alias-target record recovery
+
+Confirmed the bank-6 second pointer at `0x0821AAF4` is a standard 16-byte-header record with 0x57 bytes of data; added it to the resource manifest. Identified both alias targets and their precise sizes: `0x0807DCA4` (0x40580 bytes) and `0x080BE234` (0x4D780 bytes), repeated through 25 directory slots. Added ROM-backed alias metadata validation and deliberate header-corruption tests. This is metadata recovery; 54% estimate unchanged.
+
+## 2026-10-12: complete resource-pointer coverage
+
+Cross-checked all 32 resource directory slots and all 134 pointer entries
+against the 111 distinct records in the manifest. Fixed stale bank-6 sentinel
+comments and unique-record counts in the C metadata and earlier findings.
+Added `tools/check_resource_coverage.py` and mutation-based regression tests.
+All 39 ARM7TDMI translation units compile and all existing host tests pass.
+Source-recovery estimate remains 54%; matching-ROM build still unresolved.
+
+## 2026-10-12: Resource reference trace
+
+Added `tools/trace_resource_references.py` and three regression tests. Confirmed the sole aligned direct directory reference at `0x0804AF50`, recovered the two distinct alias-table addresses and their links to large resource records, and identified the bank-6 record reference at `0x08075200`. See `docs/RESOURCE_REFERENCE_TRACE.md`. No gameplay function has yet been reconstructed from this trace, so the source-recovery estimate remains 54%.
+
+2026-10-12: Reconstructed ROM 0x0804AF08 resource directory selection in src/resource_directory_dispatch.c, preserving the literal-pool reference to 0x08075640 and tracing the two arguments to 0x080629B4. Saved exact disassembly and notes in docs/RESOURCE_DIRECTORY_CONSUMER.md. Source compilation verified; matching ROM not established. Discovered independent public matching-decomp project for cross-checking.
+
+2026-10-12: Traced 0x0804AF08 -> 0x080629B4 -> 0x08062974. Corrected directory pair interpretation to (pointer-table base, signed-index descriptor), verified all 32 initial selections, added ROM-backed corruption tests and trace tool.
+
+## 2026-10-12: Independent upstream fingerprint compatibility
+
+Confirmed independent matching decomp uses US/EU/debug ROM hashes that do not
+match the supplied 8 MiB ROM. Added reproducible SHA-1 checker and tests.
+Do not claim byte-match equivalence or transplant upstream addresses without
+ROM-level comparison. Source recovery estimate unchanged (54%).
+
+2026-10-12: Added host-executable simulated-IWRAM regression tests for the
+0x08062974/0x080629B4 runtime-entry indexed-selection path and entry lifecycle.
+Verified selector resolution, field layout, serial handling, pool exhaustion,
+status transitions and slot reuse. Fixed two host-compiler pointer conversions
+via uintptr_t. All 40 ARM7TDMI units and full host suite pass; no matching ROM.

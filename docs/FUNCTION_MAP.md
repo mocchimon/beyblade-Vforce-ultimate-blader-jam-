@@ -40,7 +40,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 08063A74  Input_ResetTable
 08063A8C  Input_SetMapping
 08063AA0  Input_SetState
-0805FEF4  unknown/resource-related
+0805FEF4  ResourceDescriptor_Init (heap-backed surface/context constructor)
 08062490  unknown/resource-related
 08062B44  unknown
 08062E94  unknown
@@ -87,7 +87,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 | `0x0805A608` | `Heap_FindAvailable` | scans allocator metadata for a usable block |
 | `0x08060544` | `Runtime_ResetPools` | allocates/reset runtime pools; invoked repeatedly from the frame path |
 | `0x0805A890` | `ControlState_Init` | KEYINPUT + ten 0x18-byte control records |
-| `0x0805FEF4` | `ResourceDescriptor_Init` | startup resource descriptor construction; exact subsystem unresolved |
+| `0x0805FEF4` | `ResourceDescriptor_Init` | allocates a heap-backed surface context and derives region pointers; exact graphics semantics unresolved |
 
 ## Pass 4 additions
 
@@ -96,7 +96,11 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 | `0x080623CC` | `ResourceTable_Init` | loops exactly 0x80 entries, writes a 32-bit table result, then updates resource/timing globals |
 | `0x08062490` | `RuntimeObjectTable_Init` | caps count at 0x10, allocates `0x28 * count`, installs a descriptor and per-entry state |
 | `0x08062E94` | `RuntimeMemory_Init` | allocates `0xC400` and `0x1400` byte regions and installs their pointers |
-| `0x08062814` | `FrameEvent_Service` | checks runtime state and enters timing/event dispatch; gameplay meaning unresolved |
+| `0x08062814` | `FrameEvent_Service` | services the runtime-entry pool, tracks Timer0 wrap, and submits one or two segments through `0x03000D8C`; higher-level subsystem meaning unresolved |
+| `0x08062B44` | `RuntimeScript_SetDescriptor` | installs the script descriptor at `0x03005E14` |
+| `0x08062B50` | `RuntimeScript_Stop` | deactivates script-owned runtime entries and disables the interpreter |
+| `0x08062BCC` | `RuntimeScript_Start` | validates script index, loads cursor pair, resets timing state, and enables the interpreter |
+| `0x08062C48` | `RuntimeScript_Service` | bytecode interpreter for countdown delays, entry add/remove, source selection, cursor jumps, and timing-step updates |
 
 The names above are provisional and intentionally describe observed behavior
 rather than asserting game-specific semantics.
@@ -143,13 +147,14 @@ rather than asserting game-specific semantics.
 | ROM address | Provisional name | Evidence |
 |---|---|---|
 | `0x08049348` | `GameState_Dispatch` (shared-tail dispatcher) | five-entry indirect dispatch with shared register state and optional override context |
-| `0x0804A284` | `RuntimeContext_Service` | compares context indices/entry state and conditionally invokes synchronization handlers |
+| `0x0804A284` | `RuntimeContext_CheckSync` | compares context indices/entry state and conditionally invokes synchronization handlers |
 | `0x08050388` | `RuntimeRecord_Clear` | clears the fixed fields of a 0x1C-byte runtime record |
 | `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x1C` bytes and initializes a sequence of runtime records |
 
 | `0x0804AF08` | `RuntimeResource_Select` | selects an indexed runtime resource and updates its handle |
 | `0x0804AF60` | `RuntimeResource_ReleaseSelected` | releases selected runtime resource and resets selector |
-| `0x08062A74` | `RuntimeEntry_Find` | searches 0x28-byte runtime entries by key |
+| `0x08062A74` | `RuntimeEntry_Find` | searches 0x28-byte runtime entries by serial |
+| `0x08062E74` | `RuntimeEntry_IsActive` | returns true when the matching entry status byte is nonzero |
 | `0x08062AB4` | `RuntimeEntry_Deactivate` | clears runtime entry status byte |
 | `0x08062AC8` | `RuntimeEntry_SetStatus2` | sets runtime entry status to 2 |
 | `0x08062ADC` | `RuntimeEntry_AdvanceStatus` | transitions runtime entry status 2 to 1 |
@@ -161,13 +166,15 @@ rather than asserting game-specific semantics.
 | `0x08062974` | `RuntimeEntry_InitIndexed` | initializes an entry from a secondary indexed table |
 | `0x080629B4` | `RuntimeEntry_AllocIndexed` | allocates an inactive runtime entry and returns its serial |
 | `0x08062A14` | `RuntimeEntry_Alloc` | allocates an inactive runtime entry from source/index |
-| `0x08062C20` | `RuntimeTable_CopyIndexed` | bounds-checks an index and dispatches a table entry through a copy helper |
-| `0x08062FCC` | `RuntimeBlock_FindFree` | scans the runtime block list for a free slot |
-| `0x08063004` | `RuntimeBlock_Free` | releases a block and relinks the block list |
-| `0x08063090` | `RuntimeBlock_Insert` | inserts a block into the size-ordered runtime list |
+| `0x08062C20` | `RuntimeTable_AllocateIndexed` | bounds-checks a descriptor index and allocates an entry from its pointer table |
+| `0x08062F20` | `RuntimeBlock_Allocate` | allocates a run of 0xC4-byte slots, appending or delegating gap insertion |
+| `0x08062FCC` | `RuntimeBlock_FindFree` | scans the 256-entry descriptor pool for an unused slot |
+| `0x08063004` | `RuntimeBlock_Free` | cleans each 0xC4-byte child, unlinks its descriptor, and clears payload |
+| `0x08063090` | `RuntimeBlock_Insert` | inserts a descriptor into a sufficiently large interior gap and repairs links |
+| `0x0806307C` | `RuntimeBlock_FindTail` | follows +0x10 links to the final runtime block descriptor |
 | `0x080631B4` | `RuntimeBlock_Get` | returns the `0xC4`-stride block for an index |
 | `0x080631D4` | `RuntimeBuffer_Create` | allocates and describes an even-width/height buffer |
-| `0x08063210` | `RuntimeBuffer_CopyRow` | copies one indexed row/plane through the GBA copy helper |
+| `0x08063210` | `RuntimeBuffer_CopyRow` | bounds-checks a row and dispatches its byte copy through callback slot `0x0807D998` |
 | `0x08063244` | `RuntimeBuffer_Repack` | repacks six 5-bit channels from descriptor data |
 
 | `0x08064FC0` | `Object_Init` | initializes a larger object record and its flags/links |
@@ -204,6 +211,7 @@ rather than asserting game-specific semantics.
 | `0x08058778` | `Child_GetMotionState` | copies child motion fields or delegates to a callback at +0xB0 |
 | `0x0805879C` | `Child_ResetModeByte` | delegates mode reset to `0x08057DAC` |
 | `0x080587B8` | `ChildQueue_Append` | allocates/uses a four-entry 0x10-byte queue at +0x74..+0x7C |
+| `0x080588CC` | `ObjectChild_Cleanup` | releases the child resource-node handle and queue heap block |
 | `0x08058900` | `ChildQueue_Clear` | clears queued entry activity words and resets queue count |
 
 ### Continued render/runtime cluster
@@ -259,3 +267,9 @@ See `docs/ARM_RASTERIZER_FINDINGS.md` for evidence and caveats. This module has 
 |---|---|---|
 | `0x0805AC4C` | `RuntimeRecord_Create` | allocates a 0x10-byte alternate-heap payload and writes fields at +0x00/+0x04/+0x08/+0x0C |
 | `0x0805AC80` | `RuntimeRecord_SetCurrent` | stores its argument at `0x03005DC0` |
+
+| `0x08060AB8` | `ResourceNode_Unlink` | removes a resource node from the active doubly linked list, releases its range token when applicable, pushes it onto the free list, releases an auxiliary node, increments the recycle counter, and validates active-list links |
+| `0x08060B5C` | `ResourceNode_UnlinkAuxiliary` | conditionally unlinks an auxiliary node from the list at `0x03005DF8` and recycles it through the free chain at `0x03005DE8` |
+
+- `0x0806082C` — `RuntimeRange_Release`: return 16-bit range to sorted free-range list, merge adjacent nodes, recycle absorbed nodes (`src/runtime_range.c`).
+- `0x08060958` — `RuntimeRange_Reset`: reset the 0x400-unit range arena, release old resource tokens, and seed 31 spare descriptors (`src/runtime_range_init.c`).
