@@ -80,3 +80,24 @@ void ChildQueue_Clear(void *child)
 
     q->count = 0;
 }
+
+/* 0x080588CC: release a child's resource handle and queue allocation. */
+void ObjectChild_Cleanup(void *child)
+{
+    uint8_t *bytes = (uint8_t *)child;
+    uint32_t *resource_handle = (uint32_t *)(bytes + 0xB8);
+    ChildQueueState *q = (ChildQueueState *)(bytes + 0x74);
+
+    if (*resource_handle != 0) {
+        extern void ResourceNode_Unlink(void *node); /* 0x08060AB8 */
+        ResourceNode_Unlink((void *)(uintptr_t)*resource_handle);
+        *resource_handle = 0;
+    }
+
+    if (q->allocation != 0)
+        Heap_Free(q->allocation);
+
+    q->count = -1;
+    q->entries = 0;
+    q->allocation = 0;
+}

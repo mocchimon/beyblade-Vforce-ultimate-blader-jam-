@@ -45,8 +45,8 @@ static void RuntimeEntry_Init(RuntimeEntry *e, uint32_t source, uint32_t index)
 static void RuntimeEntry_InitIndexed(RuntimeEntry *e, uint32_t source_table,
                                       uint32_t secondary_table)
 {
-    int32_t index = *(const int16_t *)secondary_table;
-    uint32_t value = ((uint32_t *)source_table)[index];
+    int32_t index = *(const int16_t *)(uintptr_t)secondary_table;
+    uint32_t value = ((uint32_t *)(uintptr_t)source_table)[index];
     e->status = 1;
     e->source = value;
     e->field14 = 0;
@@ -152,4 +152,11 @@ void RuntimeEntry_SetPointer(uint32_t serial, uint32_t index)
     if (index > 0x7F)
         index = 0x7F;
     e->table_value = TABLE_0D98[index];
+}
+
+/* 0x08062E74: return true when a serial resolves to a nonzero status entry. */
+int RuntimeEntry_IsActive(uint32_t serial)
+{
+    RuntimeEntry *entry = RuntimeEntry_Find(serial);
+    return entry != 0 && entry->status != 0;
 }

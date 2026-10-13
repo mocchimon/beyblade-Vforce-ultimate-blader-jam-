@@ -10,10 +10,10 @@ typedef struct ResourceIndexRange { const uint32_t *begin; const uint32_t *end; 
 #define RESOURCE_INDEX_BANK3_COUNT 13u
 #define RESOURCE_INDEX_BANK4_COUNT 32u
 #define RESOURCE_INDEX_BANK5_COUNT 8u
-#define RESOURCE_INDEX_BANK6_POINTERS 2u /* one resource + end sentinel */
-#define RESOURCE_INDEX_PRIMARY_RESOURCE_COUNT 108u
+#define RESOURCE_INDEX_BANK6_POINTERS 2u /* both pointers identify records */
+#define RESOURCE_INDEX_PRIMARY_RESOURCE_COUNT 109u
 #define RESOURCE_INDEX_ALIAS_RESOURCE_COUNT 2u
-#define RESOURCE_INDEX_UNIQUE_RESOURCE_COUNT 110u
+#define RESOURCE_INDEX_UNIQUE_RESOURCE_COUNT 111u
 
 /* Resource record recovered from 0x08058ACC.
  *
