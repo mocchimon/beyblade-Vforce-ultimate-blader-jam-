@@ -1,0 +1,40 @@
+Original ROM Thumb bytes at `0x080604F8` (GBA ROM offset `0x000604F8`):
+
+```text
+080604F8  b530          push {r4, r5, lr}
+080604FA  1c04          movs r4, r0
+080604FC  2c00          cmp r4, #0
+080604FE  d017          beq 0x08060530
+08060500  6825          ldr r5, [r4, #0x00]
+08060502  2d00          cmp r5, #0
+08060504  d002          beq 0x0806050C
+08060506  480c          ldr r0, [pc, #0x30] ; 0x08060538 = 0x0875591C
+08060508  f7f7 fba8     bl 0x08057C5C
+0806050C  2d00          cmp r5, #0
+0806050E  d005          beq 0x0806051C
+08060510  6868          ldr r0, [r5, #0x04]
+08060512  42a0          cmp r0, r4
+08060514  d002          beq 0x0806051C
+08060516  4809          ldr r0, [pc, #0x24] ; 0x0806053C = 0x08755938
+08060518  f7f7 fba0     bl 0x08057C5C
+0806051C  6820          ldr r0, [r4, #0x00]
+0806051E  42a8          cmp r0, r5
+08060520  d002          beq 0x08060528
+08060522  4807          ldr r0, [pc, #0x1C] ; 0x08060540 = 0x08755954
+08060524  f7f7 fb9a     bl 0x08057C5C
+08060528  1c25          movs r5, r4
+0806052A  6864          ldr r4, [r4, #0x04]
+0806052C  2c00          cmp r4, #0
+0806052E  d1ed          bne 0x0806050C
+08060530  bc30          pop {r4, r5}
+08060532  bc01          pop {r0}
+08060534  4700          bx r0
+08060536  0000          padding
+08060538  591c 0875     .word 0x0875591C
+0806053C  5938 0875     .word 0x08755938
+08060540  5954 0875     .word 0x08755954
+```
+
+This listing preserves the call destinations and literal words used by the
+source reconstruction. The diagnostic callee at `0x08057C5C` is a separately
+recovered return-only routine.
