@@ -241,3 +241,69 @@ ARM SWI, and Thumb high-register MOV-to-PC transfers rather than walking through
 unknown jump destinations. Five synthetic regression cases cover these behaviors.
 These are static-analysis safety improvements, **not** newly recovered gameplay
 functions or ROM-matching evidence; estimated recovery remains 54%.
+
+### Development pass 11 (2026-10-15)
+
+The signed and unsigned division routines at `0x080660A8` and `0x080661E4` are
+now represented in C, and the duplicate resource-directory selection entry
+delegates to the full recovered runtime selector. `System_VBlankWait` now has
+its direct BIOS wrapper. Two return-only external entries are documented and
+implemented from their Thumb instructions. See `docs/MATH_DIVISION_FINDINGS.md`,
+`docs/EXTERNAL_NOOP_FINDINGS.md`, and `docs/PASS11_DEVELOPMENT_2026-10-15.md`.
+
+The historical 54% figure remains an estimate, not measured source or byte
+coverage. The last measured linkage inventory is from the prior object build;
+this pass could not regenerate ARM objects because no ARM C compiler or linker
+is available in this environment. No candidate ROM was produced, and the
+original ROM is not included in this archive.
+
+### Development pass 16 (2026-10-16)
+
+Corrected `0x08049268` to use the disassembly-confirmed context at
+`0x03000650`, separate from the object pointer stored at `0x03000FB0`, and
+renamed its source binding to `GameState_FramePrepare`. All 23 explicit stores
+and the runtime-record clear call now match the saved Thumb listing. All 42 C
+translation units parse with zero frontend errors and 34 Python regressions
+pass. This is source-level recovery only; the rough overall estimate remains
+~54%, and no object audit or ROM build was produced. Details:
+`docs/PASS16_DEVELOPMENT_2026-10-16.md`.
+
+### Development pass 17 (2026-10-16)
+
+Recovered `ResourceNode_ValidateActiveList` at `0x080604F8`, including its
+three ROM diagnostic pointers and forward/back-link checks, and removed its
+external declaration. Added direct Thumb evidence and expanded the Linux host
+harness with two malformed-list scenarios. Python recovery checks and the
+ARM7TDMI frontend parse pass; the Linux-only C harness was not executed in this
+Windows environment. This pass also replaced stale `FatalError` imports with
+the observed return-only entries and preserved their one- or two-argument
+ABIs. All 37 Python tests pass; the ROM verifier matches the validator's 32
+halfwords, three diagnostic pointers, and three call targets. The ~54%
+completion figure remains a rough, unchanged estimate, not measured coverage.
+Run `make verify-resource-node-validator ROM=/path/to/game.gba` to repeat the
+validator ROM check. See `docs/PASS17_DEVELOPMENT_2026-10-16.md`.
+
+### Development pass 20 (2026-10-16)
+
+Recovered `RuntimeObject_InitializeEntryTable` at `0x08050AA0` and the small
+byte lookup helper at `0x08063AC4`. The ROM verifier matched 216 halfwords and
+decoded 20 direct Thumb calls, including 12 callers of the new entry. All 44
+Python tests passed and all 44 C translation units passed libclang syntax
+parsing. The overall completion estimate remains roughly 54%; it is
+unmeasured, not a coverage percentage. No partial link or ROM build was
+produced: this host lacks `make` and ARM compiler/linker tools, and a GBA
+linker layout has not been recovered. See
+`docs/PASS20_DEVELOPMENT_2026-10-16.md`.
+
+### Development pass 21 (2026-10-16)
+
+Recovered the resource-node active-list insertion-point scan, free-node
+acquisition, selection-entry field initialization, and the 0x30-byte
+object-selection context initializer. Three of the prior four direct
+address-named callees now have source definitions; `0x08061684` remains
+unresolved. The ROM check matched 214 Thumb halfwords and seven direct calls,
+47 Python unit cases passed, and all 44 C translation units passed libclang
+syntax parsing. The historical **~54% completion figure remains a rough,
+unmeasured estimate**. No partial link or candidate ROM was produced because
+`make` and ARM code-generation tools are unavailable and the GBA link layout
+has not been recovered. See `docs/PASS21_DEVELOPMENT_2026-10-16.md`.
