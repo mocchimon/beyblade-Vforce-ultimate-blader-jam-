@@ -1,0 +1,629 @@
+{
+  "object_count": 40,
+  "defined_symbol_count": 94,
+  "cross_unit_references": [
+    {
+      "caller": "arm_rasterizer_loader",
+      "symbol": "Heap_Alloc",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "child_queue",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "child_queue",
+      "symbol": "Heap_Free",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "child_queue",
+      "symbol": "ResourceNode_Unlink",
+      "providers": [
+        "resource_node"
+      ]
+    },
+    {
+      "caller": "child_resource_init",
+      "symbol": "ChildResource_SelectLayout",
+      "providers": [
+        "child_resource_helpers"
+      ]
+    },
+    {
+      "caller": "frame_dispatch",
+      "symbol": "RuntimeEntry_ServiceOne",
+      "providers": [
+        "runtime_entry_service"
+      ]
+    },
+    {
+      "caller": "frame_dispatch",
+      "symbol": "RuntimeScript_Service",
+      "providers": [
+        "runtime_script"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "ArmRaster_LoadModule",
+      "providers": [
+        "arm_rasterizer_loader"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "ControlState_Init",
+      "providers": [
+        "control_state"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "FrameEvent_Service",
+      "providers": [
+        "frame_dispatch"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "Input_ResetMappings",
+      "providers": [
+        "input"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "Input_SetMapping",
+      "providers": [
+        "input"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "Input_SetState",
+      "providers": [
+        "input"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "Input_TestMask",
+      "providers": [
+        "input"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "ResourceDescriptor_Init",
+      "providers": [
+        "resource_descriptor"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "RuntimeMemory_Init",
+      "providers": [
+        "runtime_memory"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "RuntimeObjectTable_Init",
+      "providers": [
+        "runtime_object_table"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "RuntimeScript_SetDescriptor",
+      "providers": [
+        "runtime_script"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "Runtime_ResetPools",
+      "providers": [
+        "runtime_pools"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "System_DisplayInit",
+      "providers": [
+        "system_init"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "System_Dma3StateInit",
+      "providers": [
+        "system_init"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "System_InstallIwramBlock",
+      "providers": [
+        "system_init"
+      ]
+    },
+    {
+      "caller": "main",
+      "symbol": "System_SetDisplayFlags",
+      "providers": [
+        "system_init"
+      ]
+    },
+    {
+      "caller": "object_engine",
+      "symbol": "ChildQueue_Clear",
+      "providers": [
+        "child_queue"
+      ]
+    },
+    {
+      "caller": "object_record",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "resource_descriptor",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "resource_handle",
+      "symbol": "RuntimeEntry_AllocIndexed",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "resource_handle",
+      "symbol": "RuntimeEntry_Deactivate",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "resource_handle",
+      "symbol": "RuntimeEntry_SetLimit",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "resource_node",
+      "symbol": "RuntimeRange_Release",
+      "providers": [
+        "runtime_range"
+      ]
+    },
+    {
+      "caller": "runtime_block_allocate",
+      "symbol": "RuntimeBlock_FindFree",
+      "providers": [
+        "runtime_block_helpers"
+      ]
+    },
+    {
+      "caller": "runtime_block_allocate",
+      "symbol": "RuntimeBlock_Insert",
+      "providers": [
+        "runtime_block_insert"
+      ]
+    },
+    {
+      "caller": "runtime_block_free",
+      "symbol": "ObjectChild_Cleanup",
+      "providers": [
+        "child_queue"
+      ]
+    },
+    {
+      "caller": "runtime_block_free",
+      "symbol": "RuntimeMemory_Init",
+      "providers": [
+        "runtime_memory"
+      ]
+    },
+    {
+      "caller": "runtime_buffer_descriptor",
+      "symbol": "Heap_Alloc",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_entry_service",
+      "symbol": "Math_ModuloUnsigned",
+      "providers": [
+        "math_runtime"
+      ]
+    },
+    {
+      "caller": "runtime_memory",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_object_table",
+      "symbol": "Heap_Alloc",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_object_table",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_object_table",
+      "symbol": "Heap_Free",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_object_table",
+      "symbol": "ResourceTable_Init",
+      "providers": [
+        "resource_tables"
+      ]
+    },
+    {
+      "caller": "runtime_range_init",
+      "symbol": "RuntimeRange_Release",
+      "providers": [
+        "runtime_range"
+      ]
+    },
+    {
+      "caller": "runtime_record",
+      "symbol": "Heap_AllocAlt",
+      "providers": [
+        "heap"
+      ]
+    },
+    {
+      "caller": "runtime_script",
+      "symbol": "RuntimeEntry_Alloc",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "runtime_script",
+      "symbol": "RuntimeEntry_Deactivate",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "runtime_script",
+      "symbol": "RuntimeEntry_SetLimit",
+      "providers": [
+        "runtime_entries"
+      ]
+    },
+    {
+      "caller": "runtime_table_copy",
+      "symbol": "RuntimeEntry_Alloc",
+      "providers": [
+        "runtime_entries"
+      ]
+    }
+  ],
+  "unresolved_imports": [
+    {
+      "symbol": "ArmRaster_DrawRows",
+      "referenced_by": [
+        "arm_rasterizer_tables"
+      ]
+    },
+    {
+      "symbol": "ArmRaster_ProcessPrimitiveEdges",
+      "referenced_by": [
+        "arm_rasterizer_tables"
+      ]
+    },
+    {
+      "symbol": "FatalError",
+      "referenced_by": [
+        "runtime_block_helpers",
+        "runtime_memory",
+        "runtime_object_table"
+      ]
+    },
+    {
+      "symbol": "ResourceDirectory_Apply",
+      "referenced_by": [
+        "resource_directory_dispatch"
+      ]
+    },
+    {
+      "symbol": "ResourceDirectory_Create",
+      "referenced_by": [
+        "resource_directory_dispatch"
+      ]
+    },
+    {
+      "symbol": "ResourceDirectory_Prepare",
+      "referenced_by": [
+        "resource_directory_dispatch"
+      ]
+    },
+    {
+      "symbol": "ResourceNode_ValidateActiveList",
+      "referenced_by": [
+        "resource_node"
+      ]
+    },
+    {
+      "symbol": "ResourceTable_Combine",
+      "referenced_by": [
+        "resource_tables"
+      ]
+    },
+    {
+      "symbol": "ResourceTable_Generate",
+      "referenced_by": [
+        "resource_tables"
+      ]
+    },
+    {
+      "symbol": "ResourceTable_Transform",
+      "referenced_by": [
+        "resource_tables"
+      ]
+    },
+    {
+      "symbol": "Runtime_Fatal",
+      "referenced_by": [
+        "object_record"
+      ]
+    },
+    {
+      "symbol": "System_VBlankWait",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "__aeabi_uidiv",
+      "referenced_by": [
+        "runtime_object_table"
+      ]
+    },
+    {
+      "symbol": "sub_08049268",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_0804945C",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08050388",
+      "referenced_by": [
+        "game_state"
+      ]
+    },
+    {
+      "symbol": "sub_08051090",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_080512D0",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_0805193C",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08052538",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_080532DC",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08053398",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08053BB8",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08053CD8",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08055CDC",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_080574CC",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_08057B60",
+      "referenced_by": [
+        "arm_rasterizer_loader",
+        "runtime_record"
+      ]
+    },
+    {
+      "symbol": "sub_08057C5C",
+      "referenced_by": [
+        "heap",
+        "resource_descriptor",
+        "runtime_script"
+      ]
+    },
+    {
+      "symbol": "sub_08058940",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_0805A374",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_0805A6DC",
+      "referenced_by": [
+        "main"
+      ]
+    },
+    {
+      "symbol": "sub_080660A8",
+      "referenced_by": [
+        "resource_descriptor"
+      ]
+    }
+  ],
+  "duplicate_definitions": {},
+  "unresolved_by_unit": {
+    "arm_rasterizer": [],
+    "arm_rasterizer_loader": [
+      "sub_08057B60"
+    ],
+    "arm_rasterizer_tables": [
+      "ArmRaster_DrawRows",
+      "ArmRaster_ProcessPrimitiveEdges"
+    ],
+    "bios": [],
+    "child_queue": [],
+    "child_resource_helpers": [],
+    "child_resource_init": [],
+    "control_state": [],
+    "frame_dispatch": [],
+    "game_state": [
+      "sub_08050388"
+    ],
+    "heap": [
+      "sub_08057C5C"
+    ],
+    "input": [],
+    "main": [
+      "System_VBlankWait",
+      "sub_08049268",
+      "sub_0804945C",
+      "sub_08051090",
+      "sub_080512D0",
+      "sub_0805193C",
+      "sub_08052538",
+      "sub_080532DC",
+      "sub_08053398",
+      "sub_08053BB8",
+      "sub_08053CD8",
+      "sub_08055CDC",
+      "sub_080574CC",
+      "sub_08058940",
+      "sub_0805A374",
+      "sub_0805A6DC"
+    ],
+    "math_runtime": [],
+    "object_engine": [],
+    "object_record": [
+      "Runtime_Fatal"
+    ],
+    "render_transfer": [],
+    "resource_data_table": [],
+    "resource_descriptor": [
+      "sub_08057C5C",
+      "sub_080660A8"
+    ],
+    "resource_directory_dispatch": [
+      "ResourceDirectory_Apply",
+      "ResourceDirectory_Create",
+      "ResourceDirectory_Prepare"
+    ],
+    "resource_handle": [],
+    "resource_node": [
+      "ResourceNode_ValidateActiveList"
+    ],
+    "resource_tables": [
+      "ResourceTable_Combine",
+      "ResourceTable_Generate",
+      "ResourceTable_Transform"
+    ],
+    "runtime_block_allocate": [],
+    "runtime_block_free": [],
+    "runtime_block_helpers": [
+      "FatalError"
+    ],
+    "runtime_block_insert": [],
+    "runtime_buffer_descriptor": [],
+    "runtime_entries": [],
+    "runtime_entry_service": [],
+    "runtime_memory": [
+      "FatalError"
+    ],
+    "runtime_object_table": [
+      "FatalError",
+      "__aeabi_uidiv"
+    ],
+    "runtime_pools": [],
+    "runtime_range": [],
+    "runtime_range_alloc": [],
+    "runtime_range_init": [],
+    "runtime_record": [
+      "sub_08057B60"
+    ],
+    "runtime_script": [
+      "sub_08057C5C"
+    ],
+    "runtime_table_copy": [],
+    "system_init": []
+  }
+}
