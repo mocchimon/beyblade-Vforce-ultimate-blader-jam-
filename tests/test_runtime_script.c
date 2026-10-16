@@ -16,12 +16,14 @@ static uint32_t last_deactivated;
 static uint32_t last_limit_serial;
 static uint32_t last_limit;
 static unsigned deactivate_calls;
+static int alloc_failure;
+static unsigned limit_calls;
 
 int32_t RuntimeEntry_Alloc(uint32_t source, uint32_t index)
 {
     last_alloc_source = source;
     last_alloc_index = index;
-    return (int32_t)(0x1000u + index);
+    return alloc_failure ? -1 : (int32_t)(0x1000u + index);
 }
 
 void RuntimeEntry_Deactivate(uint32_t serial)
@@ -32,6 +34,7 @@ void RuntimeEntry_Deactivate(uint32_t serial)
 
 void RuntimeEntry_SetLimit(uint32_t serial, uint32_t limit)
 {
+    ++limit_calls;
     last_limit_serial = serial;
     last_limit = limit;
 }
@@ -109,6 +112,24 @@ int main(void)
         return fail("0x9-family did not store slot state/identifier/serial");
     if (*g32(0x03005E08u) != 0x10000u)
         return fail("delay command did not add a 16.16 interval");
+
+    /* Exhausted entry pool must not create a phantom script slot. */
+    memset((uint8_t *)record_words + 4, 0, 4 * 8);
+    alloc_failure = 1;
+    {
+        unsigned previous_limits = limit_calls;
+        *g32(0x03005E00u) = 0x03003000u;
+        *g32(0x03005E08u) = 0;
+        *g32(0x03005E10u) = 0;
+        RuntimeScript_Service();
+        if (((uint8_t *)record_words)[4] != 0 || limit_calls != previous_limits)
+            return fail("allocation failure published a phantom entry");
+    }
+    alloc_failure = 0;
+    /* Restore the active slot for the remove-entry test below. */
+    ((uint8_t *)record_words)[4] = 1;
+    ((uint8_t *)record_words)[5] = 7;
+    record_words[2] = 0x1007u;
 
     /* Remove the entry, skipping the command's second operand byte. */
     *g32(0x03005E00u) = 0x03003200u;
