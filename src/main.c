@@ -42,7 +42,7 @@ void sub_08053CD8(void);
 int  Input_TestMask(int);
 void sub_080512D0(void);
 void sub_08062798(void);
-void sub_08049268(void);
+void GameState_FramePrepare(void); /* 0x08049268 */
 void sub_0804945C(void);
 void sub_0805AC4C(int, int, int, int);
 void sub_080578EC(int, int);
@@ -91,7 +91,7 @@ void UBJ_Startup(void)
         ArmRaster_LoadModule((void *)((*(uint32_t *)0x03000FB0u) + 0xBA0), 0);
         sub_08052538();
 
-        sub_08049268(); /* 0x08049268: provisional GameState_FramePrepare */
+        GameState_FramePrepare();
 
         /* 0x08050656 .. 0x08050694 */
         Runtime_ResetPools(0x80, 0x20);

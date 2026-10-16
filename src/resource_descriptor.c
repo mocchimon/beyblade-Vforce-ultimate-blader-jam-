@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "runtime.h"
 
 /*
  * Recovered from 0x0805FEF4.  This is a heap-backed surface/context
@@ -46,8 +47,6 @@ _Static_assert(sizeof(ResourceDescriptor) == 0x44,
                "surface context header size mismatch");
 
 extern void *Heap_AllocAlt(uint32_t size);
-extern void sub_08057C5C(const void *message, uint32_t argument);
-extern uint32_t sub_080660A8(uint32_t numerator, uint32_t denominator);
 
 #define SURFACE_CONTEXT_GLOBAL (*(volatile ResourceDescriptor **)0x03005DC4u)
 #define REG16(address) (*(volatile uint16_t *)(uintptr_t)(address))
@@ -72,7 +71,7 @@ void ResourceDescriptor_Init(uint32_t width, uint32_t height, uint32_t format)
     descriptor = Heap_AllocAlt(allocation_size);
     if (descriptor == 0) {
         sub_08057C5C((const void *)0x087558A8u, allocation_size);
-        return; /* The original diagnostic path is expected not to return. */
+        return;
     }
 
     context = (ResourceDescriptor *)(uintptr_t)*(uint32_t *)descriptor;
@@ -102,7 +101,7 @@ void ResourceDescriptor_Init(uint32_t width, uint32_t height, uint32_t format)
 
     /* The binary divides 0x359E4 by (height >> 1), then subtracts the
        quotient from 0x20000. Keep the exact arithmetic and denominator. */
-    quotient = sub_080660A8(0x000359E4u, height >> 1);
+    quotient = (uint32_t)Math_DivideSigned(0x000359E4, (int32_t)(height >> 1));
     context->derived_10 = 0x00020000u - quotient;
     context->field14 = 0;
 

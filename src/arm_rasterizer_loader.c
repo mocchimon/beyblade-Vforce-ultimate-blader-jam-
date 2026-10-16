@@ -1,8 +1,8 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "runtime.h"
 
 extern void *Heap_Alloc(uint32_t size);
-extern void sub_08057B60(const void *message);
 
 /* Heap_Alloc returns a block descriptor; its +0/+4 fields are base and size. */
 typedef struct ArmRasterHeapBlock {

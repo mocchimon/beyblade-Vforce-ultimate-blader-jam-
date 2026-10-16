@@ -42,7 +42,8 @@ uint32_t Bios_Sqrt(uint32_t value)
     return r0;
 }
 
-void Bios_VBlankIntrWait(void)
+/* 0x080578FC: direct BIOS VBlank wait wrapper, called by the main loop. */
+void System_VBlankWait(void)
 {
     __asm__ volatile("swi 0x05" ::: "memory");
 }

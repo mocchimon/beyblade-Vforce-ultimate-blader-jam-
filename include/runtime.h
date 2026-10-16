@@ -23,6 +23,16 @@ void Input_SetMapping(uint32_t index, uint32_t value);
 void Input_SetState(uint32_t state);
 uint32_t Input_TestMask(uint32_t mask);
 
+/* Recovered ARM7TDMI arithmetic helpers and compiler ABI support. */
+uint32_t Math_DivideUnsigned(uint32_t numerator, uint32_t denominator);
+int32_t Math_DivideSigned(int32_t numerator, int32_t denominator);
+uint32_t __aeabi_uidiv(uint32_t numerator, uint32_t denominator);
+
+/* ROM-confirmed return-only service entries. */
+void sub_08057B60(const void *message);
+/* ROM saves r0-r3 and returns; callers pass one to three arguments. */
+void sub_08057C5C(const void *message, ...);
+
 #endif
 
 /* Child command/event queue recovered from 0x080587B8/0x08058900. */

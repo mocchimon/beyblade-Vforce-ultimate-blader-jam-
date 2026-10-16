@@ -1,5 +1,6 @@
 #include <stddef.h>
 #include <stdint.h>
+#include "recovered_runtime.h"
 
 typedef struct RuntimeBlockRecord {
     uint32_t start_index; /* +0x00: first 0xC4-byte payload slot */
@@ -20,7 +21,6 @@ _Static_assert(offsetof(RuntimeBlockRecord, next) == 0x10,
 
 #define RAM32(address) (*(volatile uint32_t *)(uintptr_t)(address))
 
-extern void FatalError(uint32_t message);
 
 /* 0x08062FCC: find an unused descriptor in the 256-entry 0x1400-byte pool. */
 RuntimeBlockRecord *RuntimeBlock_FindFree(void)
@@ -34,7 +34,7 @@ RuntimeBlockRecord *RuntimeBlock_FindFree(void)
             return record;
     }
 
-    FatalError(0x08755EB0u);
+    sub_08057B60((const void *)(uintptr_t)0x08755EB0u);
     return 0;
 }
 

@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "runtime.h"
 
 /*
  * Bytecode interpreter recovered from 0x08062C48. Opcode families are named
@@ -26,7 +27,6 @@ _Static_assert(sizeof(RuntimeScriptRecord) == 0x24, "script record stride mismat
 extern int32_t RuntimeEntry_Alloc(uint32_t source, uint32_t index);
 extern void RuntimeEntry_Deactivate(uint32_t serial);
 extern void RuntimeEntry_SetLimit(uint32_t serial, uint32_t limit);
-extern void sub_08057C5C(const void *message, uint32_t argument);
 
 static uint8_t Script_ReadByte(uint32_t *cursor)
 {

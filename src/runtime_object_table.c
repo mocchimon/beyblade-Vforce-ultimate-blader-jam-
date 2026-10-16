@@ -25,7 +25,6 @@ typedef struct RuntimeObjectDescriptor {
 
 void RuntimeObject_Prepare(void);
 void *Heap_AllocAlt(uint32_t size);
-void FatalError(uint32_t code);
 void ResourceTable_Init(void *context);
 
 /*
@@ -78,22 +77,24 @@ void RuntimeObjectTable_Init(void *base, uint32_t count)
      * allocator; the allocation call itself is Heap_Alloc at 0x0805A3CC.
      */
     {
-        uint32_t n = ((uint32_t)(uintptr_t)base / 0x28u + 0x0Fu) & ~0x0Fu;
+        uint32_t n = (Math_DivideUnsigned((uint32_t)(uintptr_t)base, 0x28u) +
+                      0x0Fu) & ~0x0Fu;
         *(uint16_t *)0x03005E4Cu = (uint16_t)n;
         *(uint16_t *)0x03005E18u = (uint16_t)(0u - n);
-        table = Heap_Alloc(3u * n + 40u * count);
+        uint32_t allocation_size = 3u * n + 40u * count;
+        table = Heap_Alloc(allocation_size);
+        *(uint32_t *)(uintptr_t)0x03005E2Cu = (uint32_t)(uintptr_t)table;
+        if (table == 0)
+            sub_08057C5C((const void *)(uintptr_t)0x08755DB4u,
+                         allocation_size);
     }
-
-    *(void **)0x03005E2Cu = table;
-    if (table == 0)
-        FatalError(0x08755DB4u);
 
     *(uint32_t *)0x03005E1Cu = *(uint32_t *)table;
 
     aux = Heap_AllocAlt(0x440);
     *(void **)0x03005E30u = aux;
     if (aux == 0)
-        FatalError(0x08755DE8u);
+        sub_08057C5C((const void *)(uintptr_t)0x08755DE8u, 0x440u);
 
     *(uint32_t *)0x03005E28u = *(uint32_t *)aux;
     *(uint32_t *)0x03005E50u = *(uint32_t *)0x03005E1Cu + 0x200;

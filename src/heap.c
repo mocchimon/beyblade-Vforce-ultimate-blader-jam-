@@ -29,8 +29,6 @@ typedef struct HeapBlock {
 #define ALT_ARENA_SIZE       0x0003FC00u
 #define EWRAM_LIMIT          0x0203FFFFu
 
-extern void sub_08057C5C(const void *message, uint32_t argument);
-
 void *Heap_FindAvailable(void *pool, uint32_t count)
 {
     HeapBlock *block = (HeapBlock *)pool;

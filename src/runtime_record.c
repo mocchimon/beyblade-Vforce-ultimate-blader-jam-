@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include "runtime.h"
 
 /*
  * Recovered from 0x0805AC4C and 0x0805AC80.
@@ -19,7 +20,6 @@ typedef struct RuntimeRecord {
 _Static_assert(sizeof(RuntimeRecord) == 0x10, "runtime record must be 0x10 bytes");
 
 extern void *Heap_AllocAlt(uint32_t size);
-extern void sub_08057B60(const void *message);
 
 /* 0x0805AC4C: allocate and initialize a runtime record. */
 RuntimeRecord *RuntimeRecord_Create(uint32_t field00, uint32_t field0C,
@@ -28,8 +28,7 @@ RuntimeRecord *RuntimeRecord_Create(uint32_t field00, uint32_t field0C,
     void *descriptor = Heap_AllocAlt(0x10);
     RuntimeRecord *record;
 
-    /* The original dereferences the descriptor directly; the allocator's
-       failure path is expected to be non-returning. */
+    /* The ROM dereferences the descriptor directly without a null guard. */
     record = (RuntimeRecord *)(uintptr_t)*(uint32_t *)descriptor;
     if (record == 0)
         sub_08057B60((const void *)0x0875536Cu);

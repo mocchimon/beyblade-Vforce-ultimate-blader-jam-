@@ -1,4 +1,5 @@
 #include "gba.h"
+#include "recovered_runtime.h"
 #include <stdint.h>
 
 /*
@@ -8,7 +9,6 @@
  * and builds a descriptor at 0x040000D4.
  */
 void *Heap_AllocAlt(uint32_t size);
-void FatalError(uint32_t code);
 
 void RuntimeMemory_Init(void)
 {
@@ -23,9 +23,9 @@ void RuntimeMemory_Init(void)
     small = Heap_AllocAlt(0x1400);
 
     if (large == 0)
-        FatalError(0x08755E48u);
+        sub_08057B60((const void *)(uintptr_t)0x08755E48u);
     if (small == 0)
-        FatalError(0x08755E78u);
+        sub_08057B60((const void *)(uintptr_t)0x08755E78u);
 
     *(uint32_t *)0x03005E68u = *(uint32_t *)large;
     *(uint32_t *)0x03005E54u = *(uint32_t *)small;
