@@ -87,7 +87,7 @@ Also corrected `src/main.c` so the second VBlank/`08062814` phase and direct `08
 
 ## Pass 7
 
-Recovered the `0x0804901C–0x0804945C` state/context cluster: context history, pending-index handling, signed fixed-point scaling, main state initialization, and a five-way indirect state dispatcher. See `docs/PASS7_FINDINGS.md` and `src/game_state.c`.
+Recovered the `0x0804901C–0x0804945C` state/context cluster: context history, pending-index handling, signed fixed-point scaling, frame preparation, and a five-way indirect state dispatcher. See `docs/PASS7_FINDINGS.md` and `src/game_state.c`.
 
 ## Pass 8
 
@@ -643,15 +643,175 @@ Added `tools/trace_resource_references.py` and three regression tests. Confirmed
 
 2026-10-12: Traced 0x0804AF08 -> 0x080629B4 -> 0x08062974. Corrected directory pair interpretation to (pointer-table base, signed-index descriptor), verified all 32 initial selections, added ROM-backed corruption tests and trace tool.
 
-## 2026-10-12: Independent upstream fingerprint compatibility
+## 2026-10-14: ROM-backed directory descriptor audit
 
-Confirmed independent matching decomp uses US/EU/debug ROM hashes that do not
-match the supplied 8 MiB ROM. Added reproducible SHA-1 checker and tests.
-Do not claim byte-match equivalence or transplant upstream addresses without
-ROM-level comparison. Source recovery estimate unchanged (54%).
+Confirmed the signed-index descriptors used by all 32 directory slots are
+ROM-backed, with nine unique addresses and two repeated alias descriptors.
+All initial signed indices are zero. Added a ROM-backed descriptor-storage
+audit and three negative tests. This corrects the earlier suggestion that
+these original descriptor bytes may themselves be mutable gameplay indices.
+No additional function is claimed reconstructed in this pass; source recovery
+estimate remains 54% and matching-ROM build is still outstanding.
 
-2026-10-12: Added host-executable simulated-IWRAM regression tests for the
-0x08062974/0x080629B4 runtime-entry indexed-selection path and entry lifecycle.
-Verified selector resolution, field layout, serial handling, pool exhaustion,
-status transitions and slot reuse. Fixed two host-compiler pointer conversions
-via uintptr_t. All 40 ARM7TDMI units and full host suite pass; no matching ROM.
+## 2026-10-14: signed-index directory probe
+
+Added `tools/probe_directory_indices.py` and a ROM-free synthetic regression
+suite for positive and negative signed halfword indices, shared descriptor
+aliases, and malformed resource pointers. This enables read-only inspection
+of hypothetical pointer-table selections without implying they occur during
+actual gameplay. No new gameplay routine reconstructed; source recovery
+estimate remains 54%, matching ROM build still outstanding.
+
+2026-10-14: Added aligned pointer cross-reference inventory for all unique
+resource directory table and descriptor addresses, separating directory entries
+from external candidates. Synthetic tests pass; no runtime writes inferred.
+Estimate remains 54%.
+
+## 2026-10-16: ARM rasterizer source recovery
+
+Recovered C behavior for the primitive-edge processor, row renderer, and two
+sample generators at `0x08064364`, `0x08064850`, `0x080641B8`, and `0x08064218`.
+Both rasterizer calls in the bucket walker now have source definitions, with
+shared declarations in `include/arm_rasterizer.h`; both source units use ARM
+state. All 42 C translation units parsed for their configured ARM/Thumb modes,
+and all 31 Python tests plus the ROM-backed alias check passed. `make check` and
+`make partial-link` could not run because the required build tools are missing;
+no ROM was built. The historical 54% figure remains an estimate and was not
+recalculated. See `docs/PASS12_DEVELOPMENT_2026-10-16.md` for limits.
+
+## 2026-10-16: vertex-parameter rasterizer recovery
+
+Added C behavior reconstruction for `0x08064A14` as
+`ArmRaster_ApplyVertexParameters`, including the second ROM table pointer at
+`0x0874CC60`, signed fixed-point transforms, row-byte output, and signed clamp
+behavior. All 42 C translation units parse for their configured ARM/Thumb
+modes, all 31 Python tests and the ROM-backed alias check pass. This remains
+source-level validation only; no ARM objects or ROM were built. The historical
+54% estimate remains unrecalculated. See
+`docs/PASS13_DEVELOPMENT_2026-10-16.md`.
+
+## 2026-10-16: ARM vertex-row transform recovery
+
+Added `ArmRaster_TransformVertexRows` for image entry `0x08064AFC`, preserving
+the observed 10-byte input, 6-byte target, and 16-byte output steps, optional
+interpolation, ARM multiply-accumulate order, projection branch, and signed
+minimum stores. Static recovery checks and source parsing pass. The 42-unit
+frontend parse and 32 Python regressions pass, along with the ROM-backed alias
+check. The historical ~54% remains an estimate, not a measured percentage;
+there is no current object audit or matching-ROM build. See
+`docs/PASS14_DEVELOPMENT_2026-10-16.md` for exact verification limits.
+
+## 2026-10-16: runtime-record initialization linkage correction
+
+Replaced the stale `sub_08050388` call in `GameState_Init` with the recovered
+`RuntimeRecord_Clear` symbol and corrected that routine to preserve manager
+pointer `+0x00`, as the ROM does. The function map now reflects the 0x18-byte
+record stride. This closes a source-level linkage gap and repairs one recovered
+behavior; it does not replace an object-symbol audit. The rough overall
+estimate remains **~54%**, unrecalculated and not measured coverage. Matching-
+ROM progress remains unverified.
+
+## 2026-10-16: frame-preparation layout correction
+
+Rechecked `0x08049268` against its Thumb listing and corrected its recovered C
+to use the context base `0x03000650`, while treating the pointer stored at
+`0x03000FB0` as a separate object whose `+0xC26` halfword is reset. Renamed the
+caller binding from provisional `GameState_Init` to `GameState_FramePrepare`
+and corrected all recovered field offsets and access widths, including the
+byte at context `+0x7F`. This repairs the ROM-call binding and source-level
+layout; it does not establish object-level linkage or a matching ROM build.
+
+The historical **~54% completion estimate remains unchanged and is not
+measured coverage**. See `docs/PASS16_DEVELOPMENT_2026-10-16.md` for checks and
+current build limits.
+
+## 2026-10-16: active resource-list validator recovery
+
+Recovered `ResourceNode_ValidateActiveList` at `0x080604F8` from the original
+Thumb bytes. It walks the active list, checks that the head has no predecessor
+and that each node's backward link agrees with the prior node, and passes one
+of three ROM message pointers to the already-recovered return-only
+`sub_08057C5C` on mismatch. It continues traversal without fixing or aborting
+the list. Removed the source-level external declaration and expanded the host
+C harness with malformed-link cases; the local Windows environment could not
+execute that Linux-only `mmap` harness. The Python regression suite and ARM
+frontend parse are run for this pass. The overall **~54% remains an unchanged
+rough estimate, not measured coverage**; object-level unresolved counts and a
+ROM build remain unavailable.
+
+The same pass corrected diagnostic call bindings: failure sites in
+`RuntimeMemory_Init` and `RuntimeBlock_FindFree` call the one-argument
+return-only `0x08057B60`; `RuntimeObjectTable_Init` calls the two-argument
+`0x08057C5C` with the allocation size. This removes the stale `FatalError`
+source import without asserting fatal behavior. Verification: 37 Python tests,
+42 C frontend parses with zero errors, and a ROM-byte check matching all 32
+Thumb halfwords plus three literal pointers and call targets. The Linux-only C
+host harness itself remains unrun because WSL startup is denied here.
+
+## 2026-10-16: runtime record manager recovery
+
+Reconciled `RuntimeRecord_Init` and `RuntimeRecord_Update` with the Thumb code.
+The initializer preserves the allocation descriptor separately from its
+payload, copies records from a linked source list, and returns early on zero
+size or allocation failure with the ROM's exact diagnostic arguments. The
+update loop now integrates position, velocity, and acceleration, mirrors
+positions to the source list, and applies the signed boundary/reversal logic.
+The `sub_08057C5C` declaration now accepts the one-, two-, and three-argument
+call shapes supported by its ROM-confirmed save/restore/return sequence.
+
+The pass-specific ROM check matched 176 Thumb halfwords, two diagnostic
+pointers, three direct call targets, and the `0x08057C5C` return-only bytes.
+Completion remains **approximately 54%**, unchanged and not measured coverage;
+the newly verified counts describe this pass only. No candidate ROM was
+produced because this host lacks the ARM build tools and the project has no
+recovered ROM linker layout. See `docs/PASS18_DEVELOPMENT_2026-10-16.md`.
+
+## 2026-10-16: object-record update recovery
+
+Recovered `RuntimeObject_UpdateRecordArray` at `0x08050A74` and
+`RuntimeObject_UpdateRecord` at `0x08058F18`. The batch routine adds header
+halfwords at `+0x02/+0x04` and walks `+0x0C` records at `0x88`-byte intervals.
+The per-record routine updates and mirrors two words, makes the flag-gated
+`0x08058F84` call, and follows its scaled arithmetic path. The sibling calls
+at `0x080596D0` and `0x08058F84` remain unresolved externals.
+
+Verification matched 82 Thumb halfwords across four saved ranges and decoded
+five direct-call targets from the supplied ROM. All 41 Python tests passed,
+and libclang parsed 43 ARM7TDMI C translation units with zero errors. The
+historical **~54% remains unchanged and is not measured coverage**. A ROM build
+remains unavailable because the host lacks the ARM toolchain and the project
+has no recovered linker layout.
+
+## 2026-10-16: object-selection entry-table recovery
+
+Recovered `RuntimeObject_InitializeEntryTable` at `0x08050AA0`, including
+descriptor/payload handling, 0x30-byte input and 0x1C-byte output strides,
+selected-index behavior, fixed-point table interpolation, and final dispatch.
+Also source-defined the compact byte lookup at `0x08063AC4`. The other four
+direct callees in the builder remain explicit unresolved externals.
+
+ROM verification matched **216 halfwords across two ranges** and decoded
+**20 direct Thumb calls** (eight outgoing and 12 incoming). These are measured
+pass counts, not total recovery coverage. The overall completion figure stays
+**approximately 54%**, unchanged and unmeasured; a complete ROM build remains
+unavailable without an ARM toolchain and recovered linker layout. All 44
+Python tests passed and libclang parsed all 44 C translation units with zero
+errors. `make partial-link` could not start because `make` is unavailable.
+See `docs/PASS20_DEVELOPMENT_2026-10-16.md`.
+
+## Pass 21 — resource-node selection path (2026-10-16)
+
+Recovered `0x080609E8` as the active-list insertion-point scan,
+`0x08060A04` as free-node acquisition and activation, `0x08060B8C` as the
+selection-entry field initializer, and `0x080611B4` as the selection-context
+initializer. The direct source gap in the builder is reduced from four
+address-named callees to one: `0x08061684` remains unresolved. Added ROM-backed
+range and BL-target verification plus focused regressions.
+
+The supplied ROM check matched 214 Thumb halfwords across three ranges and
+decoded seven direct calls (three calls made by the new resource-node code and
+four integration call sites in the existing builder). The completion estimate
+remains roughly 54%, unchanged and not measured coverage. ARM object output,
+partial linking, and a candidate ROM are still unavailable because this host
+lacks `make` and an ARM compiler/linker, and the original GBA link layout is
+not recovered. See `docs/PASS21_DEVELOPMENT_2026-10-16.md`.

@@ -8,7 +8,7 @@ Observed from the supplied listings: 1,215 decoded instruction lines; 36 distinc
 
 1. Compare each unresolved call site with its matching listing, then map its parameters and return convention.
 2. Cross-link targets across the nine listings and other recovered sources before deciding whether a function is missing.
-3. Reconstruct `sub_08049268` initialization as a set of field writes only after confirming literal-pool constants and RAM layout.
+3. `0x08049268` field-write recovery is complete at the source level as `GameState_FramePrepare`; pass16 corrects the context base and lists the verified write widths/offsets. It is still not a whole-program match claim.
 4. Reconstruct `sub_0804945C` control loop only after determining state transitions and callees.
 5. Separate the distinct routines appearing inside `sub_080512D0` and `sub_0805A6DC` listings; filenames are not necessarily single functions.
 6. Validate recovered behavior against the original ROM when available. Do not use fake stubs or raise the 54% estimate for tooling.

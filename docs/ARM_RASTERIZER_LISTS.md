@@ -48,24 +48,28 @@ descriptor offsets rather than asserting a fully understood graphics format.
 
 At `0x08064DE0`, the function reads a halfword iteration count at `+0x00`,
 bucket heads at `+0x08`, and node records at `+0x0C`. The second descriptor
-supplies an 8-byte-stride vertex-record base at `+0x08` and row parameters at
-`+0x10`. For each bucket, it follows signed-halfword node links until the
-`-1` sentinel. Each node's first halfword selects an 8-byte vertex record;
-the function passes that record to the primitive-edge routine at
-`0x08064364`. When that routine returns nonzero, it invokes row drawing at
-`0x08064850` with the original draw-list argument.
+supplies an 8-byte-stride primitive-record base at `+0x08` and a coordinate-
+record base at `+0x10`. For each bucket, it follows signed-halfword node links
+until the `-1` sentinel. Each node's first halfword selects an 8-byte primitive
+record; the function passes that record and the coordinate-record base to the
+primitive-edge routine at `0x08064364`. When that routine returns nonzero, it
+invokes row drawing at `0x08064850` with the original draw-list argument.
 
 The loop and pointer strides are directly visible in the ARM instructions.
 The C translation retains the raw descriptor offsets because the enclosing
-structures are not fully reconstructed. Calls to `ArmRaster_ProcessPrimitiveEdges`
-and `ArmRaster_DrawRows` are semantic external declarations for the source
-reconstruction; their own complete C bodies are not yet present. Thus this
-file improves the source-level call graph but does not make the project
-linkable or prove pixel-identical output.
+structures are not fully reconstructed. `ArmRaster_ProcessPrimitiveEdges`
+and `ArmRaster_DrawRows` now have C source definitions in ARM-state units; the
+shared declarations are in `include/arm_rasterizer.h`. The row renderer and
+sample emitters are described in
+`docs/ARM_RASTERIZER_ROW_DRAWING_RECOVERY.md`. Neither translation has been
+validated against rendered output, and this source recovery does not establish
+the complete project link or prove pixel-identical output.
 
 ## Validation
 
-The new file is compiled in ARM state (`-marm`) by the project's compile-only
-Makefile, matching the original image's ARM instruction state. Other existing
-source files use Thumb state. `make check` compiles objects only and is not a
-ROM build.
+`src/arm_rasterizer_tables.c` is compiled in ARM state (`-marm`) by the
+project's compile-only Makefile, matching the original image's ARM instruction
+state. Other existing source files use Thumb state. Frontend syntax parsing
+and source-integration checks are recorded in
+`docs/ARM_RASTERIZER_PRIMITIVE_RECOVERY.md`; `make check` would compile objects
+only and is not a ROM build.

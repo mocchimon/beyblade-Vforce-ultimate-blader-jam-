@@ -33,17 +33,17 @@ The previous pass had simplified this section too aggressively. Pass 5 keeps the
 
 ## `0x08049268`
 
-This routine operates on a large state object pointed to by the global at `0x0300500C` (literal-loaded base). It:
+Correction from the later pass7 disassembly review: the literal at `0x08049314` is the context base `0x03000650`; `0x03000FB0` is a separate global pointer to an object whose halfword at `+0x0C26` is reset. It:
 
 - writes `0xFFFF` to an object field at offset `0x0C26`;
 - clears fields at offsets `+4` and `+0xC`;
 - calls `0x08049250(7)`, which stores `7` at offset `+0x10`;
 - sets fields at `+0` and `+8` to `-1`;
 - clears a byte at `+0x7C`;
-- invokes `0x08050388` on the state object at offset `0x458`;
-- clears several additional 16/32-bit fields in the same state area.
+- invokes `RuntimeRecord_Clear` (`0x08050388`) on the state object at offset `0x458`;
+- clears verified additional fields in the context at `0x03000650`: words at `+0x424`, `+0x470`, `+0x578`, `+0x57C`, `+0x580`, `+0x588`, `+0x58C`, and `+0x5A8`; a halfword at `+0x474`; and bytes at `+0x7F`, `+0x80`, `+0x81`, `+0x481`, `+0x584`, `+0x585`, and `+0x586`.
 
-This is strongly consistent with a per-frame/state-context reset or preparation routine, but its game-level role is not yet proven. It is tracked as `GameState_FramePrepare` provisionally.
+This is strongly consistent with a per-frame/state-context reset or preparation routine, but its game-level role is not yet proven. It is tracked as `GameState_FramePrepare` provisionally. The C recovery uses that name and the verified split between the context base and object pointer.
 
 ## `0x0804945C`
 

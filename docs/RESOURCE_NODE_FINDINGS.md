@@ -25,10 +25,10 @@ in `src/resource_node.c`.
 2. Unlink from the doubly linked active list, repairing the predecessor or active head and the successor's previous pointer.
 3. Push the node onto the free chain through `+0x04` and update the free-list head.
 4. If `+0x30` is nonzero, call `0x08060B5C` and clear the field.
-5. Increment `0x03005DF4` and pass the active-list head to `0x080604F8`, which traverses/checks list-link consistency and invokes the fatal handler on mismatch.
+5. Increment `0x03005DF4` and pass the active-list head to `0x080604F8`. `ResourceNode_ValidateActiveList` walks forward, checking that the head has no predecessor and that adjacent `+0x00`/`+0x04` links agree. On a mismatch it calls `0x08057C5C` with one of three ROM message pointers (`0x0875591C`, `0x08755938`, `0x08755954`); that recovered routine returns without observable effects, so traversal continues without repairing or terminating the list.
 
 The C implementation reproduces the observed shift behavior for out-of-range shift counts (the mask becomes zero for counts >=32) rather than invoking undefined C shifts.
 
 ## Confidence / remaining work
 
-The list-link updates, fields, globals, call order, and counter update are directly supported by Thumb instructions. The semantic names of the range-release and auxiliary unlink operations remain provisional; those are kept as explicit external boundaries. This routine has compile validation, but not yet an emulator-level execution test.
+The list-link updates, validation conditions, diagnostic pointers, fields, globals, call order, and counter update are directly supported by Thumb instructions. The higher-level domain meaning of range release and auxiliary unlink remains provisional, though both calls bind to recovered C implementations. The host harness includes valid-recycling and malformed-link cases, but those C runtime cases were not executed in this Windows environment and are not an emulator-level test.

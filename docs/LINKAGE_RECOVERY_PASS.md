@@ -32,3 +32,21 @@ make test-all
 ## Recovery estimate
 
 **54% remains a historical working estimate**, not a measurement inferred from exported symbols. This pass improves integration of already recovered code and is not evidence for increasing the source-recovery estimate. A ROM-backed function inventory is needed to substantiate 75%.
+
+## Follow-up on 2026-10-15
+
+`src/resource_directory_dispatch.c` now delegates to the full
+`RuntimeResource_Select` reconstruction in `src/resource_handle.c`. That
+routine uses the existing implementations identified by ROM tracing:
+`RuntimeResource_ReleaseSelected`, `RuntimeEntry_AllocIndexed`, and
+`RuntimeEntry_SetLimit`. The divide helpers at
+`0x080660A8` and `0x080661E4` are represented in `src/math_runtime.c`, and
+`System_VBlankWait` now has its direct SWI wrapper in `src/bios.c`. The
+return-only entries at `0x08057B60` and `0x08057C5C` are also represented from
+their observed Thumb instructions in `src/runtime_noop.c`.
+
+The eight formerly unresolved import names covered by those changes are listed in
+`docs/PASS11_DEVELOPMENT_2026-10-15.md`. The 40-object/47-cross-reference/32-
+unresolved-symbol figures above are the prior object audit; no new object audit
+was run for this follow-up because the execution environment did not have the
+ARM compiler or linker.

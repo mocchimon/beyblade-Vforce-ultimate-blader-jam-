@@ -1,28 +1,42 @@
 # Object/runtime findings
 
-## Correction: 0x08050398 uses 0x18-byte records
+## Runtime record manager at 0x08050388-0x080504E6
 
-The earlier reconstruction of `0x08050398` as a 0x1C-byte record allocator was
-incorrect. Direct disassembly shows:
+The initializer at `0x08050398` allocates `count * 0x18` bytes through the
+alternate heap. The returned `0x10`-byte heap descriptor is stored at manager
+`+0x00`; its payload address is loaded from descriptor `+0x00` and stored at
+manager `+0x08`. The source descriptor is stored at `+0x04`.
 
-- source count = `[src + 0x08]`
-- allocation size = `count * 0x18`
-- destination record stride = `0x18`
-- manager fields:
-  - `+0x00` allocated record array
-  - `+0x04` source descriptor
-  - `+0x08` first word from allocated storage
-  - `+0x0C` signed record count
-  - `+0x0E` caller/requested value
-  - `+0x10` cursor/state
-  - `+0x14` capacity, initialized to `0x80`
+The manager fields are:
 
-Each 0x18-byte record is initialized from `src + 0x08`, `src + 0x0C`, and
-zeroed state/step fields.
+- `+0x00`: alternate-heap allocation descriptor
+- `+0x04`: source descriptor
+- `+0x08`: allocated record payload pointer
+- `+0x0C`: signed 16-bit record count copied from `[source + 0x08]`
+- `+0x0E`: caller-provided 16-bit flags
+- `+0x10`: boundary, initialized to zero
+- `+0x14`: bounce scale, initialized to `0x80`
 
-`0x08050420` then updates these records using the source flag field at `+0x0E`.
-It maintains two coordinate-like pairs and advances each record by 0x18 bytes.
-The exact game-level meaning is still unresolved.
+Each 0x18-byte record stores two positions at `+0x00/+0x04`, velocities at
+`+0x08/+0x0C`, and accelerations at `+0x10/+0x14`. Initialization follows the
+linked-list head at `[source + 0x00]`, copying each node's `+0x08/+0x0C` pair
+and zeroing velocity and acceleration.
+
+If the computed allocation size is zero, the routine calls `0x08057C5C` with
+message `0x087270A4` and returns without changing the manager. If allocation
+fails, it stores the null descriptor at manager `+0x00`, calls the same
+return-only service with message `0x087270DC`, byte count, and source count,
+then returns without writing the other fields. This explains why
+`sub_08057C5C` needs a variadic C declaration: this call site uses one argument
+on the zero-size path and three on allocation failure; the ROM entry saves
+`r0-r3`, restores the stack pointer, and returns without inspecting them.
+
+`0x08050420` integrates position and velocity and mirrors integrated positions
+to the linked source nodes before optional boundary handling. Flag bit 0
+selects the x axis (otherwise y); either bit in `flags & 3` enables the
+boundary check. Flag bit 2 enables a velocity reversal scaled by manager
+`+0x14` with an arithmetic shift by eight. Exact gameplay semantics remain
+provisional.
 
 ## Object record at 0x08064FC0
 

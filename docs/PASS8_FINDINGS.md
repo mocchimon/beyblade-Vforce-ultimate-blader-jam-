@@ -35,19 +35,27 @@ gameplay routine.
 
 ## Runtime record initialization: 0x08050398
 
-The function beginning at `0x08050398` takes a destination record, a source
-record, and a 16-bit-sized third argument. The source's `+0x08` count is
-multiplied by `0x1C`, allocated through `Heap_AllocAlt`, and the resulting
-record receives source/count/capacity fields. It then initializes a sequence
-of `0x1C`-byte entries from the source descriptor.
+The function beginning at `0x08050398` takes a manager, a source descriptor,
+and 16-bit flags. It allocates `source[2] * 0x18` bytes through
+`Heap_AllocAlt`, stores the returned heap descriptor at manager `+0x00`, and
+stores the descriptor's payload address at `+0x08`. It copies position pairs
+from the linked list headed by `source[0]` into 0x18-byte records and zeros
+their velocity/acceleration fields. The manager's count is a signed halfword.
+Zero-size and failed-allocation paths call the ROM-confirmed return-only
+service at `0x08057C5C` and return early.
 
-A conservative C reconstruction is in `src/object_record.c`; it should be
-considered structural rather than byte-matching C until all writes in the
-loop are correlated with its consumers.
+The update routine at `0x08050420` integrates positions and velocities,
+mirrors integrated positions to linked source nodes, and conditionally clamps
+one axis at the manager boundary. `src/object_record.c` now reflects these
+data flows; it remains behavior-level recovery rather than byte-matching C.
 
 ## Next targets
 
 1. `0x0804AF08` / `0x0804AF60` — callers from the runtime synchronization path.
-2. `0x08050398` consumers — identify the meaning of the `0x1C`-byte records.
-3. `0x08050A74` / `0x08050AA0` — related table/object allocation path.
+2. `0x08050398` consumers — correlate the record's position/velocity fields
+   with higher-level behavior.
+3. `0x08050AA0` — related object-table routine; its neighboring updater at
+   `0x08050A74` and record helper at `0x08058F18` are now recovered at the
+   source/control-flow level. The `0x08058F84` and `0x080596D0` callees remain
+   unresolved.
 4. Continue outward from `0x0804945C` into the actual state handlers.

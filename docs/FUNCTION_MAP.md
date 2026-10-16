@@ -20,6 +20,8 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 | `0x08057968` | `System_InstallIwramBlock` | DMA3 copies `0x104` bytes from ROM `0x08000168` to IWRAM `0x03000FE0`; records destination at `0x03007FFC` |
 | `0x080579CC` | `System_DisplayInit` | IME/IE/IF/DISPSTAT + DMA3 setup |
 | `0x08057A18` | `System_SetDisplayFlags` | OR into `DISPCNT` |
+| `0x08057B60` | `sub_08057B60` | confirmed return-only entry; ignores its one message-pointer argument |
+| `0x08057C5C` | `sub_08057C5C` | confirmed return-only entry; preserves stack while ignoring `r0-r3` |
 | `0x08063A74` | `Input_ResetTable` | clears 0x15-byte table at `0x03005E80` |
 | `0x08063A8C` | `Input_SetMapping` | writes a byte for mapping index <= 0x14 |
 | `0x08063AA0` | `Input_SetState` | stores 32-bit state value |
@@ -109,7 +111,7 @@ rather than asserting game-specific semantics.
 
 | ROM address | Provisional name | Evidence |
 |---|---|---|
-| `0x08049268` | `GameState_FramePrepare` | resets/prepares a large state context and clears per-frame fields |
+| `0x08049268` | `GameState_FramePrepare` | prepares the context at `0x03000650`, resets verified fields, clears its runtime-record manager, and separately resets the object selected by the pointer at `0x03000FB0` |
 | `0x0804945C` | `GameState_FrameDispatch` | VBlank + state/context processing, event/object checks, repeated frame dispatch |
 | `0x080512D0` | `ControlEvent_Service` | indexed control-record scan and event-bit updates |
 | `0x0805A6DC` | `ControlQueue_Service` | consumes queued 16-bit values and updates queue state |
@@ -139,7 +141,6 @@ rather than asserting game-specific semantics.
 | `0x08049244` | `GameState_GetContextA` | reads context `+0x0C` |
 | `0x08049250` | `GameState_SetContextB` | stores pointer at context `+0x10` |
 | `0x0804925C` | `GameState_GetContextB` | reads context `+0x10` |
-| `0x08049268` | `GameState_Init` | initializes main state record rooted at `0x03000FB0` |
 | `0x08049348` | `GameState_Dispatch` | five-entry indirect state-handler dispatch |
 
 ## Pass 8 additions
@@ -148,8 +149,8 @@ rather than asserting game-specific semantics.
 |---|---|---|
 | `0x08049348` | `GameState_Dispatch` (shared-tail dispatcher) | five-entry indirect dispatch with shared register state and optional override context |
 | `0x0804A284` | `RuntimeContext_CheckSync` | compares context indices/entry state and conditionally invokes synchronization handlers |
-| `0x08050388` | `RuntimeRecord_Clear` | clears the fixed fields of a 0x1C-byte runtime record |
-| `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x1C` bytes and initializes a sequence of runtime records |
+| `0x08050388` | `RuntimeRecord_Clear` | clears manager fields at +0x04..+0x17 while preserving the record pointer at +0x00 |
+| `0x08050398` | `RuntimeRecord_Init` | stores alternate-heap descriptor and initializes linked-source 0x18-byte position/velocity records |
 
 | `0x0804AF08` | `RuntimeResource_Select` | selects an indexed runtime resource and updates its handle |
 | `0x0804AF60` | `RuntimeResource_ReleaseSelected` | releases selected runtime resource and resets selector |
@@ -186,8 +187,13 @@ rather than asserting game-specific semantics.
 ## Consolidated object/runtime continuation
 
 | `0x08050388` | `RuntimeRecord_Clear` | clears the manager's six control fields |
-| `0x08050398` | `RuntimeRecord_Init` | allocates `count * 0x18` bytes and initializes 0x18-byte records |
-| `0x08050420` | `RuntimeRecord_Update` | advances the 0x18-byte records using the manager flag field |
+| `0x08050398` | `RuntimeRecord_Init` | allocates linked-source 0x18-byte records and recovers zero-size/allocation-failure returns |
+| `0x08050420` | `RuntimeRecord_Update` | integrates position/velocity and applies flag-controlled boundary handling |
+| `0x08050A74` | `RuntimeObject_UpdateRecordArray` | adds the two halfword counts, then dispatches entries at a 0x88-byte stride |
+| `0x08050AA0` | `RuntimeObject_InitializeEntryTable` | allocates and fills 0x1C-byte output records from 0x30-byte source records; 12 direct Thumb callers |
+| `0x08058F18` | `RuntimeObject_UpdateRecord` | updates words at +0x14/+0x18 from +0x1C/+0x20, mirrors to +0x54/+0x58, and follows verified conditional calls |
+| `0x080611B4` | `RuntimeObjectSelection_InitializeContext` | initializes the 0x30-byte local selection context, including scaled coordinates and fixed 0x100 fields |
+| `0x08063AC4` | `sub_08063AC4` | reads one byte through the pointer at 0x03005E98 plus literal 0x03005E80; ignores incoming r0 |
 | `0x08064FC0` | `Object_Init` | initializes a larger object containing 0xC4-byte children |
 | `0x0806512C` | `Object_CountActiveChildren` | counts children with nonzero field at +0x70 |
 | `0x08065164` | `Object_Update` | flag-driven object update/dispatch |
@@ -237,13 +243,14 @@ rather than asserting game-specific semantics.
 
 | Address | Working name | Status |
 |---|---|---|
-| `0x080641B8` | `ArmRaster_EmitSamples` | Fixed-point sample generation; high confidence in behavior class |
-| `0x08064218` | `ArmRaster_EmitPackedSamples` | Packs four byte samples per word; high confidence |
-| `0x08064364` | `ArmRaster_ProcessPrimitiveEdges` | Processes three 0x10-stride records and computes edge slopes; behavior class high confidence |
-| `0x080645EC` | `ArmRaster_ProcessAlternateEdgeCase` | Alternate edge path; exact contract unresolved |
-| `0x08064724` | `ArmRaster_ClampSpan` | Endpoint ordering and span clamping; medium/high confidence |
-| `0x08064850` | `ArmRaster_DrawRows` | Row-stepping and sample generation with 0x40-byte stride; high confidence |
-| `0x08064A14` | `ArmRaster_ApplyVertexParameters` | Updates compact per-row coordinate/attribute records; medium confidence |
+| `0x080641B8` | `ArmRaster_EmitSamples` | C sample-sequence reconstruction; output semantics remain provisional |
+| `0x08064218` | `ArmRaster_EmitPackedSamples` | C reciprocal-table sample reconstruction; packed stores expressed as byte writes |
+| `0x08064364` | `ArmRaster_ProcessPrimitiveEdges` | C behavior reconstruction: sorts three coordinate records, computes reciprocal-table slopes, and writes the edge descriptor; output semantics remain provisional |
+| `0x080645EC` | `ArmRaster_ProcessAlternateEdgeCase` | Implemented branch within `ArmRaster_ProcessPrimitiveEdges`; not a standalone entry |
+| `0x08064724` | `ArmRaster_ClampSpan` | Implemented repeated-index branch within `ArmRaster_ProcessPrimitiveEdges`; not a standalone entry |
+| `0x08064850` | `ArmRaster_DrawRows` | C row/span reconstruction with 0x40-byte stride; pixel equivalence unverified |
+| `0x08064A14` | `ArmRaster_ApplyVertexParameters` | C behavior reconstruction of table-based signed per-row transform; caller semantics provisional |
+| `0x08064AFC` | `ArmRaster_TransformVertexRows` | C behavior reconstruction of optional interpolation, matrix transform, projection, and 10/6/16-byte record flow; caller semantics provisional |
 | `0x08064C38` | `ArmRaster_InsertBucketItem` | Appends a signed-halfword item to a bucket-linked node table; high confidence |
 | `0x08064C8C` | `ArmRaster_BuildEdgeBuckets` | Applies the primitive orientation test, maps a fixed-point attribute into a 32-bucket domain, and inserts record indices; reconstructed in C with raw descriptor offsets |
 | `0x08064DE0` | `ArmRaster_ProcessEdgeBuckets` | Traverses bucket-linked vertex records, invokes primitive-edge processing, and conditionally draws rows; high confidence in control flow |
@@ -268,8 +275,12 @@ See `docs/ARM_RASTERIZER_FINDINGS.md` for evidence and caveats. This module has 
 | `0x0805AC4C` | `RuntimeRecord_Create` | allocates a 0x10-byte alternate-heap payload and writes fields at +0x00/+0x04/+0x08/+0x0C |
 | `0x0805AC80` | `RuntimeRecord_SetCurrent` | stores its argument at `0x03005DC0` |
 
+| `0x080604F8` | `ResourceNode_ValidateActiveList` | walks the active list and checks head/neighbor links; passes one of three ROM message pointers to the return-only diagnostic entry on mismatch |
+| `0x080609E8` | `ResourceNode_FindInsertionPoint` | returns the first active node whose halfword at +0x22 is at least the requested value, or the list tail |
+| `0x08060A04` | `ResourceNode_AcquireByClass` | removes one node from the free chain, inserts it into the active chain, decrements the available-node counter, and validates the list |
 | `0x08060AB8` | `ResourceNode_Unlink` | removes a resource node from the active doubly linked list, releases its range token when applicable, pushes it onto the free list, releases an auxiliary node, increments the recycle counter, and validates active-list links |
 | `0x08060B5C` | `ResourceNode_UnlinkAuxiliary` | conditionally unlinks an auxiliary node from the list at `0x03005DF8` and recycles it through the free chain at `0x03005DE8` |
+| `0x08060B8C` | `ResourceNode_ConfigureSelectionEntry` | initializes recovered entry fields, encoded words, sentinels, and a metadata-derived payload pointer |
 
 - `0x0806082C` — `RuntimeRange_Release`: return 16-bit range to sorted free-range list, merge adjacent nodes, recycle absorbed nodes (`src/runtime_range.c`).
 - `0x08060958` — `RuntimeRange_Reset`: reset the 0x400-unit range arena, release old resource tokens, and seed 31 spare descriptors (`src/runtime_range_init.c`).

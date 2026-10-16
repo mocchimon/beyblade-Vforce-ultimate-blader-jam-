@@ -14,13 +14,13 @@ Recovered facts:
 - caps the first argument at literal `0x0000ABEA`;
 - descriptor base is `0x03005E40`;
 - descriptor fields at `+0`, `+4`, `+8` are written as `base`, `1`, `0`;
-- allocates a variable-sized block through `0x080661E4` using a value derived from
-  the descriptor count and the supplied count;
-- stores the returned block at `0x03005E2C` and errors with literal
-  `0x08755DB4` on failure;
+- computes the requested size using the unsigned divide helper at `0x080661E4`
+  and allocates the variable-sized block through `0x0805A3CC`;
+- stores the returned block at `0x03005E2C` and calls `0x08057C5C` with literal
+  `0x08755DB4` and the requested allocation size on failure;
 - reads the first word of that block into `0x03005E1C`;
 - allocates exactly `0x440` bytes through `0x0805A444`, stores the result at
-  `0x03005E30`, and errors with `0x08755DE8` on failure;
+  `0x03005E30`, and calls `0x08057C5C` with `0x08755DE8` and `0x440` on failure;
 - reads the first word of the second block into `0x03005E28`;
 - establishes pointers around `0x03005E50`, `0x03000D98`, and the byte at
   `0x03005E04`;
@@ -39,8 +39,8 @@ Exact recovered behavior:
 *(u32*)0x03005E60 = 0;
 large = Heap_AllocAlt(0xC400);
 small = Heap_AllocAlt(0x1400);
-if (!large) FatalError(0x08755E48);
-if (!small) FatalError(0x08755E78);
+if (!large) sub_08057B60((const void*)0x08755E48);
+if (!small) sub_08057B60((const void*)0x08755E78);
 *(u32*)0x03005E68 = *(u32*)large;
 *(u32*)0x03005E54 = *(u32*)small;
 *(u32*)0x03005E58 = 0;
@@ -50,7 +50,9 @@ if (!small) FatalError(0x08755E78);
 ```
 
 The previous source had incorrectly assigned additional inferred fields. Those
-assignments were removed; the assembly remains authoritative.
+assignments were removed; the assembly remains authoritative. Both failure
+branches call the return-only ROM entry `0x08057B60`; they do not call a
+terminating fatal handler.
 
 ## `0x0805A6DC` — ControlQueue_Service
 
