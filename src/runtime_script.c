@@ -83,6 +83,9 @@ static void Script_AddEntry(uint32_t record_index, uint8_t identifier,
         if (record->source_record == 0)
             return;
         serial = RuntimeEntry_Alloc(record->source_record, identifier);
+        /* Pool exhaustion returns -1: never publish a phantom slot. */
+        if (serial < 0)
+            return;
         slot->entry_serial = (uint32_t)serial;
         RuntimeEntry_SetLimit(slot->entry_serial, limit);
         slot->active = 1;
@@ -98,26 +101,13 @@ void RuntimeScript_SetDescriptor(const void *descriptor)
     RAM32(0x03005E14u) = (uint32_t)(uintptr_t)descriptor;
 }
 
-/* 0x08062B50 — deactivate script-owned entries and stop the interpreter. */
+/* 0x08062B50 — shared implementation in runtime_pending_service.c.
+ * Do not maintain a second independent copy of the ROM routine here.
+ */
+extern void sub_08062B50(void);
 void RuntimeScript_Stop(void)
 {
-    RuntimeScriptRecord *records;
-    unsigned i, j;
-
-    if (RAM32(0x03005E0Cu) != 1)
-        return;
-
-    records = (RuntimeScriptRecord *)(uintptr_t)RAM32(0x03005E28u);
-    for (i = 0; i < 16; ++i) {
-        for (j = 0; j < 4; ++j) {
-            RuntimeScriptSlot *slot = &records[i].slots[j];
-            if (slot->active != 0) {
-                RuntimeEntry_Deactivate(slot->entry_serial);
-                slot->active = 0;
-            }
-        }
-    }
-    RAM32(0x03005E0Cu) = 0;
+    sub_08062B50();
 }
 
 /* 0x08062BCC — start one descriptor entry (two 32-bit cursor values). */

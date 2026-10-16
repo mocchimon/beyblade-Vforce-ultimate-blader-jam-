@@ -21,10 +21,10 @@ void sub_080574CC(void);
 void Input_ResetMappings(void);
 void Input_SetMapping(int, int);
 void Input_SetState(int);
-void sub_0805FEF4(int, int, int);
-void sub_08062490(void *, int);
-void sub_08062B44(int);
-void sub_08062E94(void);
+void ResourceDescriptor_Init(uint32_t, uint32_t, uint32_t);
+void RuntimeObjectTable_Init(void *, uint32_t);
+void RuntimeScript_SetDescriptor(const void *);
+void RuntimeMemory_Init(void);
 void Runtime_ResetPools(int, int);
 void sub_080532DC(void);
 void sub_08051090(void);
@@ -32,8 +32,8 @@ void sub_08055CDC(void);
 void sub_08058940(void);
 void *ArmRaster_LoadModule(void *, void *);
 void sub_08052538(void);
-void sub_080578FC(void);
-void sub_08062814(void);
+void System_VBlankWait(void);
+void FrameEvent_Service(void);
 void sub_0805A6DC(void);
 void sub_08053398(void);
 void sub_0805193C(void);
@@ -71,10 +71,10 @@ void UBJ_Startup(void)
     Input_SetState(0);
 
     /* 0x08050604 onward: subsystem/resource initialization. */
-    sub_0805FEF4(2, 0x10, 3);
-    sub_08062490((void *)0x08112B2Cu, 2);
-    sub_08062B44(0x08040CC4);
-    sub_08062E94();
+    ResourceDescriptor_Init(2, 0x10, 3);
+    RuntimeObjectTable_Init((void *)0x08112B2Cu, 2);
+    RuntimeScript_SetDescriptor((const void *)0x08040CC4u);
+    RuntimeMemory_Init();
     Runtime_ResetPools(0x80, 0x20);
     sub_080532DC();
     sub_08051090();
@@ -96,8 +96,8 @@ void UBJ_Startup(void)
         /* 0x08050656 .. 0x08050694 */
         Runtime_ResetPools(0x80, 0x20);
         sub_0804945C(); /* 0x0804945C: provisional GameState_FrameDispatch */
-        sub_080578FC();
-        sub_08062814();
+        System_VBlankWait();
+        FrameEvent_Service();
         sub_0805A6DC();
         Runtime_ResetPools(0x80, 0x20);
         sub_08053398();
