@@ -232,3 +232,12 @@ With your original ROM locally available, run `make verify-alias-resources ROM=/
 ### 2026-10-12 resource directory consumer
 
 The direct ROM reference at 0x0804AF50 is now traced to the Thumb function at 0x0804AF08. See `docs/RESOURCE_DIRECTORY_CONSUMER.md` and `src/resource_directory_dispatch.c`. A separate public matching-decompilation project is identified there for future cross-checking; this project remains compile-only and does not claim matching output.
+
+### CFG tracer follow-up (2026-10-15)
+
+The bounded candidate CFG tracer now retains the not-taken path of conditional ARM
+returns and conditional BX transfers. It stops conservatively at ARM LDR-to-PC,
+ARM SWI, and Thumb high-register MOV-to-PC transfers rather than walking through
+unknown jump destinations. Five synthetic regression cases cover these behaviors.
+These are static-analysis safety improvements, **not** newly recovered gameplay
+functions or ROM-matching evidence; estimated recovery remains 54%.
