@@ -12,7 +12,8 @@ RANGES = (
     (0x08063AC4, 0x08063AD8),  # byte lookup helper and its literal pool
 )
 CALL_TARGETS = {
-    # Calls made by RuntimeObject_InitializeEntryTable.
+    # Calls made by RuntimeObject_InitializeEntryTable and its recovered
+    # source-level dispatcher wrapper.
     0x08050AC0: 0x0805A444,
     0x08050AD0: 0x08057C5C,
     0x08050AF6: 0x080660A8,
