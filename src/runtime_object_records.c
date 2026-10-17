@@ -46,10 +46,6 @@ _Static_assert(offsetof(RuntimeObjectRecord, flags64) == 0x64,
 _Static_assert(sizeof(RuntimeObjectRecord) == 0x68,
                "record view ends at +0x68; ROM array stride is 0x88");
 
-/* These direct Thumb callees remain outside the recovered source cluster. */
-extern void sub_080596D0(RuntimeObjectRecord *record);
-extern void sub_08058F84(RuntimeObjectRecord *record);
-
 static uint32_t RuntimeObject_ArithmeticShiftRight8(uint32_t value)
 {
     uint32_t shifted = value >> 8;
@@ -72,9 +68,9 @@ void RuntimeObject_UpdateRecord(void *record_pointer)
     record->mirror54 = value14;
     record->mirror58 = value18;
 
-    sub_080596D0(record);
+    RuntimeObject_UpdateDisplayRegion(record, value14, value18);
     if ((record->flags64 & 1u) != 0)
-        sub_08058F84(record);
+        RuntimeObject_ApplyRecordTransform(record);
 
     if (record->scale24 != 0) {
         uint32_t scaled14 = RuntimeObject_ArithmeticShiftRight8(

@@ -1,5 +1,7 @@
 #include <stdint.h>
 
+#include "child_resource_helpers.h"
+
 /*
  * 0x080592A8
  *
@@ -42,36 +44,38 @@ uint32_t ChildResource_SelectLayout(void *child, uint32_t arg1, uint32_t arg2)
     }
 }
 
-/* 0x080599CC / 0x08059A0C / 0x08059A4C */
-uint16_t ChildResource_LayoutValueA(uint32_t index)
+/* 0x080599CC. Returns the selected BGxHOFS register address. */
+uintptr_t ChildResource_HorizontalOffsetRegister(uint32_t mode)
 {
-    switch ((uint8_t)index) {
-    case 0: return 0x1000;
-    case 1: return 0x1400;
-    case 2: return 0x1800;
-    case 3: return 0x1C00;
-    default: return 0;
+    switch ((uint8_t)mode) {
+    case 0: return 0x04000010u;
+    case 1: return 0x04000014u;
+    case 2: return 0x04000018u;
+    case 3: return 0x0400001Cu;
+    default: return (uint8_t)mode;
     }
 }
 
-uint16_t ChildResource_LayoutValueB(uint32_t index)
+/* 0x08059A0C. Returns the selected BGxVOFS register address. */
+uintptr_t ChildResource_VerticalOffsetRegister(uint32_t mode)
 {
-    switch ((uint8_t)index) {
-    case 0: return 0x1200;
-    case 1: return 0x1600;
-    case 2: return 0x1A00;
-    case 3: return 0x1E00;
-    default: return 0;
+    switch ((uint8_t)mode) {
+    case 0: return 0x04000012u;
+    case 1: return 0x04000016u;
+    case 2: return 0x0400001Au;
+    case 3: return 0x0400001Eu;
+    default: return (uint8_t)mode;
     }
 }
 
-uint16_t ChildResource_LayoutValueC(uint32_t index)
+/* 0x08059A4C. Returns the selected BGxCNT register address. */
+uintptr_t ChildResource_BackgroundControlRegister(uint32_t mode)
 {
-    switch ((uint8_t)index) {
-    case 0: return 0x0800;
-    case 1: return 0x0A00;
-    case 2: return 0x0C00;
-    case 3: return 0x0E00;
-    default: return 0;
+    switch ((uint8_t)mode) {
+    case 0: return 0x04000008u;
+    case 1: return 0x0400000Au;
+    case 2: return 0x0400000Cu;
+    case 3: return 0x0400000Eu;
+    default: return (uint8_t)mode;
     }
 }

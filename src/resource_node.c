@@ -142,6 +142,80 @@ void ResourceNode_Unlink(void *opaque_node)
     ResourceNode_ValidateActiveList((void *)(uintptr_t)RESOURCE_ACTIVE_HEAD);
 }
 
+typedef struct ResourceNodeChainContextView {
+    uint32_t head;                  /* +0x00 */
+    uint32_t tail;                  /* +0x04 */
+    uint32_t count;                 /* +0x08 */
+    uint8_t reserved0c[0x20];       /* +0x0C..+0x2B */
+    uint32_t value_2c;              /* +0x2C */
+} ResourceNodeChainContextView;
+
+_Static_assert(offsetof(ResourceNodeChainContextView, count) == 0x08,
+               "resource chain count must be at +0x08");
+_Static_assert(offsetof(ResourceNodeChainContextView, value_2c) == 0x2C,
+               "resource chain cleared field must be at +0x2C");
+_Static_assert(sizeof(ResourceNodeChainContextView) == 0x30,
+               "resource chain context view must be 0x30 bytes");
+
+/* ROM 0x08060D00. Release every node in a contiguous active-list segment,
+ * repair the neighboring active links, prepend the segment to the free chain,
+ * and clear the embedded head, tail, and count fields. */
+void ResourceNode_ReleaseChain(void *opaque_context)
+{
+    ResourceNodeChainContextView *context =
+        (ResourceNodeChainContextView *)opaque_context;
+    ResourceNodeView *head;
+    ResourceNodeView *tail;
+    uint32_t count = context->count;
+    uint32_t current;
+    uint32_t predecessor;
+    uint32_t successor;
+
+    if (count == 0u)
+        return;
+
+    head = (ResourceNodeView *)(uintptr_t)context->head;
+    tail = (ResourceNodeView *)(uintptr_t)context->tail;
+    current = context->head;
+    predecessor = head->prev;
+    successor = tail->next;
+    RESOURCE_NODE_COUNT += count;
+
+    for (uint32_t remaining = count; remaining != 0u; --remaining) {
+        ResourceNodeView *node = (ResourceNodeView *)(uintptr_t)current;
+
+        if (node->auxiliary != 0u) {
+            ResourceNode_UnlinkAuxiliary(
+                (void *)(uintptr_t)node->auxiliary);
+            node->auxiliary = 0u;
+        }
+
+        if (node->range_token >= 0) {
+            uint32_t shift = (uint32_t)node->range_class - 5u;
+            uint32_t mask = shift < 32u ? (1u << shift) : 0u;
+            RuntimeRange_Release(node->range_token, mask);
+        }
+        node->range_token = -1;
+        current = node->next;
+    }
+
+    if (predecessor != 0u) {
+        *(volatile uint32_t *)(uintptr_t)(predecessor + 4u) = successor;
+    } else {
+        RESOURCE_ACTIVE_HEAD = successor;
+    }
+    if (successor != 0u)
+        *(volatile uint32_t *)(uintptr_t)successor = predecessor;
+
+    tail->next = RESOURCE_FREE_HEAD;
+    RESOURCE_FREE_HEAD = context->head;
+    context->count = 0u;
+    context->head = 0u;
+    context->tail = 0u;
+    ResourceNode_ValidateActiveList(
+        (void *)(uintptr_t)RESOURCE_ACTIVE_HEAD);
+}
+
 typedef struct ResourceNodeAcquireView {
     uint32_t previous;            /* +0x00 */
     uint32_t next;                /* +0x04 */
@@ -219,6 +293,146 @@ static ResourceNodeAcquireView *ResourceNode_FindInsertionPoint(
     }
 
     return last;
+}
+
+/* ROM 0x08060C40. Take a contiguous batch from the primary free chain, link
+ * the batch together, and insert it after the class scan's insertion point. */
+void *ResourceNode_AllocateChain(void *opaque_context, uint32_t count_value,
+                                 uint32_t class_value)
+{
+    ResourceNodeChainContextView *context =
+        (ResourceNodeChainContextView *)opaque_context;
+    uint16_t count = (uint16_t)count_value;
+    uint16_t resource_class = (uint16_t)class_value;
+    uint32_t available = RESOURCE_NODE_COUNT;
+    ResourceNodeAcquireView *first;
+    ResourceNodeAcquireView *tail;
+    ResourceNodeAcquireView *insertion;
+    uint32_t remaining;
+
+    if (available < count) {
+        sub_08057C5C((const void *)(uintptr_t)0x08755AECu,
+                     available, count);
+        return 0;
+    }
+
+    RESOURCE_NODE_COUNT = available - count;
+    first = (ResourceNodeAcquireView *)(uintptr_t)RESOURCE_FREE_HEAD;
+    insertion = ResourceNode_FindInsertionPoint(RESOURCE_ACTIVE_HEAD,
+                                                resource_class);
+    context->count = count;
+    context->head = (uint32_t)(uintptr_t)first;
+    first->insertion_class = resource_class;
+    tail = first;
+
+    /* The count is nonzero at every ROM call site; the first node is already
+     * selected, so only count-1 links are visited here. */
+    remaining = (uint32_t)count - 1u;
+    while (remaining != 0u) {
+        ResourceNodeAcquireView *node =
+            (ResourceNodeAcquireView *)(uintptr_t)tail->next;
+        node->insertion_class = resource_class;
+        node->previous = (uint32_t)(uintptr_t)tail;
+        tail = node;
+        --remaining;
+    }
+
+    context->tail = (uint32_t)(uintptr_t)tail;
+    RESOURCE_FREE_HEAD = tail->next;
+
+    if (insertion != 0) {
+        ResourceNodeAcquireView *successor =
+            (ResourceNodeAcquireView *)(uintptr_t)insertion->next;
+        if (successor != 0)
+            successor->previous = (uint32_t)(uintptr_t)tail;
+        tail->next = (uint32_t)(uintptr_t)successor;
+        first->previous = (uint32_t)(uintptr_t)insertion;
+        insertion->next = (uint32_t)(uintptr_t)first;
+    } else {
+        ResourceNodeAcquireView *old_head =
+            (ResourceNodeAcquireView *)(uintptr_t)RESOURCE_ACTIVE_HEAD;
+        if (old_head != 0)
+            old_head->previous = (uint32_t)(uintptr_t)tail;
+        tail->next = (uint32_t)(uintptr_t)old_head;
+        first->previous = 0u;
+        RESOURCE_ACTIVE_HEAD = (uint32_t)(uintptr_t)first;
+    }
+
+    ResourceNode_ValidateActiveList(
+        (void *)(uintptr_t)RESOURCE_ACTIVE_HEAD);
+    return first;
+}
+
+/* ROM 0x08060DBC. Preserve an exact-size segment, extend it with free nodes,
+ * or recycle and recreate it when the requested size is smaller. */
+void *ResourceNode_ResizeChain(void *opaque_context, uint32_t count_value,
+                               uint32_t class_value)
+{
+    ResourceNodeChainContextView *context =
+        (ResourceNodeChainContextView *)opaque_context;
+    uint16_t requested = (uint16_t)count_value;
+    uint16_t resource_class = (uint16_t)class_value;
+    uint32_t current = context->count;
+    uint32_t difference;
+    uint32_t available;
+    ResourceNodeAcquireView *head;
+    ResourceNodeAcquireView *tail;
+    ResourceNodeAcquireView *first_new;
+    ResourceNodeAcquireView *new_tail;
+    ResourceNodeAcquireView *successor;
+    uint16_t inherited_class;
+
+    if (current == requested)
+        return (void *)(uintptr_t)context->head;
+
+    if (current > requested) {
+        sub_08057B60((const void *)(uintptr_t)0x08755B4Cu);
+        ResourceNode_ReleaseChain(context);
+        return ResourceNode_AllocateChain(context, requested,
+                                          resource_class);
+    }
+
+    if (current == 0u)
+        return ResourceNode_AllocateChain(context, requested,
+                                          resource_class);
+
+    difference = (uint32_t)requested - current;
+    available = RESOURCE_NODE_COUNT;
+    if (available < difference) {
+        sub_08057B60((const void *)(uintptr_t)0x08755B30u);
+        return 0;
+    }
+
+    head = (ResourceNodeAcquireView *)(uintptr_t)context->head;
+    tail = (ResourceNodeAcquireView *)(uintptr_t)context->tail;
+    first_new = (ResourceNodeAcquireView *)(uintptr_t)RESOURCE_FREE_HEAD;
+    new_tail = first_new;
+    inherited_class = head->insertion_class;
+
+    RESOURCE_NODE_COUNT = available - difference;
+    context->count = current + difference;
+    new_tail->insertion_class = inherited_class;
+    for (uint32_t remaining = difference - 1u; remaining != 0u;
+         --remaining) {
+        ResourceNodeAcquireView *node =
+            (ResourceNodeAcquireView *)(uintptr_t)new_tail->next;
+        node->insertion_class = inherited_class;
+        node->previous = (uint32_t)(uintptr_t)new_tail;
+        new_tail = node;
+    }
+
+    RESOURCE_FREE_HEAD = new_tail->next;
+    successor = (ResourceNodeAcquireView *)(uintptr_t)tail->next;
+    if (successor != 0)
+        successor->previous = (uint32_t)(uintptr_t)new_tail;
+    new_tail->next = (uint32_t)(uintptr_t)successor;
+    tail->next = (uint32_t)(uintptr_t)first_new;
+    first_new->previous = (uint32_t)(uintptr_t)tail;
+    context->tail = (uint32_t)(uintptr_t)new_tail;
+
+    ResourceNode_ValidateActiveList(
+        (void *)(uintptr_t)RESOURCE_ACTIVE_HEAD);
+    return head;
 }
 
 /* ROM 0x08060A04. Reuses one node from the resource free chain, inserts it

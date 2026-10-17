@@ -89,9 +89,6 @@ _Static_assert(offsetof(RuntimeObjectSelectionSourceRecord, value28) ==
 _Static_assert(sizeof(RuntimeObjectSelectionSourceRecord) == 0x30,
                "source records use a 0x30-byte stride");
 
-extern uint32_t sub_08061684(void *context, uint32_t selected_value,
-                             uint32_t object_byte);
-
 static int32_t RuntimeObject_ArithmeticShiftRight8(uint32_t value)
 {
     uint32_t result = value >> 8;
@@ -111,32 +108,40 @@ static int32_t RuntimeObject_ExtractSignedHighHalf(uint32_t value)
 
 typedef struct RuntimeObjectSelectionContext {
     int32_t position_x_scaled;     /* +0x00 */
-    int32_t context_scaled;        /* +0x04 */
-    uint16_t extent;               /* +0x08 */
-    uint16_t zero0a;
-    uint16_t position_y;           /* +0x0C */
+    int32_t position_y_scaled;     /* +0x04 */
+    uint16_t selection_flags;      /* +0x08 */
+    uint16_t cursor;               /* +0x0A */
+    uint16_t extent;               /* +0x0C */
     uint8_t zero0e;
     uint8_t zero0f;
     uint16_t unit_x;               /* +0x10 */
     uint16_t unit_y;               /* +0x12 */
-    uint32_t zero14;
-    uint32_t zero18;
-    uint32_t zero1c;
+    uint32_t chain_head;           /* +0x14 */
+    uint32_t chain_tail;           /* +0x18 */
+    uint32_t chain_count;          /* +0x1C */
     uint32_t object_value4;        /* +0x20 */
     uint32_t object_value0;        /* +0x24 */
     uint8_t trailing_value;        /* +0x28 */
-    uint8_t zero29;
-    uint8_t object_byte_plus_four; /* +0x2A */
+    uint8_t displacement_table_start; /* +0x29 */
+    uint8_t object_byte_plus_four;  /* +0x2A */
     uint8_t zero2b;
-    uint32_t zero2c;
+    uint32_t scale_record;         /* +0x2C */
 } RuntimeObjectSelectionContext;
 
-_Static_assert(offsetof(RuntimeObjectSelectionContext, extent) == 0x08,
-               "selection context extent must be at +0x08");
-_Static_assert(offsetof(RuntimeObjectSelectionContext, position_y) == 0x0C,
-               "selection context Y must be at +0x0C");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, selection_flags) == 0x08,
+               "selection context flags must be at +0x08");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, cursor) == 0x0A,
+               "selection context cursor must be at +0x0A");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, extent) == 0x0C,
+               "selection context extent must be at +0x0C");
 _Static_assert(offsetof(RuntimeObjectSelectionContext, unit_x) == 0x10,
                "selection context X unit must be at +0x10");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, chain_head) == 0x14,
+               "selection context chain head must be at +0x14");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, chain_tail) == 0x18,
+               "selection context chain tail must be at +0x18");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, chain_count) == 0x1C,
+               "selection context chain count must be at +0x1C");
 _Static_assert(offsetof(RuntimeObjectSelectionContext, object_value4) == 0x20,
                "selection context value must be at +0x20");
 _Static_assert(offsetof(RuntimeObjectSelectionContext, object_value0) == 0x24,
@@ -144,6 +149,8 @@ _Static_assert(offsetof(RuntimeObjectSelectionContext, object_value0) == 0x24,
 _Static_assert(offsetof(RuntimeObjectSelectionContext,
                         object_byte_plus_four) == 0x2A,
                "selection context byte must be at +0x2A");
+_Static_assert(offsetof(RuntimeObjectSelectionContext, scale_record) == 0x2C,
+               "selection context scale record must be at +0x2C");
 _Static_assert(sizeof(RuntimeObjectSelectionContext) == 0x30,
                "selection context uses a 0x30-byte layout");
 
@@ -152,37 +159,33 @@ _Static_assert(sizeof(RuntimeObjectSelectionContext) == 0x30,
 void RuntimeObjectSelection_InitializeContext(
     void *context_pointer, uint32_t object_value0, uint32_t object_value4,
     int32_t position_x, int32_t position_y, uint32_t extent,
-    uint32_t ignored_object_value8)
+    uint32_t selection_flags)
 {
     RuntimeObjectSelectionContext *context =
         (RuntimeObjectSelectionContext *)context_pointer;
     const uint8_t *object = (const uint8_t *)(uintptr_t)object_value0;
-    uint32_t scaled_context =
-        (uint32_t)(uintptr_t)context_pointer << 16;
     uint32_t scaled_x = (uint32_t)position_x << 16;
-
-    (void)ignored_object_value8;
+    uint32_t scaled_y = (uint32_t)position_y << 16;
 
     context->position_x_scaled = RuntimeObject_ArithmeticShiftRight8(scaled_x);
-    context->context_scaled =
-        RuntimeObject_ArithmeticShiftRight8(scaled_context);
+    context->position_y_scaled = RuntimeObject_ArithmeticShiftRight8(scaled_y);
+    context->selection_flags = (uint16_t)selection_flags;
+    context->cursor = 0;
     context->extent = (uint16_t)extent;
-    context->zero0a = 0;
-    context->position_y = (uint16_t)position_y;
     context->zero0e = 0;
     context->zero0f = 0;
     context->unit_x = 0x100u;
     context->unit_y = 0x100u;
-    context->zero14 = 0;
-    context->zero18 = 0;
-    context->zero1c = 0;
+    context->chain_head = 0;
+    context->chain_tail = 0;
+    context->chain_count = 0;
     context->object_value4 = object_value4;
     context->object_value0 = object_value0;
     context->trailing_value = 5;
-    context->zero29 = 0;
+    context->displacement_table_start = 0;
     context->object_byte_plus_four = (uint8_t)(object[5] + 4u);
     context->zero2b = 0;
-    context->zero2c = 0;
+    context->scale_record = 0;
 }
 
 static int32_t RuntimeObject_ScaledTableValue(const volatile int16_t *table,
@@ -194,8 +197,7 @@ static int32_t RuntimeObject_ScaledTableValue(const volatile int16_t *table,
 }
 
 /* ROM 0x08050AA0. Builds one 0x1C-byte output entry per descriptor count,
- * using source records at a 0x30-byte stride. The final selection dispatcher
- * remains external until its downstream instruction range is recovered. */
+ * using source records at a 0x30-byte stride. */
 uint32_t RuntimeObject_InitializeEntryTable(void *manager_pointer,
                                            const void *source_pointer,
                                            uint32_t selected_index)
@@ -295,11 +297,12 @@ uint32_t RuntimeObject_InitializeEntryTable(void *manager_pointer,
                                      selected_record_offset);
     uint32_t selected_element =
         sub_08063AC4((uint32_t)(uintptr_t)selected_record);
-    uint32_t selected_value = *(const uint32_t *)(const void *)(
+    uint32_t selected_stream_address = *(const uint32_t *)(const void *)(
         selected_record + 4u + selected_element * 4u);
     uint32_t object_byte = *(const uint8_t *)(const void *)(object + 0x0Au);
-    return sub_08061684((void *)(uintptr_t)context_pointer,
-                        selected_value, object_byte);
+    return RuntimeObjectSelection_Dispatch(
+        (void *)(uintptr_t)context_pointer,
+        (const uint8_t *)(uintptr_t)selected_stream_address, object_byte);
 }
 
 /* ROM 0x08063AC4. The entry computes a byte from the pointer stored at

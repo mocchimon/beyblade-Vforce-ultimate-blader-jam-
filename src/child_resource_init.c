@@ -1,4 +1,6 @@
 #include <stdint.h>
+
+#include "child_resource_helpers.h"
 #include "runtime.h"
 
 typedef struct ChildResourceHeader {
@@ -8,11 +10,6 @@ typedef struct ChildResourceHeader {
     uint32_t source_offset;
     uint8_t data[];
 } ChildResourceHeader;
-
-extern uint32_t ChildResource_SelectLayout(void *child, uint32_t arg1, uint32_t arg2);
-extern uint16_t ChildResource_LayoutValueA(uint32_t index);
-extern uint16_t ChildResource_LayoutValueB(uint32_t index);
-extern uint16_t ChildResource_LayoutValueC(uint32_t value);
 
 /* 0x08058ACC */
 void ChildResource_Init(void *child, uint32_t index, const ChildResourceHeader *src,
