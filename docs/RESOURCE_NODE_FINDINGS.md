@@ -32,3 +32,27 @@ The C implementation reproduces the observed shift behavior for out-of-range shi
 ## Confidence / remaining work
 
 The list-link updates, validation conditions, diagnostic pointers, fields, globals, call order, and counter update are directly supported by Thumb instructions. The higher-level domain meaning of range release and auxiliary unlink remains provisional, though both calls bind to recovered C implementations. The host harness includes valid-recycling and malformed-link cases, but those C runtime cases were not executed in this Windows environment and are not an emulator-level test.
+
+## Counted chain allocation and resizing (`0x08060C40`, `0x08060DBC`)
+
+`ResourceNode_AllocateChain` removes the requested contiguous batch from the
+primary free chain, tags every node with the requested class, links the batch
+into the class-ordered active list, and fills the context head, tail, and count.
+Insufficient capacity reports the ROM diagnostic and returns null before list
+mutation.
+
+`ResourceNode_ResizeChain` returns the existing head for an equal count. It
+allocates from an empty context, extends a nonempty segment immediately after
+its old tail when growing, and releases/recreates the segment when shrinking.
+An unsuccessful growth reports its diagnostic and leaves the active segment
+unchanged. Class values on appended nodes are inherited from the existing
+head; the class argument is used when the routine allocates a new segment.
+
+The embedded context at `+0x00/+0x04/+0x08` holds head, tail, and count. ROM
+`0x08060D00` clears all three after releasing a nonempty segment and leaves
+`+0x2C` untouched. Pass 24 corrected the earlier C reconstruction and harness
+after checking the stores at `0x08060D98–0x08060D9C`; preserving `+0x2C` matters
+because the selection finalizer reads that context value after reset.
+ROM verification and synthetic source checks are available through
+`make verify-resource-node-chain-ops ROM=...` and
+`make test-resource-node-chain-ops`.

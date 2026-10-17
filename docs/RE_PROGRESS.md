@@ -815,3 +815,107 @@ remains roughly 54%, unchanged and not measured coverage. ARM object output,
 partial linking, and a candidate ROM are still unavailable because this host
 lacks `make` and an ARM compiler/linker, and the original GBA link layout is
 not recovered. See `docs/PASS21_DEVELOPMENT_2026-10-16.md`.
+
+## Pass 22 — selection dispatcher and context fields (2026-10-16)
+
+Source-defined the Thumb wrapper at `0x08061684`, its context reset at
+`0x0806124C`, and five adjacent packed-field helpers at `0x08061154`,
+`0x08061170`, `0x0806117C`, `0x08061184`, and `0x0806118C`. The builder now
+uses `RuntimeObjectSelection_Dispatch`; its downstream finalizer
+`0x080614E0` and embedded-subcontext release `0x08060D00` remain unresolved.
+The Pass 22 verifier checks 60 halfwords across seven ranges and 10 direct
+call targets. The new translation unit is configured for Thumb state, but no
+object-level ISA/interworking check or ROM build was possible without a C/ARM
+compiler, linker, or `make`. The overall estimate remains **~54%**, unchanged
+and not measured coverage. See `docs/PASS22_DEVELOPMENT_2026-10-16.md`.
+
+## Pass 23 — resource-node chain release (2026-10-17)
+
+Recovered `0x08060D00` as `ResourceNode_ReleaseChain` and connected it to the
+selection-context reset. It recycles the counted active-list segment and its
+auxiliary/range ownership, repairs list links, prepends the segment to the free
+chain, clears the observed context fields, and validates the result. The ROM
+verifier matches 94 Thumb halfwords and five direct call targets. All 55 Python
+unit tests passed with the local ROM supplied; five additional ROM-backed
+checks passed. Libclang parsed all 45 C translation units plus both updated C
+behavior harnesses with no diagnostics. The host has no C/ARM compiler,
+linker, or `make`; no objects, partial link, or candidate ROM were produced.
+The rough **~54%** completion estimate remains unchanged and unmeasured;
+matching-ROM progress remains **0%**. See
+`docs/PASS23_DEVELOPMENT_2026-10-17.md`.
+
+## Pass 24 — selection finalizer and chain operations (2026-10-17)
+
+Recovered `0x08060C40` as `ResourceNode_AllocateChain`, `0x08060DBC` as
+`ResourceNode_ResizeChain`, `0x08064F5C` as the selection-code counter, and
+`0x080614E0` as `RuntimeObjectSelection_Finalize`. The dispatcher now passes a
+named zero-terminated code stream. The finalizer grows the embedded chain,
+configures ordinary entries, carries code 32 as a cursor marker, and delegates
+the remaining layout/context work to still-unresolved `0x08061260`.
+
+The ROM inspection also corrected Pass 23's chain-release model:
+`0x08060D00` zeros the context count at `+0x08` as well as its head and tail.
+It preserves context `+0x2C`; the C source and harness now match both details.
+The original ROM verifiers
+matched **228 halfwords and 10 calls** for the chain-operation ranges and **210
+halfwords, seven calls, and three literals** for the finalizer range. The
+previous release-chain check also passes at 94 halfwords and five calls. The
+Python suite and frontend syntax checks are recorded in the pass report.
+
+The overall completion figure remains the historical **~54% estimate**, not
+measured source coverage. Matching-ROM progress is **0%**. No object build,
+link, or candidate ROM is available because this host has no C/ARM compiler,
+linker, or `make`, and the original GBA link layout is not recovered. See
+`docs/PASS24_DEVELOPMENT_2026-10-17.md`.
+
+## Pass 25 — selection layout and context correction (2026-10-17)
+
+Recovered the layout loop at `0x08061260` and flags wrapper at `0x080614D4`.
+The source models the two coordinate bases, mode-specific initial X offset,
+per-entry projection and row wrapping, optional record scale, anchor-marker
+handling, signed row step, and final vertical correction from the upper flag
+bits. The finalizer now calls the named layout routine.
+
+Rechecking the adjacent initializer corrected a prior context-layout mistake:
+the halfword at `+0x08` stores caller-provided selection flags, `+0x0A` is the
+cursor, `+0x0C` is the extent, and `+0x04` stores the scaled Y coordinate.
+Pass 21 had mislabeled these fields and had treated the final initializer
+argument as ignored; both the context source and regression assertion now
+match the observed ROM stores.
+
+The saved ROM range matched **320 Thumb halfwords** and decoded the wrapper
+call to `0x08061260`; the existing finalizer verifier continues to check its
+call site. The Python suite and available C frontend checks are recorded in
+the pass report. No ARM object build, partial link, or candidate ROM was
+produced. The historical **~54% completion estimate remains unchanged and
+unmeasured**; matching-ROM progress remains **0%**. See
+`docs/PASS25_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 26 (2026-10-17)
+
+Recovered the runtime-object affine transform at `0x08058F84` and its helpers
+at `0x08059A8C`, `0x08059ADC`, `0x08059B24`, and `0x08059FC4`. The updater now
+calls the named transform implementation; `0x080596D0` remains an explicit
+external. The ROM verifier matched **352 Thumb halfwords**, **seven direct
+calls**, and **12 literal words** across five ranges. Five focused tests
+passed. Full-suite, frontend, and archive checks are recorded in
+`docs/PASS26_DEVELOPMENT_2026-10-17.md`.
+
+The historical **~54% completion estimate remains unchanged and unmeasured**;
+matching-ROM progress remains **0%**. No ARM object build, partial link, or
+candidate ROM was produced.
+
+### Development pass 27 (2026-10-17)
+
+Recovered `RuntimeObject_UpdateDisplayRegion` at `0x080596D0`, its frame
+wrapper at `0x08059928`, and corrected the three BG register-address helpers
+at `0x080599CC`, `0x08059A0C`, and `0x08059A4C`. The updater now supplies the
+two register values left in `r1/r2` by the original caller. ROM checks matched
+**421 Thumb halfwords**, **seven direct calls**, and **12 I/O literals** across
+six ranges. All 74 Python tests and all 49 C frontend parses passed. The
+`0x08059334` transfer backend remains a placeholder, so pixel equivalence is
+not established. See `docs/PASS27_DEVELOPMENT_2026-10-17.md`.
+
+The historical **~54% completion estimate remains unchanged and unmeasured**;
+matching-ROM progress remains **0%**. No ARM object build, partial link, or
+candidate ROM was produced.
