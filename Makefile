@@ -109,6 +109,26 @@ verify-resource-node-validator:
 	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
 	python3 tools/verify_resource_node_validator.py "$(ROM)"
 
+.PHONY: verify-resource-node-release-chain test-resource-node-release-chain
+verify-resource-node-release-chain:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_resource_node_release_chain.py "$(ROM)"
+
+test-resource-node-release-chain:
+	python3 -m unittest discover -s tests -p 'test_resource_node_release_chain.py' -v
+
+test-all: test-resource-node-release-chain
+
+.PHONY: verify-resource-node-chain-ops test-resource-node-chain-ops
+verify-resource-node-chain-ops:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_resource_node_chain_ops.py "$(ROM)"
+
+test-resource-node-chain-ops:
+	python3 -m unittest discover -s tests -p 'test_resource_node_chain_ops.py' -v
+
+test-all: test-resource-node-chain-ops
+
 .PHONY: verify-record-manager
 verify-record-manager:
 	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
@@ -118,6 +138,26 @@ verify-record-manager:
 verify-runtime-object-records:
 	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
 	python3 tools/verify_runtime_object_records.py "$(ROM)"
+
+.PHONY: verify-runtime-object-record-transform test-runtime-object-record-transform
+verify-runtime-object-record-transform:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_object_record_transform.py "$(ROM)"
+
+test-runtime-object-record-transform:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_record_transform.py' -v
+
+test-all: test-runtime-object-record-transform
+
+.PHONY: verify-runtime-object-display-region test-runtime-object-display-region
+verify-runtime-object-display-region:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_object_display_region.py "$(ROM)"
+
+test-runtime-object-display-region:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_display_region.py' -v
+
+test-all: test-runtime-object-display-region
 
 .PHONY: verify-runtime-object-selection test-runtime-object-selection
 verify-runtime-object-selection:
@@ -138,6 +178,39 @@ test-resource-node-selection:
 	python3 -m unittest discover -s tests -p 'test_resource_node_selection.py' -v
 
 test-all: test-resource-node-selection
+
+.PHONY: verify-runtime-object-dispatch test-runtime-object-dispatch
+verify-runtime-object-dispatch:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_object_dispatch.py "$(ROM)"
+
+test-runtime-object-dispatch:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_dispatch.py' -v
+	@mkdir -p build/tests
+	$(CC) -std=c11 -Wall -Wextra -Werror -Iinclude src/runtime_object_selection_dispatch.c tests/test_runtime_object_selection_dispatch.c -o build/tests/test_runtime_object_selection_dispatch
+	./build/tests/test_runtime_object_selection_dispatch
+
+test-all: test-runtime-object-dispatch
+
+.PHONY: verify-runtime-object-selection-finalize test-runtime-object-selection-finalize
+verify-runtime-object-selection-finalize:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_object_selection_finalize.py "$(ROM)"
+
+test-runtime-object-selection-finalize:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_selection_finalize.py' -v
+
+test-all: test-runtime-object-selection-finalize
+
+.PHONY: verify-runtime-object-selection-layout test-runtime-object-selection-layout
+verify-runtime-object-selection-layout:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_runtime_object_selection_layout.py "$(ROM)"
+
+test-runtime-object-selection-layout:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_selection_layout.py' -v
+
+test-all: test-runtime-object-selection-layout
 
 test-alias-resources:
 	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)

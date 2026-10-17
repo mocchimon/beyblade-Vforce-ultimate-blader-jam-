@@ -16,12 +16,30 @@ This is an inventory, **not** ROM matching.
    `make verify-runtime-object-records ROM=...`. `RuntimeObject_InitializeEntryTable`
    (`0x08050AA0`) and the byte lookup at `0x08063AC4` are also recovered and
    checked by `make verify-runtime-object-selection ROM=...`. The builder's
-    callees at `0x080609E8`, `0x08060A04`, `0x08060B8C`, and `0x080611B4` now
-    have source definitions. Check them with
-    `make verify-resource-node-selection ROM=...`. Its final dispatcher at
-    `0x08061684` remains unresolved; the
-    earlier record updater's callees at `0x080596D0` and `0x08058F84` also
-    remain open.
+   callees at `0x080609E8`, `0x08060A04`, `0x08060B8C`, and `0x080611B4` now
+   have source definitions. Check them with
+   `make verify-resource-node-selection ROM=...`. The wrapper at
+   `0x08061684` now has a source definition, and `0x080614E0` is now recovered
+   as `RuntimeObjectSelection_Finalize`, and `0x08061260` is now recovered as
+   `RuntimeObjectSelection_ApplyLayout`. Resource-node allocation and
+   resizing at `0x08060C40` and `0x08060DBC` are source-defined and checked by
+   `make verify-resource-node-chain-ops ROM=...`. The embedded-subcontext
+   release at `0x08060D00` is `ResourceNode_ReleaseChain`, checked by
+   `make verify-resource-node-release-chain ROM=...`. The packed-field helpers
+   at `0x08061154`, `0x08061170`, `0x0806117C`, `0x08061184`, and `0x0806118C`
+   are source-defined and checked by `make verify-runtime-object-dispatch ROM=...`.
+   The finalizer's code counter at `0x08064F5C` is also source-defined. Its
+   instructions and call edges are checked by
+   `make verify-runtime-object-selection-finalize ROM=...`.
+   The layout loop and its flags wrapper are checked by
+   `make verify-runtime-object-selection-layout ROM=...`.
+   `0x08058F84` is now source-defined as `RuntimeObject_ApplyRecordTransform`.
+   Its affine-table builder and GBA register helpers at `0x08059B24`,
+   `0x08059A8C`, `0x08059ADC`, and `0x08059FC4` are also source-defined and
+   checked by `make verify-runtime-object-record-transform ROM=...`.
+   The other updater callee, `0x080596D0`, is now
+   `RuntimeObject_UpdateDisplayRegion`; its frame wrapper and BG register
+   selectors are checked by `make verify-runtime-object-display-region ROM=...`.
 2. **Resource tables:** `ResourceTable_Generate`, `Transform`, and `Combine`
    form a missing group; verify input/output layout before implementing.
 3. **Rasterizer:** `ArmRaster_ProcessPrimitiveEdges`, `ArmRaster_DrawRows`,

@@ -27,6 +27,11 @@ fully matching ROM build is not yet claimed; the next stage is continued call-
 graph/data recovery followed by progressively replacing provisional helpers
 with verified implementations.
 
+Current rough overall decompilation estimate: **approximately 54%**. This is
+an unchanged engineering estimate without a defined denominator, not measured
+function, byte, or semantic coverage. A matching ROM build has not been
+achieved (**0%**).
+
 ## Latest render recovery
 
 The current snapshot includes the recovered `0x08059520` DMA3-backed 16-bit
@@ -70,7 +75,8 @@ The ARM-state image at `0x080641B8` is copied through the normal heap allocation
 
 The ARM-state runtime image at `0x080641B8` is now mapped as a software rasterization/primitive-processing subsystem: fixed-point sample generation, packed byte output, three-record edge processing, span clamping, 64-byte row stepping, and vertex/attribute updates. See `docs/ARM_RASTERIZER_FINDINGS.md`; raw ARM disassembly is preserved in `asm/runtime/arm_rasterizer_641b8_64edc.dis.txt`. This is separate from the unresolved IWRAM render dispatch targets.
 
-Current rough overall traditional-decompilation estimate: **17%**. A reproducible build matching the original ROM is not yet achieved.
+Historical estimate at this stage: **17%**. A build matching the original ROM
+had not been achieved.
 
 ### Latest recovery: ARM rasterizer copy helper
 
@@ -80,8 +86,8 @@ The ARM image's helper at `0x08064E54` has now been reconstructed in C as
 64-byte block contiguously. Its precise graphics format remains under
 investigation. See `docs/ARM_RASTERIZER_COPY_HELPER.md`.
 
-Current rough engineering estimate: **18% overall decompilation**; matching-ROM
-build remains **0% complete**.
+Historical estimate at this stage: **18% overall decompilation**; a build
+matching the original ROM remained **0% complete**.
 
 ### Compile recovered sources
 
@@ -93,8 +99,8 @@ mean it does **not** create a runnable or matching ROM. Rasterizer bucket-list
 and edge-dispatch reconstructions are documented in
 `docs/ARM_RASTERIZER_LISTS.md`.
 
-Current rough overall traditional-decompilation estimate: **24%**. Matching-ROM
-build remains **0% complete**.
+Historical estimate at this stage: **24% overall decompilation**. A build
+matching the original ROM remained **0% complete**.
 
 The ARM image loader and relocation map are documented in `docs/ARM_RASTERIZER_LOADER.md`.
 
@@ -299,11 +305,60 @@ linker layout has not been recovered. See
 
 Recovered the resource-node active-list insertion-point scan, free-node
 acquisition, selection-entry field initialization, and the 0x30-byte
-object-selection context initializer. Three of the prior four direct
-address-named callees now have source definitions; `0x08061684` remains
+object-selection context initializer. At that time, three of the prior four
+direct address-named callees had source definitions and `0x08061684` remained
 unresolved. The ROM check matched 214 Thumb halfwords and seven direct calls,
 47 Python unit cases passed, and all 44 C translation units passed libclang
 syntax parsing. The historical **~54% completion figure remains a rough,
 unmeasured estimate**. No partial link or candidate ROM was produced because
 `make` and ARM code-generation tools are unavailable and the GBA link layout
 has not been recovered. See `docs/PASS21_DEVELOPMENT_2026-10-16.md`.
+
+### Development pass 22 (2026-10-16)
+
+Recovered the `0x08061684` selection wrapper, its `0x0806124C` context reset,
+and five packed-field helpers. The builder now calls the named wrapper. The
+large finalizer at `0x080614E0` and embedded-subcontext release routine at
+`0x08060D00` remain unresolved. ROM checks matched 60 Thumb halfwords across
+seven ranges and decoded 10 direct calls. The added C source is configured for
+Thumb state; no object-level ARM/Thumb linkage could be exercised because this
+host has no compiler/linker or `make`. No candidate ROM was produced. The
+full 52-test Python suite passed with the original ROM supplied, and libclang
+parsed all 45 ARM7TDMI C units without diagnostics. The rough **~54%**
+completion estimate is unchanged and is not measured coverage.
+See `docs/PASS22_DEVELOPMENT_2026-10-16.md`.
+
+### Development pass 23 (2026-10-17)
+
+Recovered `ResourceNode_ReleaseChain` at `0x08060D00` and replaced the
+selection reset's address-named import with the source function. The ROM check
+matched 94 Thumb halfwords and five direct call targets. All 55 Python unit
+tests passed with the local ROM supplied, along with five additional ROM-backed
+checks. Libclang parsed all 45 source files and both updated C behavior
+harnesses with zero diagnostics. The host has no C/ARM compiler, linker, or
+`make`, so no ARM objects, link, or candidate ROM were produced. The remaining
+selection gap is the finalizer at `0x080614E0`. The historical **~54%**
+estimate remains unchanged and is not measured coverage; matching-ROM progress
+remains **0%**. See `docs/PASS23_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 24 (2026-10-17)
+
+Recovered the resource-chain allocator/resizer, selection-stream counter, and
+`RuntimeObjectSelection_Finalize` at `0x080614E0`. Corrected the earlier
+resource-release implementation to clear its count, matching the ROM stores.
+ROM checks matched 228 Thumb halfwords and 10 calls for chain operations, plus
+210 halfwords, seven calls, and three literals for the finalizer. The release
+routine clears its chain count but preserves context `+0x2C`. The ~54%
+completion figure remains a rough, unmeasured estimate; matching-ROM progress
+is 0%. See `docs/PASS24_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 25 (2026-10-17)
+
+Recovered the selection-chain layout routine at `0x08061260` and its flags
+wrapper at `0x080614D4`. The pass also corrected the shared context field map:
+flags are at `+0x08`, cursor at `+0x0A`, and extent at `+0x0C`, with both
+fixed-point coordinate bases at `+0x00/+0x04`. ROM verification matched 320
+halfwords and the wrapper's direct call. The rough ~54% estimate remains
+unmeasured; matching-ROM progress is 0%. The host still cannot compile ARM
+objects or link a candidate ROM. See
+`docs/PASS25_DEVELOPMENT_2026-10-17.md`.
