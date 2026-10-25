@@ -35,7 +35,7 @@ test-math:
 .PHONY: test-script
 test-script:
 	@mkdir -p build/tests
-	$(CC) -std=c11 -Wall -Wextra -Werror src/runtime_script.c src/runtime_pending_service.c tests/test_runtime_script.c -o build/tests/test_runtime_script
+	$(CC) -Iinclude -std=c11 -Wall -Wextra -Werror src/runtime_script.c src/runtime_pending_service.c tests/test_runtime_script.c -o build/tests/test_runtime_script
 	./build/tests/test_runtime_script
 
 
@@ -158,6 +158,86 @@ test-runtime-object-display-region:
 	python3 -m unittest discover -s tests -p 'test_runtime_object_display_region.py' -v
 
 test-all: test-runtime-object-display-region
+
+.PHONY: verify-runtime-object-display-init test-runtime-object-display-init
+verify-runtime-object-display-init:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_object_display_init.py "$(ROM)"
+
+test-runtime-object-display-init:
+	python3 -m unittest discover -s tests -p 'test_runtime_object_display_init.py' -v
+
+test-all: test-runtime-object-display-init
+
+.PHONY: verify-runtime-display-controls test-runtime-display-controls
+verify-runtime-display-controls:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_display_controls.py "$(ROM)"
+
+test-runtime-display-controls:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_controls.py' -v
+
+test-all: test-runtime-display-controls
+
+.PHONY: verify-runtime-background-dispatch test-runtime-background-dispatch
+verify-runtime-background-dispatch:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_background_dispatch.py "$(ROM)"
+
+test-runtime-background-dispatch:
+	python3 -m unittest discover -s tests -p 'test_runtime_background_dispatch.py' -v
+
+test-all: test-runtime-background-dispatch
+
+.PHONY: verify-child-runtime-init-variant-c test-child-runtime-init-variant-c
+verify-child-runtime-init-variant-c:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_child_runtime_init_variant_c.py "$(ROM)"
+
+test-child-runtime-init-variant-c:
+	python3 -m unittest discover -s tests -p 'test_child_runtime_init_variant_c.py' -v
+
+test-all: test-child-runtime-init-variant-c
+
+.PHONY: verify-runtime-display-state-record test-runtime-display-state-record
+verify-runtime-display-state-record:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_runtime_display_state_record.py "$(ROM)"
+
+test-runtime-display-state-record:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_state_record.py' -v
+
+test-all: test-runtime-display-state-record
+
+.PHONY: verify-runtime-display-state-helpers test-runtime-display-state-helpers
+verify-runtime-display-state-helpers:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_runtime_display_state_helpers.py "$(ROM)"
+
+test-runtime-display-state-helpers:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_state_helpers.py' -v
+
+test-all: test-runtime-display-state-helpers
+
+.PHONY: audit-iwram-target-03006fac test-iwram-target-03006fac
+audit-iwram-target-03006fac:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/audit_iwram_target_03006fac.py "$(ROM)"
+
+test-iwram-target-03006fac:
+	python3 -m unittest discover -s tests -p 'test_iwram_target_03006fac.py' -v
+
+test-all: test-iwram-target-03006fac
+
+.PHONY: verify-runtime-display-tile-blit test-runtime-display-tile-blit
+verify-runtime-display-tile-blit:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_runtime_display_tile_blit.py "$(ROM)"
+
+test-runtime-display-tile-blit:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_tile_blit.py' -v
+
+test-all: test-runtime-display-tile-blit
 
 .PHONY: verify-runtime-object-selection test-runtime-object-selection
 verify-runtime-object-selection:
@@ -381,3 +461,255 @@ test-all: test-entries
 partial-link: check
 	$(CC) --target=armv4t-none-eabi -fuse-ld=lld -nostdlib -Wl,-r $(OBJECTS) -o build/ultimate_blader_jam.partial.o
 	@echo 'Produced relocatable integration object (not a ROM).'
+
+.PHONY: verify-runtime-display-state-operations test-runtime-display-state-operations
+verify-runtime-display-state-operations:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_display_state_operations.py "$(ROM)"
+
+test-runtime-display-state-operations:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_state_operations.py' -v
+
+test-all: test-runtime-display-state-operations
+
+.PHONY: verify-runtime-display-metric test-runtime-display-metric
+verify-runtime-display-metric:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_display_metric.py "$(ROM)"
+
+test-runtime-display-metric:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_metric.py' -v
+
+test-all: test-runtime-display-metric
+
+.PHONY: verify-runtime-display-sequence test-runtime-display-sequence
+verify-runtime-display-sequence:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_display_sequence.py "$(ROM)"
+
+test-runtime-display-sequence:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_sequence.py' -v
+
+test-all: test-runtime-display-sequence
+
+.PHONY: verify-runtime-display-byte-stream test-runtime-display-byte-stream
+verify-runtime-display-byte-stream:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_display_byte_stream.py "$(ROM)"
+
+test-runtime-display-byte-stream:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_byte_stream.py' -v
+
+test-all: test-runtime-display-byte-stream
+
+.PHONY: verify-collision-data-spline test-collision-data-spline
+verify-collision-data-spline:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_collision_data_spline.py "$(ROM)"
+
+test-collision-data-spline:
+	python3 -m unittest discover -s tests -p 'test_collision_data_spline.py' -v
+
+test-all: test-collision-data-spline
+
+
+.PHONY: verify-collision-owned-segments test-collision-owned-segments
+verify-collision-owned-segments:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/the/original.gba' && exit 1)
+	python3 tools/verify_collision_data_owned_segments.py "$(ROM)"
+
+test-collision-owned-segments:
+	python3 -m unittest discover -s tests -p 'test_collision_data_owned_segments.py' -v
+
+test-all: test-collision-owned-segments
+
+.PHONY: verify-runtime-copy-callback test-runtime-copy-callback
+verify-runtime-copy-callback:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/verify_runtime_copy_callback.py "$(ROM)"
+
+test-runtime-copy-callback:
+	python3 -m unittest discover -s tests -p 'test_runtime_copy_callback.py' -v
+
+test-all: test-runtime-copy-callback
+
+.PHONY: audit-runtime-image-bounds test-runtime-image-bounds
+audit-runtime-image-bounds:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_image_bounds.py "$(ROM)"
+
+test-runtime-image-bounds:
+	python3 -m unittest discover -s tests -p 'test_runtime_image_bounds.py' -v
+
+test-all: test-runtime-image-bounds
+
+.PHONY: audit-iwram-function-table test-iwram-function-table
+audit-iwram-function-table:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 2)
+	python3 tools/audit_iwram_function_table.py "$(ROM)" --json build/reports/iwram_function_table_pass42.json
+
+test-iwram-function-table:
+	python3 -m unittest discover -s tests -p 'test_iwram_function_table.py' -v
+
+.PHONY: audit-iwram-install-candidates test-iwram-install-candidates
+audit-iwram-install-candidates:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_iwram_install_candidates.py "$(ROM)" --json build/reports/iwram_install_candidates.json
+
+test-iwram-install-candidates:
+	python3 -m unittest discover -s tests -p 'test_iwram_install_candidates.py' -v
+
+test-all: test-iwram-install-candidates
+
+.PHONY: audit-runtime-copy-paths test-runtime-copy-paths
+audit-runtime-copy-paths:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_runtime_copy_paths.py "$(ROM)" --json build/reports/runtime_copy_paths_pass44.json
+
+test-runtime-copy-paths:
+	python3 -m unittest discover -s tests -p 'test_runtime_copy_paths.py' -v
+
+test-all: test-runtime-copy-paths
+
+.PHONY: audit-arm-runtime-module test-arm-runtime-module
+audit-arm-runtime-module:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_arm_runtime_module.py "$(ROM)" --json build/reports/arm_runtime_module_pass45.json
+
+test-arm-runtime-module:
+	python3 -m unittest discover -s tests -p 'test_arm_runtime_module.py' -v
+
+test-all: test-arm-runtime-module
+
+.PHONY: audit-startup-iwram-installer test-startup-iwram-installer verify-startup-iwram-installer
+# Exact startup-installer audit; the ROM is supplied locally and never copied into the archive.
+audit-startup-iwram-installer:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_startup_iwram_installer.py "$(ROM)" --json build/reports/startup_iwram_installer_pass46.json
+
+verify-startup-iwram-installer: audit-startup-iwram-installer
+
+test-startup-iwram-installer:
+	python3 -m unittest discover -s tests -p 'test_startup_iwram_installer.py' -v
+
+test-all: test-startup-iwram-installer
+
+.PHONY: verify-runtime-display-attribute-mask test-runtime-display-attribute-mask
+verify-runtime-display-attribute-mask:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/verify_runtime_display_attribute_mask.py "$(ROM)"
+
+test-runtime-display-attribute-mask:
+	python3 -m unittest discover -s tests -p 'test_runtime_display_attribute_mask.py' -v
+
+test-all: test-runtime-display-attribute-mask
+
+
+.PHONY: audit-dma3-transfer-08065994 test-dma3-transfer-08065994
+audit-dma3-transfer-08065994:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_dma3_transfer_08065994.py "$(ROM)" --json build/reports/dma3_transfer_08065994.json
+
+test-dma3-transfer-08065994:
+	python3 -m unittest discover -s tests -p 'test_dma3_transfer_08065994.py' -v
+
+test-all: test-dma3-transfer-08065994
+
+.PHONY: audit-input-mask-callers test-input-mask-callers
+audit-input-mask-callers:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_input_mask_callers.py "$(ROM)" --json docs/input_mask_callers_pass50.json
+
+test-input-mask-callers:
+	python3 -m unittest discover -s tests -p 'test_input_mask_callers.py' -v
+
+test-all: test-input-mask-callers
+
+.PHONY: audit-input-mask-semantics-pass51 test-input-mask-semantics-pass51
+audit-input-mask-semantics-pass51:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_input_mask_semantics_pass51.py "$(ROM)" --json docs/input_mask_semantics_pass51.json
+
+test-input-mask-semantics-pass51:
+	python3 -m unittest discover -s tests -p 'test_input_mask_semantics_pass51.py' -v
+
+test-all: test-input-mask-semantics-pass51
+
+.PHONY: audit-runtime-base-pointer test-runtime-base-pointer
+audit-runtime-base-pointer:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_base_pointer.py "$(ROM)" --json docs/runtime_base_pointer_xrefs_pass52.json
+
+test-runtime-base-pointer:
+	python3 -m unittest discover -s tests -p 'test_runtime_base_pointer.py' -v
+
+test-all: test-runtime-base-pointer
+
+.PHONY: audit-runtime-base-slot-writes test-runtime-base-slot-writes
+audit-runtime-base-slot-writes:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_base_slot_writes.py "$(ROM)" --json docs/runtime_base_slot_write_candidates_pass53.json
+
+test-runtime-base-slot-writes:
+	python3 -m unittest discover -s tests -p 'test_runtime_base_slot_writes.py' -v
+
+test-all: test-runtime-base-slot-writes
+
+.PHONY: audit-sub-08051090 test-sub-08051090
+audit-sub-08051090:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_sub_08051090.py "$(ROM)" --json docs/sub_08051090_control_flow_pass54.json
+
+test-sub-08051090:
+	python3 -m unittest discover -s tests -p 'test_sub_08051090_audit.py' -v
+
+test-all: test-sub-08051090
+
+.PHONY: audit-runtime-context-init-pass55 test-runtime-context-init-pass55
+audit-runtime-context-init-pass55:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_context_init_pass55.py "$(ROM)" --json docs/runtime_context_init_pass55.json
+
+test-runtime-context-init-pass55:
+	python3 -m unittest discover -s tests -p 'test_runtime_context_init_pass55.py' -v
+
+test-all: test-runtime-context-init-pass55
+
+.PHONY: audit-runtime-context-followup-pass56 test-runtime-context-followup-pass56
+audit-runtime-context-followup-pass56:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_context_followup_pass56.py "$(ROM)" --json docs/runtime_context_followup_pass56.json
+
+test-runtime-context-followup-pass56:
+	python3 -m unittest discover -s tests -p 'test_runtime_context_followup_pass56.py' -v
+
+test-all: test-runtime-context-followup-pass56
+
+.PHONY: audit-runtime-helpers-pass57 test-runtime-helpers-pass57
+audit-runtime-helpers-pass57:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_helpers_pass57.py "$(ROM)" --json docs/runtime_helpers_pass57.json
+test-runtime-helpers-pass57:
+	python3 -m unittest discover -s tests -p 'test_runtime_helpers_pass57.py' -v
+test-all: test-runtime-helpers-pass57
+
+
+.PHONY: audit-runtime-state-setter-pass58 test-runtime-state-setter-pass58
+audit-runtime-state-setter-pass58:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_runtime_state_setter_pass58.py "$(ROM)" --json docs/runtime_state_setter_pass58.json
+
+test-runtime-state-setter-pass58:
+	python3 -m unittest discover -s tests -p 'test_runtime_state_setter_pass58.py' -v
+
+test-all: test-runtime-state-setter-pass58
+
+.PHONY: audit-state-switch-pass59 test-state-switch-pass59
+audit-state-switch-pass59:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_state_switch_pass59.py "$(ROM)" --json docs/state_switch_pass59.json
+
+test-state-switch-pass59:
+	python3 -m unittest discover -s tests -p 'test_state_switch_pass59.py' -v
+
+test-all: test-state-switch-pass59
