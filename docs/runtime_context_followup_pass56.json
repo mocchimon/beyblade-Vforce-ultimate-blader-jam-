@@ -1,0 +1,61 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "expected_reference_rom_match": true,
+  "entry": "0x08051120",
+  "checked_halfwords": 80,
+  "checked_literal_words": 7,
+  "findings": [
+    {
+      "address": "0x08051128",
+      "fact": "clears byte at runtime base + 0x0, and clears halfword at +0x6E8",
+      "confidence": "Thumb instructions and offset arithmetic verified"
+    },
+    {
+      "address": "0x0805113A",
+      "fact": "writes byte value 1 at runtime base + 0x6AB",
+      "confidence": "Thumb instructions and literal 0x6AB verified"
+    },
+    {
+      "address": "0x08051144",
+      "fact": "clears word at runtime base + 0x6C0",
+      "confidence": "Thumb instructions and immediate arithmetic verified"
+    },
+    {
+      "address": "0x0805114A",
+      "fact": "clears word at runtime base + 0x6B4, overwriting the value 1 seeded by 0x080510C2",
+      "confidence": "cross-routine write order verified; field meaning unknown"
+    },
+    {
+      "address": "0x08051152",
+      "fact": "writes halfword 0xFFFF at runtime base + 0x6EA",
+      "confidence": "Thumb instructions and literal-pool words verified"
+    },
+    {
+      "address": "0x08051158",
+      "fact": "loop indexes 0 through 55; record base is 0x08075B70 + index * 0xD0",
+      "confidence": "loop bound and stride decoded from instructions"
+    },
+    {
+      "address": "0x0805116A",
+      "fact": "stores record pointer at returned object + 0x0C and copies record words +4 and +8 to object +4 and +8",
+      "confidence": "directly supported by Thumb load/store encodings"
+    },
+    {
+      "address": "0x08051196",
+      "fact": "sets object halfword at +0 to 6 for index 0, otherwise 4; dispatches callbacks for object +0x10 and +0x14",
+      "confidence": "control flow and calls verified; callback meaning unknown"
+    },
+    {
+      "address": "0x080511C2",
+      "fact": "second loop indexes 0 through 9; each object gets pointer 0x08075850 + index * 0x50 at +4 and zero byte/halfword at +0/+2",
+      "confidence": "loop bound, stride, and stores verified"
+    }
+  ],
+  "interpretation": "The follow-on initializer performs additional runtime-base field writes, then constructs 56 table-backed records (0xD0-byte stride) through helper 0x08051744 and dispatches two callbacks per record through 0x08065C44. It also initializes 10 entries with a 0x50-byte stride. Crucially, the word at runtime base +0x6B4 seeded to 1 by 0x08051090 is cleared to 0 at 0x0805114A before the initializer returns. The semantic names of these fields, table records, and callbacks remain unresolved.",
+  "limitations": [
+    "Only a bounded instruction/literal fingerprint is audited, not a complete disassembly.",
+    "The callback target is loaded indirectly from 0x0807D994; its behavior is not inferred here.",
+    "No Easter egg or secret-input behavior is established by this initializer."
+  ]
+}

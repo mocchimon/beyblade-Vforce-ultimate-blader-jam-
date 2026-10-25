@@ -1,0 +1,23 @@
+Pass 52 validation record
+ROM: Beyblade V-Force - Ultimate Blader # GBA(2).GBA
+ROM size: 8388608 bytes
+ROM SHA-256: a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce
+
+Focused tests:
+  python3 -m unittest discover -s tests -p 'test_runtime_base_pointer.py' -v
+  Result: 4 tests passed.
+
+The full test suite and ARM7TDMI compile-only check are run after this record is
+created; their final results are reported in the conversation and archive.
+This project is not a matching-ROM build.
+
+Full regression suite:
+  make test-all
+  Result: passed (exit code 0), including the four Pass 52 focused tests.
+
+ARM7TDMI compile-only check:
+  make check
+  Result: passed (62 C source files compiled; exit code 0).
+
+Archive verification is performed after packaging. No matching-ROM build was
+produced; compilation is not evidence of a matching ROM.

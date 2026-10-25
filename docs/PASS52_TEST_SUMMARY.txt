@@ -1,0 +1,4 @@
+make test-all: PASS (exit 0)
+make check: PASS (62 ARM7TDMI C source files; exit 0)
+Focused Pass 52 tests: 4 passed
+ROM SHA-256: a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce

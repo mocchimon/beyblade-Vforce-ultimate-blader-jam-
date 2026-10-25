@@ -1,0 +1,24 @@
+Pass 54 validation
+==================
+Original ROM: supplied local GBA image (not redistributed)
+ROM-backed audit: tools/audit_sub_08051090.py
+Report: docs/sub_08051090_control_flow_pass54.json
+
+Focused tests:
+  python3 -m unittest discover -s tests -p 'test_sub_08051090_audit.py' -v
+  Result: 4 passed
+
+Full regression suite:
+  make test-all
+  Result: exit 0; 44 unittest invocations, 183 tests total, all 44 runs OK.
+
+Compile check:
+  make check
+  Result: compiled 62 C source files to ARM7TDMI objects.
+  Note: compile-only check; no matching ROM was produced.
+
+Archive integrity: verified after packaging.
+
+Limitations: the local decoder is bounded to the known routine. The store to
+0x03000F48 is verified at instruction level, but initialization semantics and
+zero-return control flow remain unresolved. No Easter egg has been confirmed.

@@ -1,0 +1,18 @@
+Pass 51 validation summary
+==========================
+
+Reference ROM:
+  File: Beyblade V-Force - Ultimate Blader # GBA(2).GBA
+  Size: 8,388,608 bytes
+  SHA-256: a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce
+
+Completed commands:
+  make audit-input-mask-semantics-pass51 ROM="/path/to/original.gba"  PASS
+  make test-input-mask-semantics-pass51                                PASS (3 tests)
+  make test-all                                                        PASS
+  make check                                                           PASS (62 ARM7TDMI C translation units compiled)
+
+Interpretation limits:
+  - This is source compilation and regression validation, not a matching-ROM build.
+  - The runtime pointer value at 0x03000F48 is not proven for every call site.
+  - No Easter egg or secret-input sequence has been confirmed.

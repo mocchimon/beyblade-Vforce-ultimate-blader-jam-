@@ -1,0 +1,39 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "target_slot": "0x03000F48",
+  "lookahead_halfwords": 8,
+  "candidate_store_count": 1,
+  "candidates": [
+    {
+      "slot_address_load": "0x080510A8",
+      "slot_address_load_halfword": "0x4B16",
+      "slot_register": "r3",
+      "literal_address": "0x08051104",
+      "store_address": "0x080510AC",
+      "store_halfword": "0x6019",
+      "store_kind": "str_word_immediate",
+      "stored_source_register": "r1",
+      "byte_displacement": 0,
+      "halfwords_between_load_and_store": 1,
+      "intervening_halfwords": [
+        "0x6821"
+      ],
+      "raw_context_start": "0x080510A0",
+      "raw_context_halfwords": [
+        "0x4817",
+        "0x1C29",
+        "0xF006",
+        "0xFDDA",
+        "0x4B16",
+        "0x6821",
+        "0x6019",
+        "0x22D6",
+        "0x00D2",
+        "0x1888",
+        "0x6004"
+      ]
+    }
+  ],
+  "interpretation": "Candidates are Thumb encoding patterns where an LDR-literal value equals the slot address and a nearby STR uses that loaded register as its base. This is not proof of reachability or a complete control-flow/data-flow analysis."
+}

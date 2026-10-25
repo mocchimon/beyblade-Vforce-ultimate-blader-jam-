@@ -1,0 +1,309 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "entry": "0x08051090",
+  "end_exclusive": "0x080510F8",
+  "instructions": [
+    {
+      "address": "0x08051090",
+      "halfword": "0xB530"
+    },
+    {
+      "address": "0x08051092",
+      "halfword": "0x4D1A",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x080510FC",
+      "literal_value": "0x00000C6C"
+    },
+    {
+      "address": "0x08051094",
+      "halfword": "0x1C28"
+    },
+    {
+      "address": "0x08051096",
+      "halfword": "0xF009",
+      "mnemonic": "BL",
+      "second_halfword": "0xF9D5",
+      "target": "0x0805A444"
+    },
+    {
+      "address": "0x0805109A",
+      "halfword": "0x1C04"
+    },
+    {
+      "address": "0x0805109C",
+      "halfword": "0x2C00"
+    },
+    {
+      "address": "0x0805109E",
+      "halfword": "0xD103",
+      "mnemonic": "conditional_branch",
+      "condition": "NE",
+      "target": "0x080510A8"
+    },
+    {
+      "address": "0x080510A0",
+      "halfword": "0x4817",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051100",
+      "literal_value": "0x087293E4"
+    },
+    {
+      "address": "0x080510A2",
+      "halfword": "0x1C29"
+    },
+    {
+      "address": "0x080510A4",
+      "halfword": "0xF006",
+      "mnemonic": "BL",
+      "second_halfword": "0xFDDA",
+      "target": "0x08057C5C"
+    },
+    {
+      "address": "0x080510A8",
+      "halfword": "0x4B16",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051104",
+      "literal_value": "0x03000F48"
+    },
+    {
+      "address": "0x080510AA",
+      "halfword": "0x6821"
+    },
+    {
+      "address": "0x080510AC",
+      "halfword": "0x6019"
+    },
+    {
+      "address": "0x080510AE",
+      "halfword": "0x22D6"
+    },
+    {
+      "address": "0x080510B0",
+      "halfword": "0x00D2"
+    },
+    {
+      "address": "0x080510B2",
+      "halfword": "0x1888"
+    },
+    {
+      "address": "0x080510B4",
+      "halfword": "0x6004"
+    },
+    {
+      "address": "0x080510B6",
+      "halfword": "0x2400"
+    },
+    {
+      "address": "0x080510B8",
+      "halfword": "0x700C"
+    },
+    {
+      "address": "0x080510BA",
+      "halfword": "0x681A"
+    },
+    {
+      "address": "0x080510BC",
+      "halfword": "0x4812",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051108",
+      "literal_value": "0x000006B4"
+    },
+    {
+      "address": "0x080510BE",
+      "halfword": "0x1811"
+    },
+    {
+      "address": "0x080510C0",
+      "halfword": "0x2001"
+    },
+    {
+      "address": "0x080510C2",
+      "halfword": "0x6008"
+    },
+    {
+      "address": "0x080510C4",
+      "halfword": "0x7094"
+    },
+    {
+      "address": "0x080510C6",
+      "halfword": "0x6819"
+    },
+    {
+      "address": "0x080510C8",
+      "halfword": "0x4810",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x0805110C",
+      "literal_value": "0x000006E6"
+    },
+    {
+      "address": "0x080510CA",
+      "halfword": "0x180A"
+    },
+    {
+      "address": "0x080510CC",
+      "halfword": "0x2080"
+    },
+    {
+      "address": "0x080510CE",
+      "halfword": "0x8010"
+    },
+    {
+      "address": "0x080510D0",
+      "halfword": "0x480F",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051110",
+      "literal_value": "0x000006E4"
+    },
+    {
+      "address": "0x080510D2",
+      "halfword": "0x180A"
+    },
+    {
+      "address": "0x080510D4",
+      "halfword": "0x20FF"
+    },
+    {
+      "address": "0x080510D6",
+      "halfword": "0x8010"
+    },
+    {
+      "address": "0x080510D8",
+      "halfword": "0x4A0E",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051114",
+      "literal_value": "0x000006AC"
+    },
+    {
+      "address": "0x080510DA",
+      "halfword": "0x1888"
+    },
+    {
+      "address": "0x080510DC",
+      "halfword": "0x8004"
+    },
+    {
+      "address": "0x080510DE",
+      "halfword": "0x3202"
+    },
+    {
+      "address": "0x080510E0",
+      "halfword": "0x1888"
+    },
+    {
+      "address": "0x080510E2",
+      "halfword": "0x8004"
+    },
+    {
+      "address": "0x080510E4",
+      "halfword": "0x4A0C",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x08051118",
+      "literal_value": "0x00000C64"
+    },
+    {
+      "address": "0x080510E6",
+      "halfword": "0x1888"
+    },
+    {
+      "address": "0x080510E8",
+      "halfword": "0x6004"
+    },
+    {
+      "address": "0x080510EA",
+      "halfword": "0x480C",
+      "mnemonic": "LDR_literal",
+      "literal_address": "0x0805111C",
+      "literal_value": "0x00000C68"
+    },
+    {
+      "address": "0x080510EC",
+      "halfword": "0x1809"
+    },
+    {
+      "address": "0x080510EE",
+      "halfword": "0x600C"
+    },
+    {
+      "address": "0x080510F0",
+      "halfword": "0xF000",
+      "mnemonic": "BL",
+      "second_halfword": "0xF816",
+      "target": "0x08051120"
+    },
+    {
+      "address": "0x080510F4",
+      "halfword": "0xBC30"
+    },
+    {
+      "address": "0x080510F6",
+      "halfword": "0xBC01"
+    }
+  ],
+  "callee_entry_context": [
+    {
+      "address": "0x0805A444",
+      "halfwords": [
+        "0xB570",
+        "0xB082",
+        "0x1C06",
+        "0x4D16"
+      ]
+    },
+    {
+      "address": "0x08057C5C",
+      "halfwords": [
+        "0xB40F",
+        "0xB004",
+        "0x4770",
+        "0x0000"
+      ]
+    },
+    {
+      "address": "0x08051120",
+      "halfwords": [
+        "0xB5F0",
+        "0x4B16",
+        "0x6818",
+        "0x2200"
+      ]
+    }
+  ],
+  "control_flow_findings": [
+    {
+      "address": "0x08051096",
+      "kind": "BL",
+      "target": "0x0805A444",
+      "meaning": "return value copied into r4 at 0x0805109A"
+    },
+    {
+      "address": "0x0805109E",
+      "kind": "BNE",
+      "target": "0x080510A8",
+      "meaning": "taken only when r4 != 0; skips the fallback call at 0x080510A4"
+    },
+    {
+      "address": "0x080510A4",
+      "kind": "BL",
+      "target": "0x08057C5C",
+      "meaning": "executed on the r4 == 0 fall-through path"
+    },
+    {
+      "address": "0x080510A8",
+      "kind": "LDR_LITERAL",
+      "literal_address": "0x08051104",
+      "literal_value": "0x03000F48"
+    },
+    {
+      "address": "0x080510AA",
+      "kind": "LDR",
+      "meaning": "loads r1 from [r4, #0]"
+    },
+    {
+      "address": "0x080510AC",
+      "kind": "STR",
+      "meaning": "stores r1 to [r3, #0], where r3 holds address 0x03000F48"
+    }
+  ],
+  "interpretation": "The slot store is real at the encoding level. Normal-path provenance depends on the return value from 0x0805A444. If that value is zero, execution calls 0x08057C5C before joining at 0x080510A8; this path and the subsequent [r4] load need further semantic investigation. Do not yet label this a proven initializer."
+}

@@ -1,0 +1,23 @@
+Pass 53 validation record
+ROM: Beyblade V-Force - Ultimate Blader # GBA(2).GBA
+ROM size: 8388608 bytes
+ROM SHA-256: a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce
+
+Focused tests:
+  python3 -m unittest discover -s tests -p 'test_runtime_base_slot_writes.py' -v
+  Result: 4 tests passed.
+
+ROM-backed scan:
+  python3 tools/audit_runtime_base_slot_writes.py ROM --json docs/runtime_base_slot_write_candidates_pass53.json
+  Result: 1 encoding-level candidate at LDR 0x080510A8 / STR 0x080510AC.
+
+Full regression suite:
+  make test-all
+  Result: passed (exit code 0).
+
+ARM7TDMI compile-only check:
+  make check
+  Result: passed (62 C source files compiled; exit code 0).
+
+This is not a matching-ROM build. The candidate store is not yet proven to be
+the runtime-base slot initializer, and no Easter egg has been confirmed.

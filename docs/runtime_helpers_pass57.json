@@ -1,0 +1,34 @@
+{
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "reference_rom_match": true,
+  "checked_halfwords": 25,
+  "checked_words": 7,
+  "runtime_slot": "0x03000F48",
+  "helper_08051704": {
+    "base_offset": "0x544",
+    "stride": "0x8",
+    "formula": "runtime_base + 0x544 + index * 8",
+    "pass56_entries": 10
+  },
+  "helper_08051744": {
+    "base_offset": "0x4",
+    "stride": "0x18",
+    "formula": "runtime_base + 4 + index * 24",
+    "pass56_entries": 56
+  },
+  "callback": {
+    "dispatch_site": "0x08065C44",
+    "instruction": "BX R3",
+    "rom_pointer_slot": "0x0807D994",
+    "ram_pointer_slot": "0x03006FAC",
+    "interpretation": "RAM slot holds runtime callback address; target cannot be determined statically from this ROM literal"
+  },
+  "bitmask_helper_080517A4": {
+    "formula": "input_mask & *(runtime_base + 0x6B4)",
+    "initial_state_after_08051120": 0
+  },
+  "limitations": [
+    "No callback target is proven; requires tracing writes to RAM 0x03006FAC.",
+    "No secret or Easter egg behavior is established."
+  ]
+}

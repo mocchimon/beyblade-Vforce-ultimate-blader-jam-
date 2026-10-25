@@ -1,4 +1,18 @@
+## Pass 59 — five-way context selector dispatch
+
+The routine at `0x08045A08` reads `[r6 + 0x4B4]`, rejects values greater than four, and jumps through a five-entry table at `0x08045A34`. Cases 0–2 invoke the verified runtime `+0x6B4` setter with values 1 or 4 before selecting contexts `0x19` or `0x0F`; cases 3–4 select `0x0C` and `0x28`. Semantic labels and any Easter-egg connection remain unresolved. See `docs/PASS59_DEVELOPMENT_2026-10-25.md`.
+
 # Reverse-engineering progress
+
+## Pass 55 — runtime-base initializer
+
+ROM evidence now confirms that `0x08051090` calls `Heap_AllocAlt(0xC6C)`,
+stores the allocation descriptor's payload address at `0x03000F48`, preserves
+the descriptor pointer at payload offset `+0x6B0`, seeds several fields, and
+calls `0x08051120` for further initialization. The field meanings and the
+zero-allocation path remain unresolved. See
+`docs/PASS55_DEVELOPMENT_2026-10-25.md` and
+`docs/runtime_context_init_pass55.json`. No Easter egg has been confirmed.
 
 ## Pass 1 — boot and entry
 
@@ -147,12 +161,13 @@ corrected to store the source-table pointer at entry `+0x1C`, matching the ROM.
 
 ## Continued render/runtime recovery
 
-The cluster `0x08058948..0x08058D68` was disassembled directly from the ROM.
+The cluster `0x08058948..0x08058E3C` was disassembled directly from the ROM.
 Two small table helpers at `0x08058948`/`0x08058960` were recovered, and the
 larger initializer family at `0x0805898C`, `0x08058A4C`, `0x08058ACC`, and
-`0x08058C98` was mapped. `0x08058ACC` is now represented by a conservative
-field-level source reconstruction in `src/child_resource_init.c`; unresolved
-helper semantics remain explicit rather than guessed.
+`0x08058C98` was mapped. `0x08058ACC` is represented by a conservative
+field-level reconstruction, and `0x08058C98` is now source-defined as
+`ChildRuntime_InitVariantC`; unresolved helper semantics remain explicit
+rather than guessed.
 
 ## Runtime pointer/configuration table pass
 
@@ -919,3 +934,301 @@ not established. See `docs/PASS27_DEVELOPMENT_2026-10-17.md`.
 The historical **~54% completion estimate remains unchanged and unmeasured**;
 matching-ROM progress remains **0%**. No ARM object build, partial link, or
 candidate ROM was produced.
+
+### Development pass 28 (2026-10-17)
+
+Recovered `RuntimeObject_InitializeDisplayState` at `0x08059958` and the
+record `+0x64` mask helper at `0x080599B8`. The initializer clears the observed
+IWRAM state bytes and BG scroll offsets, then initializes BG2/BG3 affine state.
+Its three direct incoming calls and four outgoing helper calls are ROM-checked.
+The verifier matched 63 Thumb halfwords across five ranges and three IWRAM
+pointer literals. Caller bodies remain unrecovered, and no direct caller was
+found for the flags helper.
+
+The overall estimate remains **~54%**, unchanged and not measured coverage;
+matching-ROM progress remains **0%**. The display-transfer backend remains a
+placeholder. All 78 Python tests passed, and libclang parsed all 50 C
+translation units with zero diagnostics. Object-level linkage and a candidate
+ROM remain unverified. See
+`docs/PASS28_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 29 (2026-10-17)
+
+Recovered five display-control routines at `0x08059C3C`, `0x08059CD8`,
+`0x08059CEC`, `0x08059D14`, and `0x08059D28`. These write/read the low two
+bits of BGxCNT, select the control register from a record byte, and update the
+per-background enable bit in DISPCNT. The ROM verifier matched 218 halfwords
+across ten ranges, 12 direct calls, and four mask literals. The five incoming
+caller bodies remain unknown in source.
+
+All 84 Python tests passed and 51 C translation units parsed with zero frontend
+diagnostics. The rough **~54%** estimate remains historical and unmeasured;
+matching-ROM progress remains **0%**. No object build or candidate ROM is
+available. See `docs/PASS29_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 30 (2026-10-17)
+
+Recovered two record-based display wrappers at `0x0804A7EC` and
+`0x0804A7FC`. The second follows the pointer at record `+0x88`, reads its
+background-memory index at `+0x5D`, and dispatches through the shared Thumb
+`BX r3` entry at `0x08065C44` to the even IWRAM pointer stored at `0x0807D994`;
+the backend behavior remains unknown. ROM checks matched 52 Thumb halfwords,
+two direct calls, two pointer literals, and all twelve register entries in the
+adjacent interworking thunk family. The larger caller at `0x0804A748` remains
+open because its incoming `r8` contract is unresolved.
+
+All 89 Python tests and 52 C frontend parses passed. The rough **~54%** source
+estimate is unchanged and unmeasured; matching-ROM progress remains **0%**.
+No ARM objects, partial link, or candidate ROM were available from this host.
+See `docs/PASS30_DEVELOPMENT_2026-10-17.md`.
+
+### Development pass 31 (2026-10-17)
+
+Recovered `ChildRuntime_InitVariantC` at `0x08058C98`, including its nested
+record setup, byte-sized background-memory allocation counters, opaque
+operation-slot call, and final BG control register write. Its ROM checks matched
+233 Thumb halfwords, four call destinations, and five literal words across the
+initializer, its observed caller setup, and the shared `BX r3` entry. Also
+recovered the five-argument record initializer at `0x0805B268`; its ROM checks
+matched 22 Thumb halfwords and its call from `0x0804A780`. The callback target
+remains the even ARM address `0x03006FAC`, with its behavior unresolved. The
+surrounding caller at `0x0804A748` is still not source-defined because its
+incoming `r8` contract remains open.
+
+The historical source-recovery estimate remains **~54%**, rough and
+unmeasured. Matching-ROM progress remains **0%**. This host still lacks the
+ARM compiler/linker and original section layout needed for a verified ROM
+build; compile checks do not establish a candidate or matching ROM. See
+`docs/PASS31_DEVELOPMENT_2026-10-17.md`.
+
+All 98 Python tests passed with the locally supplied ROM enabled, and libclang
+parsed 54 C translation units for ARM7TDMI with zero diagnostics. These are
+source, frontend, and ROM-byte checks; they do not constitute a linked object
+or ROM build.
+
+## Pass 32 — 2026-10-17
+
+Recovered the neighboring display-state field setters and indexed-address
+helper at `0x0805B284`–`0x0805B294`. The ROM check matched 22 Thumb halfwords,
+four direct calls into the address helper from `0x0805B2A4`, and its
+`0x000003FF` index mask. Added an IWRAM target pointer audit: the only literal
+word occurrence of `0x03006FAC` is at `0x0807D994`; 34 occurrences of the slot
+address itself remain reference candidates, not decoded xrefs. The target's
+code image and installer remain unresolved.
+
+ROM verifiers for passes 26–32 passed. All **107 tests passed with the
+original ROM supplied and no skips**. Libclang parsed **55 C translation units**
+for ARM7TDMI with zero diagnostics. These results establish source syntax and
+ROM-byte consistency only; there is still no object/link build or candidate
+ROM. This host lacks the ARM toolchain and the original linker layout.
+
+The historical source-recovery estimate remains **~54%**, rough and
+unmeasured. Matching-ROM progress remains **0%**. See
+`docs/PASS32_DEVELOPMENT_2026-10-17.md`.
+
+## Pass 33 — 2026-10-17
+
+Recovered the complete `0x0805B2A4` routine as
+`RuntimeDisplay_BlitIndexed4bppTile`. The ROM reads eight packed-pixel rows,
+selects four destination tile addresses from map entries `0/1/32/33`, shifts
+each row by the low three coordinate bits, and ORs clipped fragments into
+neighboring 32-byte tiles. Its caller at `0x0805B638` computes the tile-map
+cell and passes the coordinates using the observed four-register-plus-stack
+ABI. ROM checks cover 150 Thumb halfwords, five call destinations, and ten
+conditional branch targets. The name/format interpretation is supported by
+the 4-bit shifts and 32-byte blocks; runtime pixel equivalence remains
+untested.
+
+ROM verifiers for passes 26–33 and the pass 32 IWRAM pointer audit passed.
+All **112 tests passed with the original ROM supplied and no skips**. Libclang
+parsed **56 C translation units** for ARM7TDMI with zero diagnostics. No
+object/link build or candidate ROM was produced. The existing source estimate
+remains **~54%**, rough and unmeasured; matching-ROM progress remains **0%**.
+
+## Pass 34 — 2026-10-17
+
+Recovered `RuntimeDisplayState_InvokeRecordOperations` at `0x0805B3B8`.
+It follows the object pointer at record `+0x00`, dispatches `(0, VRAM +
+object[0x5D] * 0x4000, object_word[0x74])` and `(0, VRAM + object[0x5C] *
+0x800, 0x800)` through the shared Thumb-to-ARM thunk, then stores halfword 1
+at record `+0x0E`. The body’s incoming caller was not found, and target
+`0x03006FAC` remains unresolved.
+
+The historical source-recovery estimate remains approximately **54%** and is
+not measured coverage; matching-ROM progress remains **0%**. Pass-specific
+ROM checks, tests, parser results, and archive integrity are recorded in
+`docs/PASS34_DEVELOPMENT_2026-10-17.md`.
+
+## Pass 35 — 2026-10-17
+
+Recovered `RuntimeDisplay_ComputeSequenceMetric` at `0x0805B400`. It scans a
+zero-terminated byte sequence, adds five for byte `0x20`, and for other bytes
+adds the caller's base metric, optionally subtracting a second lookup from the
+ROM table at `0x0807D9A4`. Its direct caller at `0x0805B4C0` supplies the
+sequence, table offset, and base metric; the larger display routine remains
+source-open. The result is used in a mode-dependent origin adjustment, while
+the table's product-specific meaning remains unknown.
+
+The `0x03006FAC` callback installation remains unresolved. A range check shows
+that it would fall outside the `0xD24` ARM module under the hypothesized base
+`0x030061B8`; this rejects only that mapping, not other installation paths.
+Pass-specific ROM evidence, suite results, frontend parsing, and archive
+integrity are recorded in `docs/PASS35_DEVELOPMENT_2026-10-17.md`. The overall
+estimate remains the historical rough **~54%**, not measured coverage.
+
+## Pass 36 — 2026-10-17
+
+Recovered `RuntimeDisplay_DrawGlyphSequence` at `0x0805B440`, the internal
+descriptor lookup at `0x0805B814`, and argument setups at all five direct
+callers. The renderer reserves map entries with the record's palette bits,
+dispatches initialization of any newly allocated tile span through the known
+generic callback wrapper, maps sequence bytes through `0x0807D9A4`, and feeds
+the descriptor-backed 8x8 blocks to `RuntimeDisplay_BlitIndexed4bppTile` at
+`0x0805B2A4`. It returns the ending X coordinate. The callback implementation
+and language-specific control-byte meanings remain unresolved. The sequence
+metric's mode-2 alignment is corrected to logical half (`metric >> 1`), as
+shown by the Thumb LSR instruction.
+
+The Pass 36 verifier matches **333 Thumb halfwords**, **11 direct calls**,
+**20 conditional and 3 unconditional branch targets**, and **4 literal words**
+across eight ranges. It includes all five observed callers. The pass tests,
+full ROM-enabled suite, ARM7TDMI frontend parsing, and archive integrity are
+recorded in `docs/PASS36_DEVELOPMENT_2026-10-17.md`. The source estimate stays
+at the historical **~54% rough estimate**, not measured coverage; matching-ROM
+progress remains **0%**. This host still cannot generate ARM objects or link a
+candidate ROM.
+
+## Pass 37 — 2026-10-17
+
+Recovered `RuntimeDisplay_ProcessByteStream` at `0x0805B824` and its direct
+calls into the glyph-sequence renderer. It buffers ordinary bytes; `0xFB`
+updates record `+0x0D`, `0xFC` flushes and then updates record `+0x0C`, line
+feed flushes/resets X/advances Y by `+0x0D`, and `0xFF` or a later NUL flushes
+and returns. An initially empty stream returns without drawing. Bytes `0xFD`
+and `0xFE` are ordinary buffered bytes. The mutable record-byte meanings stay
+address-based. The full-ROM scan found zero direct Thumb BLs, zero direct
+Thumb branches, and zero stored Thumb pointers to the parser entry; its
+incoming dispatch remains unresolved.
+
+The pass's ROM verifier, complete test suite, ARM7TDMI frontend parse,
+source-level renderer-call check, toolchain availability, and archive checks
+are recorded in `docs/PASS37_DEVELOPMENT_2026-10-17.md`. The historical overall
+source estimate remains approximately **54%**, rough and not measured coverage;
+matching-ROM progress remains **0%** unless a true candidate build is produced.
+
+## Pass 38 — 2026-10-17
+
+Recovered `CollisionData_BuildSplineIndex` at `0x0805B8E8` and its packed
+record lookup helper at `0x0805DBA4`. The builder resolves three source-relative
+offsets, clamps a signed count above 64 after the return-only diagnostic,
+stores one pointer per packed entry, and clears three observed state fields.
+The helper walks using the 32-bit stride at each entry `+0x04`. A whole-ROM
+aligned Thumb-BL scan found nine call sites to each entry. The following
+allocator/copy routine at `0x0805B95C` and callback slot `0x0807D998` remain
+unresolved.
+
+ROM-byte checks, tests, ARM7TDMI frontend parsing, archive integrity, and build
+tool availability are recorded in `docs/PASS38_DEVELOPMENT_2026-10-17.md`.
+The historical source-recovery estimate remains **approximately 54%**, a rough
+value without a measured denominator; matching-ROM progress remains **0%**.
+
+
+## Pass 39 — 2026-10-20
+
+Recovered `CollisionData_InitializeOwnedSegments` at `0x0805B95C` from the supplied ROM. Added the C source reconstruction, instruction listing, ROM-backed verifier, regression tests, and pass notes. Verified 123 Thumb halfwords, 6 call targets, 9 conditional branches, 2 unconditional branches, 4 literal loads, and 3 literal words; the existing Pass 38 collision-spline verifier also passes. The callback installed at `0x0807D998` remains unresolved.
+
+
+## Pass 40 — shared runtime-copy callback ABI (2026-10-20)
+
+The ROM word at `0x0807D998` contains the even ARM-state IWRAM target
+`0x03007034`. Both `RuntimeBuffer_CopyRow` (`0x08063210`) and
+`CollisionData_InitializeOwnedSegments` (`0x0805B95C`) load this slot and pass
+source, destination, and byte count through the shared `BX r3` trampoline at
+`0x08065C44`. The shared copy-like ABI is now ROM-verified; the code installer
+and target implementation remain unresolved. `make test-all`, `make partial-link`,
+and all 28 ROM-backed `verify-*` Make targets pass. The relocatable object is
+still not a ROM and matching progress remains 0%. See
+`docs/PASS40_DEVELOPMENT_2026-10-20.md` and `docs/MATCHING_ROM_PLAN.md`.
+
+
+## Pass 41 — runtime-image bounds audit (2026-10-20)
+
+Audited the known ARM runtime image at ROM `0x080641B8..0x08064EDC` (`0xD24`
+bytes). Under the explicitly hypothetical base `0x030061B8`, renderer targets
+`0x0300646C` and `0x0300682C` are within range, while `0x03006FAC` and
+`0x03007034` fall `0xD0` and `0x158` bytes beyond it. The assumed base remains
+unproven; this is a negative constraint, not identification of another installer.
+Added a range-audit tool, JSON evidence report, Make targets, and three tests.
+No matching ROM candidate has been produced; byte-match progress remains 0%.
+
+## Pass 48 (2026-10-24)
+Original-ROM validation and callback-installer candidate scan completed; see `docs/PASS48_DEVELOPMENT_2026-10-24.md`. No callback implementation claimed.
+
+
+## Pass 49 (2026-10-24)
+
+Audited the Thumb routine at `0x08065994` against the supplied original ROM.
+The routine takes `(source, destination, halfword_count)` in `r0-r2`, writes
+DMA3 SAD/DAD/CNT at `0x040000D4`, `0x040000D8`, and `0x040000DC`, uses the
+32-bit CNT write to set the enable bit in `0x040000DE`, and polls until the
+DMA enable bit clears. It also temporarily zeros the halfword at `0x04000208`
+and restores its saved value after the transfer; it updates the BG2X register
+word at `0x04000204` from state at `0x03005E9C`. The visual purpose of these
+display-register side effects is not yet established.
+
+This pass also corrected the DMA-register labels in
+`tools/audit_iwram_install_candidates.py`: `0x040000D0` is DMA2CNT_L, while
+`0x040000D4` is DMA3SAD (not DMA3DAD); the scan now includes DMA3CNT_H at
+`0x040000DE`. Regenerated candidate report contains 24 references (8 IWRAM
+address literals and 16 DMA-register literals). These labels were wrong in the
+Pass 48 report and are corrected in the Pass 49 report. The installer for the
+upper-IWRAM callback at `0x03007034` remains unresolved; no causal connection
+to `0x08065994` is claimed.
+
+## Pass 50 — input-mask caller triage (2026-10-25)
+
+Added a ROM-backed audit for the instruction fingerprint at `0x080517A4` and
+its raw Thumb BL-shaped references. The original ROM contains 47 linear-scan
+candidates targeting that address; these are not all confirmed calls because a
+whole-ROM scan may encounter embedded data. The audit also identified an
+important mismatch: the current `src/input.c` reconstruction reads
+`0x03005E98`, but the bytes at `0x080517A4` instead load a literal from
+`0x03000F48` and use a second PC-relative word at `0x080517B8`. That word
+also overlaps a potential instruction entry, so the source model is left
+unchanged until control flow and data/code boundaries are resolved. No secret
+input or Easter egg is claimed. See `docs/PASS50_DEVELOPMENT_2026-10-25.md` and
+`docs/input_mask_callers_pass50.json`.
+
+## Pass 51 — input-mask local layout correction (2026-10-25)
+
+Pass 51 verified the helper at `0x080517A4` and adjacent base-plus-offset
+setter at `0x080517BC` against the original ROM. The helper evaluates
+`*(u32 *)(*(u32 *)0x03000F48 + 0x6B4) & mask`; the adjacent routine stores a
+value to that same computed field. The word at `0x080517B8` is a literal, not
+an instruction-overlap indication; the adjacent function has its own literals
+at `0x080517C8` and `0x080517CC`. `src/input.c` now represents the observed
+indirection. This does not yet prove the initialized pointer's value, establish
+equivalence with `0x03005E98` at all call sites, or identify a secret input.
+See `docs/PASS51_DEVELOPMENT_2026-10-25.md`.
+
+
+## Pass 54 — `sub_08051090` local control-flow audit (2026-10-25)
+
+Added `tools/audit_sub_08051090.py` and a ROM-backed JSON report. The branch at
+`0x0805109E` is BNE to `0x080510A8`; the first call is at `0x08051096` and the
+zero-return fall-through calls `0x08057C5C` at `0x080510A4`. The store at
+`0x080510AC` writes a value loaded from `[r4]` through the slot address
+`0x03000F48`. The zero-return path remains anomalous because it subsequently
+loads through `r4`; no explanation is asserted. Tests cover the bounded decoder.
+See `docs/PASS54_DEVELOPMENT_2026-10-25.md`. No secret input or Easter egg is
+claimed.
+
+## Pass 56 — follow-on runtime-context initializer (2026-10-25)
+
+Audited `0x08051120` against the original ROM. Important cross-pass detail: this routine clears runtime-base `+0x6B4` at `0x0805114A`, overwriting the earlier seed of `1` from `0x080510C2`; the observed final write here is zero. It also clears `+0x0`, `+0x6E8`, and `+0x6C0`, sets byte `+0x6AB` to `1`, and writes `0xFFFF` to halfword `+0x6EA`.
+
+The routine initializes 56 table-backed records with stride `0xD0` from `0x08075B70`, dispatching two indirect callbacks per record, then initializes 10 entries with stride `0x50` from `0x08075850`. Field and callback meanings remain provisional/unknown. See `docs/PASS56_DEVELOPMENT_2026-10-25.md`, `docs/runtime_context_followup_pass56.json`, and `asm/runtime/runtime_context_followup_51120_pass56.thumb.s`. No Easter egg is claimed.
+
+Pass 58: runtime state setter at `0x080517BC` is verified; its call paths supply values 1 and 1/4 to offset `+0x6B4`. See `docs/PASS58_DEVELOPMENT_2026-10-25.md`.
+
+Pass 57: helper `0x08051744` indexes 56 objects at runtime +4 (stride 0x18); `0x08051704` indexes 10 entries at +0x544 (stride 8). Indirect trampoline `0x08065C44` branches to a callback dynamically stored in RAM `0x03006FAC`; see `docs/PASS57_DEVELOPMENT_2026-10-25.md`.

@@ -1,0 +1,71 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "expected_reference_rom_match": true,
+  "entry": "0x08051090",
+  "checked_halfwords": 50,
+  "checked_literal_words": 9,
+  "findings": [
+    {
+      "address": "0x08051096",
+      "fact": "calls 0x0805A444 (Heap_AllocAlt) with size 0xC6C",
+      "confidence": "ROM instruction/literal verified; function identity supported by existing heap reconstruction"
+    },
+    {
+      "address": "0x080510A8",
+      "fact": "loads slot address 0x03000F48; 0x080510AA reads descriptor word [r4] and 0x080510AC stores it into the slot",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510B4",
+      "fact": "stores descriptor pointer r4 at payload_base + 0x6B0",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510C2",
+      "fact": "writes 1 to payload_base + 0x6B4",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510B8",
+      "fact": "clears byte at payload_base + 0x0; 0x080510C4 clears byte at +0x2",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510CE",
+      "fact": "writes halfword 0x0080 at payload_base + 0x6E6",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510D6",
+      "fact": "writes halfword 0x00FF at payload_base + 0x6E4",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510DC",
+      "fact": "clears halfwords at payload_base + 0x6AC and +0x6AE",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510E8",
+      "fact": "clears words at payload_base + 0xC64 and +0xC68",
+      "confidence": "directly supported by Thumb encodings"
+    },
+    {
+      "address": "0x080510F0",
+      "fact": "calls follow-on initializer at 0x08051120",
+      "confidence": "directly decoded Thumb BL"
+    },
+    {
+      "address": "0x0805109E",
+      "fact": "zero return from allocation falls through a call to 0x08057C5C and then still reaches a descriptor dereference",
+      "confidence": "control flow verified; exact intended failure semantics unknown"
+    }
+  ],
+  "interpretation": "The routine allocates a 0xC6C-byte block from the alternate heap, stores the payload base in 0x03000F48, stores the allocator descriptor at payload offset 0x6B0, seeds several fields, then calls 0x08051120. This proves the runtime-base slot is initialized here on the normal successful-allocation path. It does not identify the semantic names of the fields or fully reconstruct the follow-on initializer.",
+  "limitations": [
+    "The diagnostic stub at 0x08057C5C returns without terminating; do not assume allocation failure is safely handled.",
+    "Offsets are preserved as offsets; field meanings remain unknown unless independently supported.",
+    "This is a bounded signature audit, not a whole-ROM disassembly or matching-build proof."
+  ]
+}
