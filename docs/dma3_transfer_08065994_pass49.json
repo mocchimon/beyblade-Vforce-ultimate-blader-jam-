@@ -1,0 +1,43 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "entry": "0x08065994",
+  "isa": "Thumb",
+  "instruction_halfwords_verified": 47,
+  "literal_values": {
+    "0x080659F4": "0x04000208",
+    "0x080659F8": "0x04000204",
+    "0x080659FC": "0x0000F8FF",
+    "0x08065A00": "0x03005E9C",
+    "0x08065A04": "0x040000D4",
+    "0x08065A08": "0x040000D8",
+    "0x08065A0C": "0x040000DC",
+    "0x08065A10": "0x040000DE"
+  },
+  "abi": {
+    "r0": "source address",
+    "r1": "destination address",
+    "r2": "halfword count (truncated to 16 bits before control bit is added)"
+  },
+  "transfer": {
+    "channel": 3,
+    "source_register": "0x040000D4 (DMA3SAD)",
+    "destination_register": "0x040000D8 (DMA3DAD)",
+    "count_register": "0x040000DC (DMA3CNT_L)",
+    "control_register": "0x040000DE (DMA3CNT_H)",
+    "control_word": "0x80000000 | (r2 & 0xFFFF)",
+    "unit": "16-bit halfwords; 32-bit transfer bit is not set",
+    "completion_wait": "poll DMA3CNT_H bit 15 until cleared"
+  },
+  "display_guard": {
+    "temporarily_zeroed_halfword": "0x04000208 (BG2PA)",
+    "BG2X_update_base": "0x04000204",
+    "restores_saved_BG2PA_halfword_after_DMA": true
+  },
+  "conclusion": "Verified guarded DMA3 halfword-transfer helper. This is a ROM-resident three-argument copy-like routine, not evidence that the IWRAM callback at 0x03007034 has been installed.",
+  "limitations": [
+    "The audit verifies instruction halfwords and literal values, not hardware execution.",
+    "The display-register side effects are described from the instruction sequence; their visual purpose is not established.",
+    "No source-built ROM or byte-for-byte match is produced."
+  ]
+}

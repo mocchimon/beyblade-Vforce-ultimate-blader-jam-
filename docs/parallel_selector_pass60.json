@@ -1,0 +1,40 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "expected_original_rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "dispatch_entry": "0x08043C8C",
+  "selector_offset": "0x4B4",
+  "bounds_check": "selector > 4 branches to 0x08043CE2",
+  "jump_table_base": "0x08043CBC",
+  "cases": [
+    {
+      "selector": 0,
+      "target": "0x08043CD0",
+      "argument_to_08063AA0": 0
+    },
+    {
+      "selector": 1,
+      "target": "0x08043CD4",
+      "argument_to_08063AA0": 3
+    },
+    {
+      "selector": 2,
+      "target": "0x08043CD8",
+      "argument_to_08063AA0": 4
+    },
+    {
+      "selector": 3,
+      "target": "0x08043CDC",
+      "argument_to_08063AA0": 5
+    },
+    {
+      "selector": 4,
+      "target": "0x08043CE0",
+      "argument_to_08063AA0": 7
+    }
+  ],
+  "common_action": "passes selected argument to 0x08063AA0, then stores 0x20 to RAM word 0x03000168",
+  "comparison": "A second dispatch reads the same context offset +0x4B4 as 0x08045A08 but maps selector values to different arguments (0,3,4,5,7).",
+  "interpretation_limit": "Selector semantic names and relationship to Easter eggs are not established.",
+  "sha256_matches_expected_rom": true
+}

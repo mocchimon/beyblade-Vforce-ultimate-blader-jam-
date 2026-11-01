@@ -1,0 +1,23 @@
+{
+  "pass": 63,
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "expected_original_rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "select_or_push_helper": "0x080490FC",
+  "restore_or_pop_helper": "0x0804917C",
+  "state_block": "0x03000650",
+  "event_flag_byte": "0x03000BFC",
+  "observed_select_behavior": [
+    "input argument in r0 is compared with the current state at [0x03000650] and previous state at [0x03000654]; matching either skips the state update path",
+    "for a nonduplicate state, a bounded history counter at state_block+0x7C indexes a 15-entry array beginning at state_block+0x14",
+    "the helper records the previous state, shifts current state to state_block+8, stores the requested state at state_block+4, and calls 0x080495C8",
+    "when the previous state equals 0xFFFFFFFF, it calls 0x08049348 and 0x080490D0 with argument 3, then sets byte 0x03000BFC to 1"
+  ],
+  "observed_restore_behavior": [
+    "companion routine returns early when history counter at state_block+0x7C is zero",
+    "otherwise decrements the history counter and loads the corresponding saved state from state_block+0x14+index*4 into state_block+4",
+    "copies state_block+0 into state_block+8 and calls 0x080495C8"
+  ],
+  "limits": "State history behavior is directly supported by instruction/literal checks. The meaning of numeric state IDs and any Easter-egg relationship remain unverified.",
+  "sha256_matches_expected_rom": true
+}

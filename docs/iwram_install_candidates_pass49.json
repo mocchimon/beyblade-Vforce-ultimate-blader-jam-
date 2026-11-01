@@ -1,0 +1,245 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "scan": {
+    "iwram_range": [
+      "0x03006000",
+      "0x03008000"
+    ],
+    "dma_registers": {
+      "0x040000D0": "DMA2CNT_L",
+      "0x040000D4": "DMA3SAD",
+      "0x040000D8": "DMA3DAD",
+      "0x040000DC": "DMA3CNT_L",
+      "0x040000DE": "DMA3CNT_H"
+    },
+    "thumb_halfword_aligned_scan": true
+  },
+  "reference_count": 24,
+  "iwram_literal_references": 8,
+  "dma_register_references": 16,
+  "references": [
+    {
+      "instruction": "0x080506C0",
+      "instruction_halfword": "0x4903",
+      "literal_address": "0x080506D0",
+      "literal_value": "0x03007FF8",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08052A9A",
+      "instruction_halfword": "0x4C05",
+      "literal_address": "0x08052AB0",
+      "literal_value": "0x03007FA0",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08052AC2",
+      "instruction_halfword": "0x4905",
+      "literal_address": "0x08052AD8",
+      "literal_value": "0x03007FA0",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08052ADE",
+      "instruction_halfword": "0x4C05",
+      "literal_address": "0x08052AF4",
+      "literal_value": "0x03007EC0",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08052B06",
+      "instruction_halfword": "0x4905",
+      "literal_address": "0x08052B1C",
+      "literal_value": "0x03007EC0",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0805790A",
+      "instruction_halfword": "0x480A",
+      "literal_address": "0x08057934",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08057968",
+      "instruction_halfword": "0x4A0A",
+      "literal_address": "0x08057994",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0805798C",
+      "instruction_halfword": "0x4805",
+      "literal_address": "0x080579A4",
+      "literal_value": "0x03007FFC",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08057A40",
+      "instruction_halfword": "0x4906",
+      "literal_address": "0x08057A5C",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08058E9C",
+      "instruction_halfword": "0x4A1D",
+      "literal_address": "0x08058F14",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08059484",
+      "instruction_halfword": "0x4A18",
+      "literal_address": "0x080594E8",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08059592",
+      "instruction_halfword": "0x4A16",
+      "literal_address": "0x080595EC",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0805EFF8",
+      "instruction_halfword": "0x4A05",
+      "literal_address": "0x0805F010",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0805F408",
+      "instruction_halfword": "0x4B05",
+      "literal_address": "0x0805F420",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0805FE40",
+      "instruction_halfword": "0x4D11",
+      "literal_address": "0x0805FE88",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08062560",
+      "instruction_halfword": "0x4A2E",
+      "literal_address": "0x0806261C",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0806279E",
+      "instruction_halfword": "0x4808",
+      "literal_address": "0x080627C0",
+      "literal_value": "0x040000D0",
+      "kind": "dma_register_literal",
+      "register_name": "DMA2CNT_L",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x08062EE0",
+      "instruction_halfword": "0x480D",
+      "literal_address": "0x08062F18",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x080659B6",
+      "instruction_halfword": "0x4B13",
+      "literal_address": "0x08065A04",
+      "literal_value": "0x040000D4",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3SAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x080659BA",
+      "instruction_halfword": "0x4813",
+      "literal_address": "0x08065A08",
+      "literal_value": "0x040000D8",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3DAD",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x080659BE",
+      "instruction_halfword": "0x4913",
+      "literal_address": "0x08065A0C",
+      "literal_value": "0x040000DC",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3CNT_L",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x080659D8",
+      "instruction_halfword": "0x4A0D",
+      "literal_address": "0x08065A10",
+      "literal_value": "0x040000DE",
+      "kind": "dma_register_literal",
+      "register_name": "DMA3CNT_H",
+      "region_class": "main_rom_code_candidate"
+    },
+    {
+      "instruction": "0x0841CCF4",
+      "instruction_halfword": "0x484B",
+      "literal_address": "0x0841CE24",
+      "literal_value": "0x03007F55",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "other_rom_region"
+    },
+    {
+      "instruction": "0x0842429C",
+      "instruction_halfword": "0x4BB3",
+      "literal_address": "0x0842456C",
+      "literal_value": "0x03007747",
+      "kind": "iwram_address_literal",
+      "register_name": null,
+      "region_class": "other_rom_region"
+    }
+  ],
+  "limitations": [
+    "A matching Thumb LDR-literal encoding does not prove the halfword is executable code.",
+    "A literal reference to a DMA register does not by itself establish transfer source, destination, or length.",
+    "No match for a destination address does not rule out computed addresses, BIOS decompression, or runtime-generated code.",
+    "This report does not establish the installer/source for IWRAM target 0x03007034."
+  ]
+}

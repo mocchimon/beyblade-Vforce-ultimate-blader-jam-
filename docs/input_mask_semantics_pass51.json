@@ -1,0 +1,42 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "input_mask": {
+    "entry": "0x080517A4",
+    "verified_thumb_halfwords": [
+      "0x1C01",
+      "0x4803",
+      "0x6800",
+      "0x4A03",
+      "0x1880",
+      "0x6800",
+      "0x4008",
+      "0x4770"
+    ],
+    "base_pointer_literal_address": "0x080517B4",
+    "base_pointer_literal_value": "0x03000F48",
+    "offset_literal_address": "0x080517B8",
+    "offset_literal_value": "0x000006B4",
+    "pseudocode": "return *(u32 *)(*(u32 *)0x03000F48 + 0x6B4) & mask;"
+  },
+  "adjacent_setter": {
+    "entry": "0x080517BC",
+    "verified_thumb_halfwords": [
+      "0x4902",
+      "0x6809",
+      "0x4A02",
+      "0x1889",
+      "0x6008",
+      "0x4770"
+    ],
+    "base_pointer_literal_address": "0x080517C8",
+    "offset_literal_address": "0x080517CC",
+    "pseudocode": "*(u32 *)(*(u32 *)0x03000F48 + 0x6B4) = value;"
+  },
+  "correction": "0x080517B8 contains the 0x000006B4 literal consumed by the helper at 0x080517A4. The adjacent routine begins at 0x080517BC and references its own duplicate literals at 0x080517C8 and 0x080517CC. The prior code/data-overlap hypothesis is not supported by this local control-flow layout.",
+  "confidence_limits": [
+    "The ROM proves the base-pointer-plus-offset access pattern, not the runtime value stored at 0x03000F48 at every call.",
+    "Equivalence with fixed address 0x03005E98 depends on initialized runtime state and is not assumed by this audit.",
+    "This audit does not identify any secret-input sequence or Easter egg."
+  ]
+}

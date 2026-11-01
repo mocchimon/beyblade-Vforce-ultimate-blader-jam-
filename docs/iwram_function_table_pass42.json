@@ -1,0 +1,285 @@
+{
+  "rom_size": 8388608,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "table_start": "0x0807D920",
+  "table_end_exclusive": "0x0807D9A4",
+  "verified_entries": 25,
+  "iwram_target_count": 16,
+  "iwram_targets": [
+    "0x0300616C",
+    "0x0300646C",
+    "0x0300682C",
+    "0x03006940",
+    "0x03006A20",
+    "0x03006B84",
+    "0x03006C60",
+    "0x03006F10",
+    "0x03006FAC",
+    "0x03007034",
+    "0x030070B8",
+    "0x0300711C",
+    "0x0300717C",
+    "0x030071D0",
+    "0x030072F8",
+    "0x03007478"
+  ],
+  "target_gaps": [
+    {
+      "from": "0x0300616C",
+      "to": "0x0300646C",
+      "gap": 768
+    },
+    {
+      "from": "0x0300646C",
+      "to": "0x0300682C",
+      "gap": 960
+    },
+    {
+      "from": "0x0300682C",
+      "to": "0x03006940",
+      "gap": 276
+    },
+    {
+      "from": "0x03006940",
+      "to": "0x03006A20",
+      "gap": 224
+    },
+    {
+      "from": "0x03006A20",
+      "to": "0x03006B84",
+      "gap": 356
+    },
+    {
+      "from": "0x03006B84",
+      "to": "0x03006C60",
+      "gap": 220
+    },
+    {
+      "from": "0x03006C60",
+      "to": "0x03006F10",
+      "gap": 688
+    },
+    {
+      "from": "0x03006F10",
+      "to": "0x03006FAC",
+      "gap": 156
+    },
+    {
+      "from": "0x03006FAC",
+      "to": "0x03007034",
+      "gap": 136
+    },
+    {
+      "from": "0x03007034",
+      "to": "0x030070B8",
+      "gap": 132
+    },
+    {
+      "from": "0x030070B8",
+      "to": "0x0300711C",
+      "gap": 100
+    },
+    {
+      "from": "0x0300711C",
+      "to": "0x0300717C",
+      "gap": 96
+    },
+    {
+      "from": "0x0300717C",
+      "to": "0x030071D0",
+      "gap": 84
+    },
+    {
+      "from": "0x030071D0",
+      "to": "0x030072F8",
+      "gap": 296
+    },
+    {
+      "from": "0x030072F8",
+      "to": "0x03007478",
+      "gap": 384
+    }
+  ],
+  "entries": [
+    {
+      "slot": "0x0807D920",
+      "value": "0x0300717C",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D924",
+      "value": "0x030071D0",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D928",
+      "value": "0x030072F8",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D92C",
+      "value": "0x03007478",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D950",
+      "value": "0x08057B65",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D954",
+      "value": "0x08057C5D",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D958",
+      "value": "0x080607B5",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D95C",
+      "value": "0x0806082D",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D960",
+      "value": "0x0300616C",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D964",
+      "value": "0x08057C5D",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D968",
+      "value": "0x0300646C",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D96C",
+      "value": "0x0300682C",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D970",
+      "value": "0x03006940",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D974",
+      "value": "0x03006A20",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D978",
+      "value": "0x03006B84",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D97C",
+      "value": "0x08057B61",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D980",
+      "value": "0x08057B65",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D984",
+      "value": "0x08057C5D",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D988",
+      "value": "0x03006C60",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D98C",
+      "value": "0x03006F10",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D990",
+      "value": "0x08057C5D",
+      "region": "ROM",
+      "isa_candidate": "Thumb",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D994",
+      "value": "0x03006FAC",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D998",
+      "value": "0x03007034",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D99C",
+      "value": "0x030070B8",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    },
+    {
+      "slot": "0x0807D9A0",
+      "value": "0x0300711C",
+      "region": "IWRAM",
+      "isa_candidate": "ARM",
+      "semantics": "unresolved"
+    }
+  ],
+  "limitations": [
+    "Pointer values do not prove runtime reachability or installation source.",
+    "Even IWRAM pointers are ARM-state candidates, not verified disassemblies.",
+    "Gaps between entry addresses are not function sizes."
+  ]
+}

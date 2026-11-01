@@ -1,0 +1,841 @@
+{
+  "pass_number": 74,
+  "rom_sha256": "a8c64df585e2ed0da969b47af3369227f10ad08987cd91ba54cf7f9186fcb2ce",
+  "matches_expected_rom": true,
+  "rom_size": 8388608,
+  "linear_bl_scan_bytes": 524288,
+  "counts": {
+    "rom_odd_word_refs": 1547,
+    "refs_to_push_lr": 161
+  },
+  "distinct_push_lr_targets": 79,
+  "linear_bl_patterns_in_range": 4286,
+  "distinct_bl_pattern_targets": 1471,
+  "pointer_and_bl_overlap_targets": 3,
+  "overlap_target_samples": [
+    134562412,
+    134583584,
+    134613036
+  ],
+  "bl_pattern_samples": [
+    {
+      "callsite": 134217834,
+      "target": 135464860
+    },
+    {
+      "callsite": 134284592,
+      "target": 135474494
+    },
+    {
+      "callsite": 134284598,
+      "target": 137418614
+    },
+    {
+      "callsite": 134285080,
+      "target": 136354124
+    },
+    {
+      "callsite": 134285416,
+      "target": 136498282
+    },
+    {
+      "callsite": 134285696,
+      "target": 138420658
+    },
+    {
+      "callsite": 134285822,
+      "target": 138476580
+    },
+    {
+      "callsite": 134286082,
+      "target": 134245160
+    },
+    {
+      "callsite": 134286090,
+      "target": 135339312
+    },
+    {
+      "callsite": 134286188,
+      "target": 135356816
+    },
+    {
+      "callsite": 134286246,
+      "target": 137432014
+    },
+    {
+      "callsite": 134286344,
+      "target": 137452064
+    },
+    {
+      "callsite": 134286442,
+      "target": 137474186
+    },
+    {
+      "callsite": 134286456,
+      "target": 134312088
+    },
+    {
+      "callsite": 134286546,
+      "target": 134276334
+    },
+    {
+      "callsite": 134286554,
+      "target": 136414968
+    },
+    {
+      "callsite": 134286576,
+      "target": 134316818
+    },
+    {
+      "callsite": 134286672,
+      "target": 136404850
+    },
+    {
+      "callsite": 134286780,
+      "target": 135369692
+    },
+    {
+      "callsite": 134286794,
+      "target": 134321132
+    },
+    {
+      "callsite": 134286970,
+      "target": 137472654
+    },
+    {
+      "callsite": 134286992,
+      "target": 136452258
+    },
+    {
+      "callsite": 134287082,
+      "target": 134391550
+    },
+    {
+      "callsite": 134287162,
+      "target": 137512266
+    },
+    {
+      "callsite": 134287168,
+      "target": 137499474
+    },
+    {
+      "callsite": 134287228,
+      "target": 137489810
+    },
+    {
+      "callsite": 134287354,
+      "target": 134351894
+    },
+    {
+      "callsite": 134287392,
+      "target": 135362620
+    },
+    {
+      "callsite": 134287460,
+      "target": 137489530
+    },
+    {
+      "callsite": 134287512,
+      "target": 136440492
+    },
+    {
+      "callsite": 134287518,
+      "target": 135389372
+    },
+    {
+      "callsite": 134287714,
+      "target": 136441208
+    }
+  ],
+  "entry_candidates": [
+    {
+      "target": 134483224,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652516
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134484988,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652540
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134487712,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134488652
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134488260,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652564
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134489468,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652828
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134490084,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652852
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134493700,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134493412
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134494732,
+      "pointer_refs": 5,
+      "sample_pointer_sites": [
+        134651892,
+        134651916,
+        134651940,
+        134651964,
+        134651988
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134494808,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652012
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134494884,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652036
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134495484,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652156
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134495624,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652324
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134496344,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652300
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134497360,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652348
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134498552,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652708
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134499404,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652732
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134500056,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652756
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134500708,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652780
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134501340,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652372
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134501408,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652396
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134501948,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652084
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134502000,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652108
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134502032,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652060
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134502476,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652132
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134503040,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652180
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134503608,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652204
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134504924,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652228
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134505512,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652420
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134505732,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652276
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134506520,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652444
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134507024,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652468
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134507416,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652876
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134507720,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652492
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134510052,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652252
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134512224,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652588
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134512880,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652612
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134513428,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652660
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134514320,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652684
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134515436,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652636
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134516112,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652804
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519036,
+      "pointer_refs": 17,
+      "sample_pointer_sites": [
+        134652040,
+        134652112,
+        134652136,
+        134652160,
+        134652184,
+        134652232,
+        134652328,
+        134652376
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519232,
+      "pointer_refs": 2,
+      "sample_pointer_sites": [
+        134652568,
+        134652832
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519336,
+      "pointer_refs": 16,
+      "sample_pointer_sites": [
+        134652208,
+        134652256,
+        134652280,
+        134652304,
+        134652352,
+        134652472,
+        134652520,
+        134652544
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519432,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134651896
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519548,
+      "pointer_refs": 6,
+      "sample_pointer_sites": [
+        134651920,
+        134651944,
+        134651968,
+        134651992,
+        134652016,
+        134652064
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134519660,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134652088
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134520044,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134651900
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134520292,
+      "pointer_refs": 17,
+      "sample_pointer_sites": [
+        134487624,
+        134651904,
+        134651924,
+        134651928,
+        134651948,
+        134651952,
+        134651972,
+        134651976
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134520828,
+      "pointer_refs": 8,
+      "sample_pointer_sites": [
+        134652260,
+        134652264,
+        134652524,
+        134652528,
+        134652548,
+        134652552,
+        134652860,
+        134652864
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134538216,
+      "pointer_refs": 3,
+      "sample_pointer_sites": [
+        134525508,
+        134563036,
+        134564512
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134546856,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134218364
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134547160,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        141740840
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134554360,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134560544
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134556060,
+      "pointer_refs": 4,
+      "sample_pointer_sites": [
+        134552348,
+        134552504,
+        134553240,
+        134553876
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134556460,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134556864
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134562412,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711756
+      ],
+      "bl_pattern_refs": 1
+    },
+    {
+      "target": 134562732,
+      "pointer_refs": 14,
+      "sample_pointer_sites": [
+        134711760,
+        134711776,
+        134711804,
+        134711808,
+        134711812,
+        134711816,
+        134711820,
+        134711824
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134562764,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711736
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134562928,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711740
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563040,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711744
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563120,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711748
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563284,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711752
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563496,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711764
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563528,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711768
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563564,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711772
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563596,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711780
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563640,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711788
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134563680,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134711796
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134566108,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134564476
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134569248,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134569232
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134569808,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134569240
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134570384,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134569236
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134572920,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134564480
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134583584,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134583152
+      ],
+      "bl_pattern_refs": 1
+    },
+    {
+      "target": 134612088,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134611976
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134612916,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134732120
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134613036,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134732124
+      ],
+      "bl_pattern_refs": 4
+    },
+    {
+      "target": 134626768,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134627168
+      ],
+      "bl_pattern_refs": 0
+    },
+    {
+      "target": 134738946,
+      "pointer_refs": 1,
+      "sample_pointer_sites": [
+        134366788
+      ],
+      "bl_pattern_refs": 0
+    }
+  ],
+  "limitations": [
+    "Odd ROM words can be non-pointer data, even when they point to a PUSH opcode.",
+    "PUSH prologues are common but not mandatory for real Thumb functions.",
+    "Linear BL-pattern scanning may misinterpret literal pools and asset data as instructions.",
+    "No byte count from this scan is credited as reconstructed/decompiled code.",
+    "Full 8 MiB pointer-word scan; BL-pattern scan only in the configured bounded prefix."
+  ]
+}

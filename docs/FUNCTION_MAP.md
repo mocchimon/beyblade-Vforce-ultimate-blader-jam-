@@ -26,6 +26,14 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 | `0x08063A8C` | `Input_SetMapping` | writes a byte for mapping index <= 0x14 |
 | `0x08063AA0` | `Input_SetState` | stores 32-bit state value |
 | `0x080517A4` | `Input_TestMask` | returns `(input_state & mask)` |
+| `0x08049000` | `StateFlagBit0Test` (provisional) | reads halfword at pointer-from-`0x03000BEC` + `0xEC`; returns whether bit 0 is set; flag meaning unknown |
+| `0x0804901C` | `StateMotionFields_Clear` (provisional) | clears four words at state offsets `+0x84/+0x88/+0x8C/+0x90` |
+| `0x08049040` | `StateMotionFields_SetTargets` (provisional) | stores two arguments as 8-fractional-bit targets at state `+0x8C/+0x90`; seeds current values `+0x84/+0x88` from signed source halfwords `+0x48/+0x4A` |
+| `0x08049078` | `StateMotionFields_SmoothToTarget` (provisional) | updates current values toward targets using `0x080491E4`, then writes integer portions back to source `+0x48/+0x4A`; coordinate-like interpretation provisional |
+| `0x080495C8` | `State_DescriptorFollowup` (provisional) | indexes 0x18-byte descriptor table at `0x08069FEC`; conditional record processing and shared follow-up |
+| `0x080504E8` | `StateRecord_BuildFields10_14` (provisional) | iterates signed count and writes scaled values at output offsets +0x10/+0x14, stride 0x18 |
+| `0x08050530` | `StateRecord_BuildFields08_0C` (provisional) | companion builder writing output offsets +0x08/+0x0C, stride 0x18 |
+| `0x0805057C` | `StateRecord_WriteFields10_14` (provisional) | writes word +0x10 and sign-extended halfword value as word at +0x14 |
 | `0x0805A374` | `System_ResetGlobals` | clears a group of `0x03005cxx` globals |
 | `0x0805A890` | `Input_Init` (preliminary) | reads `KEYINPUT` and initializes input globals |
 
@@ -48,7 +56,7 @@ Target ROM: `BEYP70` Rev.00, 8 MiB.
 08062E94  unknown
 08060544  unknown
 080532DC  unknown
-08051090  unknown
+08051090  RuntimeContext_AllocateAndSeed (provisional; 0xC6C allocation + base-field seeding)
 08055CDC  unknown
 08058940  unknown
 0805EFC0  ArmRaster_LoadModule (DMA image copy + selected pointer rebasing)
@@ -175,7 +183,7 @@ rather than asserting game-specific semantics.
 | `0x0806307C` | `RuntimeBlock_FindTail` | follows +0x10 links to the final runtime block descriptor |
 | `0x080631B4` | `RuntimeBlock_Get` | returns the `0xC4`-stride block for an index |
 | `0x080631D4` | `RuntimeBuffer_Create` | allocates and describes an even-width/height buffer |
-| `0x08063210` | `RuntimeBuffer_CopyRow` | bounds-checks a row and dispatches its byte copy through callback slot `0x0807D998` |
+| `0x08063210` | `RuntimeBuffer_CopyRow` | bounds-checks a row and dispatches `(source, destination, byte_count)` through callback slot `0x0807D998`, whose value is the unresolved ARM IWRAM target `0x03007034` |
 | `0x08063244` | `RuntimeBuffer_Repack` | repacks six 5-bit channels from descriptor data |
 
 | `0x08064FC0` | `Object_Init` | initializes a larger object record and its flags/links |
@@ -186,13 +194,60 @@ rather than asserting game-specific semantics.
 
 ## Consolidated object/runtime continuation
 
+| `0x0804A7EC` | `RuntimeDisplay_DisableRecordBackground` | clears the BG enable bit selected by record byte +0x5E |
+| `0x0804A7FC` | `RuntimeDisplay_InvokeRecordBackgroundOperation` | follows the pointer at record `+0x88`, reads its byte `+0x5D`, then dispatches `(0, VRAM + index * 0x4000, 0x8000)`; backend behavior unresolved |
+| `0x0805B268` | `RuntimeDisplayState_InitializeRecord` | writes owner/source words, one caller byte, a copied source byte, and active halfword 1 into a 16-byte record |
+| `0x0805B284` | `RuntimeDisplayState_SetFields_0805B284` | writes words at +0x08/+0x04 and the low byte at +0x0C |
+| `0x0805B28C` | `RuntimeDisplayState_SetByteAtOffset0D` | stores the low argument byte at record +0x0D |
+| `0x0805B290` | `RuntimeDisplayState_SetByteAtOffset0C` | stores the low argument byte at record +0x0C |
+| `0x0805B294` | `RuntimeDisplayState_GetIndexedBlockAddress` | returns base + ((index & 0x03FF) << 5); four direct uses in the containing routine |
+| `0x0805B2A4` | `RuntimeDisplay_BlitIndexed4bppTile` | shifts eight packed-pixel rows across up to four map-selected tiles and ORs them into destination memory; coordinate clipping is preserved |
+| `0x0805B3B8` | `RuntimeDisplayState_InvokeRecordOperations` | dispatches two operations using object bytes +0x5D/+0x5C and length at +0x74, then stores halfword 1 at record +0x0E; IWRAM backend behavior remains unresolved |
+| `0x0805B400` | `RuntimeDisplay_ComputeSequenceMetric` | scans a zero-terminated byte sequence, gives byte 0x20 metric 5, and applies an optional table-derived adjustment to other bytes; direct caller subtracts the result or half of it for two alignment modes |
+| `0x0805B440` | `RuntimeDisplay_DrawGlyphSequence` | reserves palette-tagged map entries, dispatches initialization for newly allocated tile memory, resolves indexed glyph data, blits its 8x8 blocks, and returns the final X coordinate; backend and language-specific control bytes remain unresolved |
+| `0x0805B814` | `RuntimeDisplaySequence_GetGlyphSource` | resolves a glyph byte pointer from descriptor offset +0x10 and the glyph index shifted by descriptor byte +0x06 |
+| `0x0805B824` | `RuntimeDisplay_ProcessByteStream` | buffers bytes for the glyph renderer; `0xFB` updates record +0x0D, `0xFC` flushes and updates +0x0C, line feed flushes/resets X/advances Y, and `0xFF` or later NUL flushes and returns; no direct BL/branch or stored Thumb pointer to this entry was found |
+| `0x0805B95C` | `CollisionData_InitializeOwnedSegments` | stores selected flags, allocates a combined alternate-heap block, dispatches selected segments through the same three-argument callback at `0x0807D998` (`0x03007034`), then builds the spline pointer cache; implementation remains unresolved |
+| `0x0805B8E8` | `CollisionData_BuildSplineIndex` | resolves three source-relative pointers, caps the signed count at 64, fills the record's spline pointer cache, then clears observed state fields; nine direct Thumb callers |
+| `0x0805DBA4` | `CollisionData_GetSplineByIndex` | walks packed spline records using each entry's `+0x04` byte stride; nine direct Thumb callers |
 | `0x08050388` | `RuntimeRecord_Clear` | clears the manager's six control fields |
 | `0x08050398` | `RuntimeRecord_Init` | allocates linked-source 0x18-byte records and recovers zero-size/allocation-failure returns |
 | `0x08050420` | `RuntimeRecord_Update` | integrates position/velocity and applies flag-controlled boundary handling |
 | `0x08050A74` | `RuntimeObject_UpdateRecordArray` | adds the two halfword counts, then dispatches entries at a 0x88-byte stride |
 | `0x08050AA0` | `RuntimeObject_InitializeEntryTable` | allocates and fills 0x1C-byte output records from 0x30-byte source records; 12 direct Thumb callers |
 | `0x08058F18` | `RuntimeObject_UpdateRecord` | updates words at +0x14/+0x18 from +0x1C/+0x20, mirrors to +0x54/+0x58, and follows verified conditional calls |
-| `0x080611B4` | `RuntimeObjectSelection_InitializeContext` | initializes the 0x30-byte local selection context, including scaled coordinates and fixed 0x100 fields |
+| `0x08058F84` | `RuntimeObject_ApplyRecordTransform` | advances fixed-point record fields, updates affine state, writes BG2/BG3 reference points, and applies scale |
+| `0x080596D0` | `RuntimeObject_UpdateDisplayRegion` | applies the caller's two word adjustments, clips/wraps six bounds words, and updates BG offsets or affine reference points |
+| `0x08059928` | `RuntimeObject_UpdateDisplayRegionFromFrame` | derives two display-region adjustments from frame and record words before calling `RuntimeObject_UpdateDisplayRegion` |
+| `0x08059958` | `RuntimeObject_InitializeDisplayState` | clears observed IWRAM state and BG scroll offsets, then initializes BG2/BG3 affine state |
+| `0x080599B8` | `RuntimeObject_TestFlagsAt64` | returns whether the record halfword at +0x64 intersects the supplied mask |
+| `0x080599CC` | `ChildResource_HorizontalOffsetRegister` | selects BG0HOFS through BG3HOFS register addresses |
+| `0x08059A0C` | `ChildResource_VerticalOffsetRegister` | selects BG0VOFS through BG3VOFS register addresses |
+| `0x08059A4C` | `ChildResource_BackgroundControlRegister` | selects BG0CNT through BG3CNT register addresses |
+| `0x08059A8C` | `RuntimeObject_SetAffineReferencePoint` | writes the 32-bit BG2X/BG2Y or BG3X/BG3Y reference values |
+| `0x08059ADC` | `RuntimeObject_SetAffineCoefficients` | writes PA/PB/PC/PD halfwords for BG2 or BG3 |
+| `0x08059B24` | `RuntimeObject_UpdateAffineTransform` | stores one of three 0x18-byte IWRAM entries and derives four coefficients from two ROM tables |
+| `0x08059C3C` | `RuntimeDisplay_SetAllBackgroundControlLowBits` | replaces the low two bits in BG0CNT–BG3CNT from four inputs |
+| `0x08059CD8` | `RuntimeDisplay_GetRecordBackgroundControlLowBits` | reads the selected BG control low bits using record byte +0x5E |
+| `0x08059CEC` | `RuntimeDisplay_SetBackgroundControlLowBits` | replaces the low two bits of the selected BGxCNT register |
+| `0x08059D14` | `RuntimeDisplay_GetBackgroundControlLowBits` | reads the low two bits of the selected BGxCNT register |
+| `0x08059D28` | `RuntimeDisplay_SetBackgroundEnabled` | sets or clears the selected BG0–BG3 enable bit in DISPCNT |
+| `0x08059FC4` | `RuntimeObject_MultiplyAffineCoefficients` | multiplies signed halfwords, scales by 1/256 with truncation toward zero, then wraps to a signed halfword |
+| `0x08060C40` | `ResourceNode_AllocateChain` | removes a contiguous batch from the free chain, tags it with a class, and inserts it into the ordered active list |
+| `0x08060D00` | `ResourceNode_ReleaseChain` | releases a counted contiguous active-list segment, recycles auxiliary/range ownership, repairs links, prepends it to the free chain, and clears head/tail/count |
+| `0x08060DBC` | `ResourceNode_ResizeChain` | keeps an equal-size chain, appends free nodes when growing, and releases/recreates on shrink |
+| `0x08061154` | `RuntimeObjectSelection_AddStateBits` | ORs the low two input bits into context word `+0x10`, bits 10–11 |
+| `0x08061170` | `RuntimeObjectSelection_GetStateBits` | returns context word `+0x10`, bits 10–11 |
+| `0x0806117C` | `RuntimeObjectSelection_SetByte19ToOne` | stores byte value 1 at context `+0x19` |
+| `0x08061184` | `RuntimeObjectSelection_SetByte19ToZero` | stores byte value 0 at context `+0x19` |
+| `0x0806118C` | `RuntimeObjectSelection_SetControlNibble` | replaces the high nibble of the halfword at context `+0x14` |
+| `0x080611B4` | `RuntimeObjectSelection_InitializeContext` | initializes scaled X/Y, selection flags at +0x08, cursor at +0x0A, extent at +0x0C, the node chain, and fixed 0x100 fields |
+| `0x0806124C` | `RuntimeObjectSelection_ResetContext` | calls `ResourceNode_ReleaseChain` on context `+0x14`, then clears halfword `+0x0A` |
+| `0x08061260` | `RuntimeObjectSelection_ApplyLayout` | assigns fixed-point X/Y positions to node segments, wraps them against the context extent, applies the optional scale, and adjusts vertical centering from flags |
+| `0x080614D4` | `RuntimeObjectSelection_SetFlagsAndApplyLayout` | stores the low halfword at context `+0x08` and calls `RuntimeObjectSelection_ApplyLayout` |
+| `0x080614E0` | `RuntimeObjectSelection_Finalize` | counts a zero-terminated code stream, resizes the embedded chain, configures ordinary entries, carries code 32 as a cursor marker, then applies node layout |
+| `0x08061684` | `RuntimeObjectSelection_Dispatch` | truncates its control-byte argument, resets context, calls `RuntimeObjectSelection_Finalize`, and returns its low byte |
+| `0x08064F5C` | `RuntimeObjectSelection_CountEntries` | counts nonzero stream bytes except the special value 32 |
 | `0x08063AC4` | `sub_08063AC4` | reads one byte through the pointer at 0x03005E98 plus literal 0x03005E80; ignores incoming r0 |
 | `0x08064FC0` | `Object_Init` | initializes a larger object containing 0xC4-byte children |
 | `0x0806512C` | `Object_CountActiveChildren` | counts children with nonzero field at +0x70 |
@@ -210,6 +265,8 @@ rather than asserting game-specific semantics.
 | `0x08058400` | `ChildResource_Apply` | reads resource metadata and applies it to child fields; exact asset semantics unresolved |
 | `0x08059334` | `ChildResource_RenderCopy` | clips a rectangle and dispatches the selected transfer backend through `0x08065C5C` |
 | `0x08059520` | `Render_CopyRect16_DMA3` | copies a 16-bit rectangle row-by-row by programming GBA DMA3 into VRAM |
+| `0x08065994` | `Runtime_Dma3CopyHalfwords_Guarded` (provisional) | ROM-verified three-argument helper: r0 source, r1 destination, r2 halfword count; programs DMA3 and waits for completion while temporarily modifying/restoring BG2 affine registers |
+| `0x08059620` | `RuntimeDisplay_ApplyAttributeMask` (provisional) | traverses a child-selected VRAM tile-map region, preserves low 12 bits per halfword, and replaces the high nibble unless child `+0x64` bit 0 is set; no direct Thumb BL callers found |
 | `0x080584DC` | `ChildMotion_Update` | advances three fixed-point accumulators and an activity timer |
 | `0x080585EC` | `Child_SetModeByte` | updates child byte at +0x98 and refreshes +0x58 when it changes |
 | `0x0805861C` | `Child_SetTransform4` | stores four halfword parameters at +0xA8..+0xAE |
@@ -226,7 +283,13 @@ rather than asserting game-specific semantics.
 | `0x0805898C` | `ChildRuntime_InitVariantA` | initializes nested runtime state and child defaults |
 | `0x08058A4C` | `ChildRuntime_InitVariantB` | related initializer using caller-supplied dimensions/flags |
 | `0x08058ACC` | `ChildResource_Init` | resource-backed child initializer; consumes the 16-byte resource record header and establishes source/end pointers |
-| `0x08058C98` | `ChildRuntime_InitVariantC` | related runtime initializer |
+| `0x08058C98` | `ChildRuntime_InitVariantC` | initializes an internally allocated child display record, tracks its 0x4000-byte block cursor, dispatches its layout operation, and updates BGxCNT; operation semantics remain opaque |
+
+## Object-selection layout follow-up
+
+The former downstream gap at `0x08061260` is now source-defined as
+`RuntimeObjectSelection_ApplyLayout`; the measurement and ROM-byte evidence
+for this recovery are recorded in `docs/PASS25_DEVELOPMENT_2026-10-17.md`.
 
 ## Runtime configuration / render backend follow-up
 
@@ -284,3 +347,33 @@ See `docs/ARM_RASTERIZER_FINDINGS.md` for evidence and caveats. This module has 
 
 - `0x0806082C` — `RuntimeRange_Release`: return 16-bit range to sorted free-range list, merge adjacent nodes, recycle absorbed nodes (`src/runtime_range.c`).
 - `0x08060958` — `RuntimeRange_Reset`: reset the 0x400-unit range arena, release old resource tokens, and seed 31 spare descriptors (`src/runtime_range_init.c`).
+
+| `0x08051120` | `RuntimeContext_InitializeFollowup` (provisional) | Clears/sets additional runtime-base offsets, then initializes 56 table-backed records and 10 auxiliary entries; clears `+0x6B4` after the preceding routine seeded it to 1. Callback and field semantics remain unresolved. See Pass 56 audit. |
+
+Pass 58: `0x080517BC` writes a caller-provided value to runtime-context offset `+0x6B4`; direct call paths at `0x08045A4A` and `0x08045A5C` supply values 1 and 1/4 respectively. Semantics unresolved; see `docs/PASS58_DEVELOPMENT_2026-10-25.md`.
+
+Pass 57: helper `0x08051744` indexes 56 objects at runtime +4 (stride 0x18); `0x08051704` indexes 10 entries at +0x544 (stride 8). Indirect trampoline `0x08065C44` branches to a callback dynamically stored in RAM `0x03006FAC`; see `docs/PASS57_DEVELOPMENT_2026-10-25.md`.
+
+
+## Pass 59 addition
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x08045A08` | `ContextSelector_Dispatch5` | loads selector at enclosing-context offset `+0x4B4`, bounds-checks 0–4, dispatches through a five-entry ROM table; case actions verified, semantic meaning unresolved |
+
+## Pass 60 addition
+
+| `0x08043C8C` | `ContextSelector_Dispatch5_Parallel` (provisional) | reads the same selector field `+0x4B4` as `0x08045A08`; selectors 0–4 pass values 0, 3, 4, 5, 7 to `0x08063AA0`, then write `0x20` to `0x03000168`; semantic meaning unresolved |
+
+## Pass 64 additions
+
+| ROM address | Provisional name | Evidence |
+|---|---|---|
+| `0x080495C8` | `GameState_ApplySelectionDescriptor` | reads selected state ID, indexes 0x18-byte descriptor table at `0x08069FEC`, conditionally forwards descriptor/record fields to helper routines; semantic naming remains provisional |
+
+- `0x080491E4`: signed magnitude-dependent step quantizer, r1=0x80 in motion consumer.
+- `0x08049000`: bit-zero predicate at `[0x03000BEC]+0xEC`.
+
+## Pass 71 input candidate
+
+| `0x08043D42` | `MenuInput_TriageCandidate` (provisional) | checks masks 1, 0x100, 4 and conditionally forwards 0x11/0x12/0x13 to 0x08049250; nearby branches pass 0x0A/0x09 to state-history helper 0x080490FC; title/pause identity unconfirmed |

@@ -1232,3 +1232,55 @@ The routine initializes 56 table-backed records with stride `0xD0` from `0x08075
 Pass 58: runtime state setter at `0x080517BC` is verified; its call paths supply values 1 and 1/4 to offset `+0x6B4`. See `docs/PASS58_DEVELOPMENT_2026-10-25.md`.
 
 Pass 57: helper `0x08051744` indexes 56 objects at runtime +4 (stride 0x18); `0x08051704` indexes 10 entries at +0x544 (stride 8). Indirect trampoline `0x08065C44` branches to a callback dynamically stored in RAM `0x03006FAC`; see `docs/PASS57_DEVELOPMENT_2026-10-25.md`.
+
+## Pass 60 — parallel selector dispatch
+
+A second dispatch at `0x08043C8C` reads `[r6 + 0x4B4]`, bounds-checks 0–4, and jumps through the table at `0x08043CBC`. Its five cases pass values `0, 3, 4, 5, 7` to `0x08063AA0` (the input-state storage helper), then store `0x20` at `0x03000168`. It uses the same selector offset as `0x08045A08` but has different actions, so the selector meaning remains unresolved. See `docs/PASS60_DEVELOPMENT_2026-10-25.md`. No Easter egg is established.
+
+
+## Pass 61 — selector snapshots
+
+Two additional paths (`0x08048536`, `0x080488B2`) read selector offset `+0x4B4` and copy its low byte to another record at `+0x4`. A third consumer at `0x08048956` uses a bounded five-way dispatch. These are read-side cross-references only; the upstream writer and gameplay meaning remain unresolved. See `docs/PASS61_DEVELOPMENT_2026-10-25.md`. No Easter egg is established.
+
+## Pass 62 — additional selector consumer at `0x08045A00`
+
+This path loads the selector from context offset `+0x4B4`, bounds-checks 0–4, and dispatches through `0x08045A34`. The five cases pass numeric arguments to the known runtime-field setter and helper `0x080490FC` in different combinations. The selector writer and semantic names remain unresolved. See `docs/PASS62_DEVELOPMENT_2026-10-25.md`; no Easter egg is established.
+
+## Pass 63 — context state history and restore at `0x080490FC` / `0x0804917C`
+
+Traced the common helper called by several Pass 59/62 selector branches. The selection routine keeps current/previous state words in the block referenced by `0x03000650`, maintains a bounded history count at `+0x7C`, saves history words from `+0x14`, and invokes a shared follow-up at `0x080495C8`. Its companion restores a saved state when history is nonempty. The non-`0xFFFFFFFF` selection path and the nonempty restore path set byte `0x03000BFC` to `1`. All observations remain numeric/structural; semantic state names and Easter-egg relevance are unconfirmed. See `docs/PASS63_DEVELOPMENT_2026-10-25.md` and `docs/context_history_pass63.json`.
+
+
+## Pass 64 — follow-up descriptor processing at `0x080495C8`
+
+Traced the shared follow-up reached by state selection and restoration. It indexes a 0x18-byte descriptor table at `0x08069FEC` using the state word at state-block `+4`, checks a signed halfword at `0x03000AB4`, and conditionally passes record fields to `0x080504E8`, `0x08050530`, and `0x0805057C`. It also calls `0x08043558` and conditionally invokes `0x08049000` / `0x08049040`. These are structural findings; the descriptor type and state-ID semantics remain unconfirmed. See `docs/PASS64_DEVELOPMENT_2026-10-25.md` and `docs/state_followup_pass64.json`. No Easter egg is established.
+
+
+## Pass 65 — descriptor records and fixed-point builders
+
+Pass 65 fingerprints the descriptor lookup at `0x080495C8`, representative 24-byte records at `0x08069FEC`, and helper loops at `0x080504E8` / `0x08050530`. The paired helpers emit 0x18-byte output entries and store scaled arithmetic-shifted values in offsets `+0x10/+0x14` and `+0x08/+0x0C`. `0x0805057C` writes another pair of fields. Coordinate units and descriptor semantics remain unconfirmed. See `docs/PASS65_DEVELOPMENT_2026-10-25.md`; no Easter egg is claimed.
+
+
+## Pass 66 — classify conditional descriptor helpers
+
+`0x08049000` is a boolean bit-0 test on the halfword at a pointer loaded from `0x03000BEC`, offset `+0xEC`. `0x08049040` scales two incoming values and signed halfwords from source offsets `+0x48/+0x4A` by `0x100`, storing them at RAM `0x030006DC`, `0x030006E0`, `0x030006D4`, and `0x030006D8`. Fixed-point-like use is plausible, but exact units and the tested flag's meaning are unknown. The preceding data run at `0x08069FC4`–`0x08069FE8` is fingerprinted without assigning a struct role. See `docs/PASS66_DEVELOPMENT_2026-10-25.md`; no Easter egg is established.
+
+
+## Pass 67 — trace state motion fields
+
+The consumer at `0x08049078` reads the current pair at state `+0x84/+0x88` and target pair at `+0x8C/+0x90`, computes incremental adjustments through `0x080491E4`, and stores the integer portions back into source-record signed halfwords at `+0x48/+0x4A`. `0x0804901C` clears all four fields. This supports a smoothed coordinate-like flow, but not a specific gameplay meaning. The `0x08049000` predicate's flag source is still unresolved. See `docs/PASS67_DEVELOPMENT_2026-10-25.md` and `docs/state_motion_field_consumers_pass67.json`; no Easter egg is established.
+
+- Pass 68: verified signed step quantizer at 0x080491E4 and bit predicate at 0x08049000; semantics of the bit unresolved.
+
+## Pass 72 — ROM-wide inventory baseline
+
+The project direction is now full-ROM reconstruction toward a close 1:1 recreation. The Easter-egg investigation is deprioritized as a standalone target. `tools/rom_wide_coverage.py` inventories all 2,048 4-KiB pages across the 8 MiB ROM and records explicit address-reference density across project files. Baseline: 1,463 distinct ROM addresses mentioned in 224 implementation/evidence files. These are inventory metrics, **not** a claim that the corresponding bytes are decompiled. See `docs/PASS72_DEVELOPMENT_2026-10-27.md` and `docs/rom_wide_inventory_pass72.json`.
+
+
+## Pass 73
+Full-ROM 4-KiB page inventory and SHA-256 verification. {'unresolved': 1883, 'all_zero_fill': 165}. Fill-only coverage 8.057%; not decompilation coverage. Overall 1:1 estimate under 5%.
+
+## Pass 74 — function-entry candidate scan (2026-10-28)
+- 79 distinct PUSH/LR entry candidates from 161 word-pointer references.
+- 4286 linear BL patterns in first 524288 bytes; 3 targets overlap.
+- These are not verified functions or decompilation progress. Estimated 1:1 completion: under 5% (qualitative).
