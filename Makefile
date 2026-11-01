@@ -713,3 +713,120 @@ test-state-switch-pass59:
 	python3 -m unittest discover -s tests -p 'test_state_switch_pass59.py' -v
 
 test-all: test-state-switch-pass59
+
+.PHONY: audit-parallel-selector-pass60 test-parallel-selector-pass60
+audit-parallel-selector-pass60:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_parallel_selector_pass60.py "$(ROM)" --json docs/parallel_selector_pass60.json
+
+test-parallel-selector-pass60:
+	python3 -m unittest discover -s tests -p 'test_parallel_selector_pass60.py' -v
+
+test-all: test-parallel-selector-pass60
+
+.PHONY: audit-selector-snapshot-pass61 test-selector-snapshot-pass61
+audit-selector-snapshot-pass61:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_selector_snapshot_pass61.py "$(ROM)" --json docs/selector_snapshot_pass61.json
+
+test-selector-snapshot-pass61:
+	python3 -m unittest discover -s tests -p 'test_selector_snapshot_pass61.py' -v
+
+test-all: test-selector-snapshot-pass61
+
+.PHONY: audit-selector-dispatch-pass62 test-selector-dispatch-pass62
+audit-selector-dispatch-pass62:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_selector_dispatch_pass62.py "$(ROM)" --json docs/selector_dispatch_pass62.json
+
+test-selector-dispatch-pass62:
+	python3 -m unittest discover -s tests -p 'test_selector_dispatch_pass62.py' -v
+
+test-all: test-selector-dispatch-pass62
+
+.PHONY: audit-context-history-pass63 test-context-history-pass63
+audit-context-history-pass63:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_context_history_pass63.py "$(ROM)" --json docs/context_history_pass63.json
+
+test-context-history-pass63:
+	python3 -m unittest discover -s tests -p 'test_context_history_pass63.py' -v
+
+test-all: test-context-history-pass63
+
+.PHONY: audit-state-followup-pass64 test-state-followup-pass64
+audit-state-followup-pass64:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_state_followup_pass64.py "$(ROM)" --json docs/state_followup_pass64.json
+
+test-state-followup-pass64:
+	python3 -m unittest discover -s tests -p 'test_state_followup_pass64.py' -v
+
+test-all: test-state-followup-pass64
+
+
+.PHONY: audit-state-descriptor-records-pass65 test-state-descriptor-records-pass65
+audit-state-descriptor-records-pass65:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_state_descriptor_records_pass65.py "$(ROM)" --json docs/state_descriptor_records_pass65.json
+
+test-state-descriptor-records-pass65:
+	python3 -m unittest discover -s tests -p 'test_state_descriptor_records_pass65.py' -v
+
+test-all: test-state-descriptor-records-pass65
+
+.PHONY: audit-state-descriptor-helpers-pass66 test-state-descriptor-helpers-pass66
+audit-state-descriptor-helpers-pass66:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/your.gba' && exit 1)
+	python3 tools/audit_state_descriptor_helpers_pass66.py "$(ROM)" --json docs/state_descriptor_helpers_pass66.json
+
+test-state-descriptor-helpers-pass66:
+	python3 -m unittest tests/test_state_descriptor_helpers_pass66.py -v
+
+
+.PHONY: audit-state-motion-fields-pass67 test-state-motion-fields-pass67
+audit-state-motion-fields-pass67:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_state_motion_field_consumers_pass67.py "$(ROM)" --json docs/state_motion_field_consumers_pass67.json
+
+test-state-motion-fields-pass67:
+	python3 -m unittest discover -s tests -p 'test_state_motion_field_consumers_pass67.py' -v
+
+test-all: test-state-motion-fields-pass67
+
+.PHONY: audit-state-adjustment-pass68 test-state-adjustment-pass68
+audit-state-adjustment-pass68:
+	python3 tools/audit_state_adjustment_pass68.py "$(ROM)" --json docs/state_adjustment_pass68.json
+test-state-adjustment-pass68:
+	python3 -m unittest discover -s tests -p 'test_state_adjustment_pass68.py' -v
+
+
+.PHONY: audit-title-pause-input-triage-pass71 test-title-pause-input-triage-pass71
+audit-title-pause-input-triage-pass71:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/audit_title_pause_input_triage_pass71.py "$(ROM)" --json docs/title_pause_input_triage_pass71.json
+
+test-title-pause-input-triage-pass71:
+	python3 -m unittest discover -s tests -p 'test_title_pause_input_triage_pass71.py' -v
+
+.PHONY: inventory-rom-wide test-rom-wide-inventory
+inventory-rom-wide:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/original.gba' && exit 1)
+	python3 tools/rom_wide_coverage.py "$(ROM)" --json docs/rom_wide_inventory_pass72.json
+
+test-rom-wide-inventory:
+	python3 -m unittest discover -s tests -p 'test_rom_wide_coverage.py' -v
+
+test-all: test-rom-wide-inventory
+
+.PHONY: audit-full-rom-pages-pass73
+audit-full-rom-pages-pass73:
+	python3 tools/audit_full_rom_pages_pass73.py "$(ROM)" --json docs/full_rom_page_inventory_pass73.json
+
+.PHONY: scan-thumb-entry-candidates-pass74 test-thumb-entry-candidates-pass74
+scan-thumb-entry-candidates-pass74:
+	@test -n "$(ROM)" || (echo 'Set ROM=/path/to/game.gba' && exit 1)
+	python3 tools/scan_thumb_entry_candidates_pass74.py "$(ROM)" --json docs/thumb_entry_candidates_pass74.json
+
+test-thumb-entry-candidates-pass74:
+	python3 -m unittest discover -s tests -p 'test_thumb_entry_candidates_pass74.py' -v

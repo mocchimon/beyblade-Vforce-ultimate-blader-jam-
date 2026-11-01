@@ -8,9 +8,21 @@ copy is required for matching/verification.
 
 ## Current state
 
-### Latest analysis pass — Pass 59
+### Latest analysis pass — Pass 66
 
-Pass 59 maps the five-way switch-like dispatch at `0x08045A08`: it reads a selector at context offset `+0x4B4`, bounds-checks values 0–4, then jumps through a ROM table. Cases 0–2 write values 1 or 4 to runtime-base offset `+0x6B4` and select contexts `0x19` or `0x0F`; cases 3–4 select contexts `0x0C` and `0x28`. The meaning of these numeric states remains unknown. See `docs/PASS59_DEVELOPMENT_2026-10-25.md`. No Easter egg is claimed.
+Pass 66 classifies `0x08049000` as a boolean bit-test helper and `0x08049040` as a routine that scales two arguments and two signed source-record fields by 256 into RAM fields around `0x030006D4`–`0x030006E0`. It also fingerprints the data preceding the descriptor table without assigning it an unproven structure. Flag and coordinate semantics remain unknown. See `docs/PASS66_DEVELOPMENT_2026-10-25.md` and `docs/state_descriptor_helpers_pass66.json`. No Easter egg is claimed.
+
+### Latest analysis pass — Pass 65
+
+Pass 65 traces the 24-byte descriptor lookup used by `0x080495C8` and the paired fixed-point record builders at `0x080504E8` / `0x08050530`. Both iterate a signed halfword count and emit 0x18-byte output records; exact record and coordinate semantics remain unresolved. See `docs/PASS65_DEVELOPMENT_2026-10-25.md` and `docs/state_descriptor_records_pass65.json`. No Easter egg is claimed.
+
+### Latest analysis pass — Pass 64
+
+Pass 64 traces the follow-up at `0x080495C8` reached after selecting or restoring a state. It reads a state descriptor from the 0x18-byte table at `0x08069FEC`, checks a signed halfword at `0x03000AB4`, and conditionally forwards record fields to helper routines. State-ID meanings and descriptor semantics remain unresolved. See `docs/PASS64_DEVELOPMENT_2026-10-25.md` and `docs/state_followup_pass64.json`. No Easter egg is claimed.
+
+### Previous analysis pass — Pass 63
+
+Pass 63 traces the state-selection/history helper at `0x080490FC` and its restore companion at `0x0804917C`. The helper keeps current/previous state words and a bounded history array in the block referenced by `0x03000650`; the companion restores a prior state. The state IDs and event-flag semantics remain unresolved. See `docs/PASS63_DEVELOPMENT_2026-10-25.md` and `docs/context_history_pass63.json`. No Easter egg is claimed.
 
 ### Latest analysis pass — Pass 58
 
@@ -603,3 +615,44 @@ identified; this is groundwork for tracing the platformer's input path. See
 `make audit-runtime-context-followup-pass56 ROM=/path/to/original.gba` checks a bounded instruction/literal fingerprint at `0x08051120`. The audit confirms the earlier `+0x6B4 = 1` seed is overwritten by a zero store during follow-on initialization, and records two table-backed loops (56 records at stride `0xD0`; 10 entries at stride `0x50`). Unknown field and callback semantics remain unnamed. See `docs/PASS56_DEVELOPMENT_2026-10-25.md`.
 
 Pass 57: helper `0x08051744` indexes 56 objects at runtime +4 (stride 0x18); `0x08051704` indexes 10 entries at +0x544 (stride 8). Indirect trampoline `0x08065C44` branches to a callback dynamically stored in RAM `0x03006FAC`; see `docs/PASS57_DEVELOPMENT_2026-10-25.md`.
+
+Pass 60 adds a ROM-backed audit for the second five-way context selector at `0x08043C8C`. Run `make audit-parallel-selector-pass60 ROM=/path/to/original.gba` and `make test-parallel-selector-pass60` to verify its table and case actions.
+
+
+### Latest analysis pass — Pass 61
+
+Pass 61 extends the `+0x4B4` selector cross-reference set with two snapshot sites that copy its low byte into a secondary record, plus a related five-way consumer at `0x08048956`. The upstream writer and selector semantics remain unresolved. Run `make audit-selector-snapshot-pass61 ROM=/path/to/original.gba` and `make test-selector-snapshot-pass61`. No Easter egg is claimed.
+
+### Pass 62 selector consumer audit
+
+Pass 62 verifies another five-way consumer of context offset `+0x4B4` at `0x08045A00`. Run `make audit-selector-dispatch-pass62 ROM=/path/to/original.gba` and `make test-selector-dispatch-pass62`. This is a read-side dispatch; the upstream writer and gameplay meaning remain unresolved.
+
+
+### Latest analysis pass — Pass 67
+
+Pass 67 traces the fields written by `0x08049040` into the consumer at `0x08049078`: current values at state `+0x84/+0x88` move toward target values at `+0x8C/+0x90`, and integer portions are written back to source-record halfwords `+0x48/+0x4A`. This supports a smoothed coordinate-like interpretation but does not prove the field's gameplay meaning. Run `make audit-state-motion-fields-pass67 ROM=/path/to/original.gba` and `make test-state-motion-fields-pass67`. No Easter egg is confirmed.
+
+Pass 68: `docs/PASS68_DEVELOPMENT_2026-10-26.md` documents the signed adjustment helper and state predicate.
+
+### Pass 69
+
+Shared RAM base `0x03000BE0` literal inventory and record-field read cross-references: see `docs/PASS69_DEVELOPMENT_2026-10-26.md`. Run `python3 tools/audit_shared_state_base_pass69.py ROM.gba --json docs/shared_state_base_pass69.json` and `python3 -m unittest discover -s tests -p test_shared_state_base_pass69.py`.
+
+Pass 70: see `docs/PASS70_DEVELOPMENT_2026-10-27.md` and `tools/audit_state_callback_pass70.py`.
+
+Pass 70: see `docs/PASS70_DEVELOPMENT_2026-10-27.md` and `tools/audit_state_callback_pass70.py`.
+
+## Pass 71 — title/pause secret-input investigation
+
+The user clarified that the Easter egg uses specific inputs at the title screen or pause menu. Pass 71 pivots the analysis toward menu input paths. A candidate block at `0x08043D42` checks masks `1`, `0x100`, and `4`, then conditionally passes `0x11`, `0x12`, or `0x13` to `0x08049250`; nearby paths call `0x080490FC` with `0x0A` and `0x09`. The exact screen identity and secret sequence remain unproven. Run `make audit-title-pause-input-triage-pass71 ROM=/path/to/original.gba` and `make test-title-pause-input-triage-pass71`.
+
+## Pass 72 — full-ROM reconstruction baseline
+
+The work priority has shifted from isolated title/pause Easter-egg hunting to a systematic 1:1-oriented reconstruction of the entire ROM. Run `python3 tools/rom_wide_coverage.py /path/to/original.gba --json docs/rom_wide_inventory_pass72.json` to generate the 4-KiB-page inventory. The report distinguishes address references from actual decompilation coverage; function/data range classification and call-graph coverage are the next work items. See `docs/PASS72_DEVELOPMENT_2026-10-27.md`.
+
+
+### Pass 73
+ROM-wide 4-KiB page audit: `python3 tools/audit_full_rom_pages_pass73.py /path/to/rom.gba --json docs/full_rom_page_inventory_pass73.json`. Fill-only coverage must not be interpreted as decompilation completeness.
+
+### Pass 74 — Thumb function entry candidates
+Run `make scan-thumb-entry-candidates-pass74 ROM=/path/to/game.gba` for a conservative pointer/prologue inventory. See `docs/PASS74_DEVELOPMENT_2026-10-28.md`. Candidates are not verified functions.
